@@ -1,0 +1,59 @@
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title">Add Products</h3>
+            <p></p>
+
+            <br>
+
+            <form class="forms-sample" method="post" action="/admin/add-products" enctype="multipart/form-data">
+
+                <div class="row">
+                    <div class="form-group col-md-5">
+                        <label for="exampleInputName1">Name</label>
+                        <input type="text" class="form-control" id="exampleInputName1" placeholder="name" name="name" required>
+                    </div>
+
+                    <div class="form-group col-md-5">
+                        <label for="exampleInputPassword4">Price</label>
+                        <input type="text" class="form-control" id="exampleInputPassword4" placeholder="Price"
+                            name="price" required>
+                    </div>
+
+
+                    <div class="form-group col-md-5">
+                        <label for="exampleSelectGender">Category</label>
+                        <select class="form-control" id="exampleSelectGender" name="category">
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group col-md-5">
+                        <label for="exampleInputPassword4">Quantity</label>
+                        <input type="text" class="form-control" id="exampleInputPassword4" placeholder="quantity"
+                            name="quantity" required>
+                    </div>
+
+
+                    <div class="form-group col-md-10">
+                        <label for="exampleTextarea1">Description</label>
+                        <textarea class="form-control" id="exampleTextarea1" rows="5" name="description"></textarea>
+                    </div>
+
+                    <div class="form-group col-md-10">
+                        <label for="">Image</label>
+                        <input type="file" name="image" class="form-control">
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary ml-3 mr-2 col-md-2">Submit</button>
+                    <a href="/admin/products" class="btn btn-light">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,60 @@
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title">Edit Products</h3>
+            <p></p>
+
+            <br>
+
+            <form class="forms-sample" method="post" action="/admin/edit-products/<%= products._id  %> " enctype="multipart/form-data">
+
+                <div class="row">
+                    <div class="form-group col-md-5">
+                        <label for="exampleInputName1">Name</label>
+                        <input value="<%=products.name%>" type="text" class="form-control" id="exampleInputName1" placeholder="name" name="name" value="<%= products.name  %>">
+                    </div>
+
+                    <div class="form-group col-md-5">
+                        <label for="exampleInputPassword4">Price</label>
+                        <input value="<%=products.price%>" type="text" class="form-control" id="exampleInputPassword4" placeholder="Price"
+                            name="price" >
+                    </div>
+ 
+
+                    <div class="form-group col-md-5">
+                        <label for="exampleSelectGender">Category</label>
+                        <select class="form-control" id="exampleSelectGender"  name="category"  >
+
+                            <option>winter</option>
+                            <option>tees</option>
+                            <option>jackets</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group col-md-5">
+                        <label for="exampleInputPassword4">Quantity</label>
+                        <input type="text" class="form-control" id="exampleInputPassword4" placeholder="quantity"
+                            name="quantity" value="<%=products.quantity%>"  >
+                    </div>
+
+
+                    <div class="form-group col-md-10">
+                        <label for="exampleTextarea1">Description</label>
+                        <textarea value="<%=products.description%>" class="form-control" id="exampleTextarea1" rows="5" name="description"><%- products.quantity%></textarea>
+                    </div>
+
+                    <div class="form-group col-md-10">
+                        <label for="">Image</label>
+                        <input  type="file" name="image" class="form-control">
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary ml-3 mr-2 col-md-2">Submit</button>
+                    <button class="btn btn-light">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> 
+

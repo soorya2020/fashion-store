@@ -1,0 +1,32 @@
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Add New Category
+
+            </h4>
+            <!-- <p class="card-description">
+                Basic form layout
+            </p> -->
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+
+
+
+
+            <form class="forms-sample text-center" action="/admin/add-category" method="post">
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Category</label>
+                    <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Username" name="name">
+                </div>
+               
+                <button type="submit" class="btn btn-primary mr-2">Submit</button>
+                <button class="btn btn-light">Cancel</button>
+            </form>
+        </div>
+    </div>
+</div>
