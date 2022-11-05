@@ -50,10 +50,21 @@ router.get('/',verifyAdminLogin, function (req, res, next) {
 });
 
 router.get('/add-products', (req, res) => {
-  res.render('admin/add_product', {
-    layout
+  adminHelpers.getAllCatagories().then((category)=>{
+    res.render('admin/add_product',{layout,category})
   })
+  
 })
+
+
+// router.get('/edit-products/:id', async(req, res) => {
+//   let products = await productHelpers.getProductDetails(req.params.id)
+//   adminHelpers.getAllCatagories().then((category)=>{
+//     res.render('admin/edit-products', {products,layout,category})
+//   })
+    
+  
+// })
 
 
 /*------------------------add-product------------------------------*/
@@ -108,7 +119,10 @@ router.get('/delete-products/:id', (req, res) => {
 
 router.get('/edit-products/:id', async(req, res) => {
   let products = await productHelpers.getProductDetails(req.params.id)
-    res.render('admin/edit-products', {products,layout})
+  adminHelpers.getAllCatagories().then((category)=>{
+    res.render('admin/edit-products', {products,layout,category})
+  })
+    
   
 })
 
@@ -140,6 +154,7 @@ router.post('/add-user',(req,res)=>{
 router.get('/blockUser/:id', (req, res) => {
   adminHelpers.blockUser(req.params.id).then((user)=>{
     console.log(user);
+    req.session.loggedIn=false
     res.redirect("/admin/users")
   })
   

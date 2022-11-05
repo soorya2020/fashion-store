@@ -29,11 +29,17 @@
                         <div class="product-gallery product-gallery-vertical">
                             <div class="row">
                                 <figure class="product-main-image">
-                                    <img id="product-zoom" src="/product-images/<%= product._id  %>.jpg " data-zoom-image="images/products/single/centered/1-big.jpg" alt="product image">
-
-                                    <a href="#" id="btn-product-gallery" class="btn-product-gallery">
-                                        <i class="icon-arrows"></i>
-                                    </a>
+                                    <!-- todo-->
+                                    <div class="img_producto_container" data-scale="1.6">
+                                        <a
+                                          class="dslc-lightbox-image img_producto"
+                                          href="/product-images/<%= product._id  %>.jpg"
+                                          target="_self"
+                                          style="background-image:url('/product-images/<%= product._id  %>.jpg')"
+                                        >
+                                        </a>
+                                      </div>
+                                     <!-- todo end -->
                                 </figure><!-- End .product-main-image -->
 
                                 <div id="product-zoom-gallery" class="product-image-gallery">
@@ -250,3 +256,7 @@
             </div><!-- End .product-details-tab -->
 
            
+
+           
+
+            

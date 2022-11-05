@@ -16,12 +16,13 @@ router.get("/", function (req, res) {
 //------------------------------middleware to check is user login in or not ------------------
 const verifyLogin = (req, res, next) => {
   if (req.session.loggedIn) {
+    res.locals.loggedIn=true
     next();
   } else {
     res.redirect("/login");
   }
 };
-//-------------------------------------------------------------------------------------
+//--------------------------------------show all products-----------------------------------------------
 router.get("/shop", verifyLogin, (req, res) => {
   var user = req.session.user;
   productHelpers.getAllProducts().then((products) => {
@@ -34,7 +35,7 @@ router.get("/shop", verifyLogin, (req, res) => {
       nav,
       footer,
     });
-    console.log(products);
+    
   });
 });
 //-------------------------------------USER login-----------------------------
@@ -139,11 +140,11 @@ router.get("/single-product/:id", verifyLogin, (req, res) => {
 });
 
 router.get("/about-us", (req, res) => {
-  res.render("user/about-us", { nav: true, footer: true });
+  res.send('coming soon')
 });
 
-router.get("/wishlist", verifyLogin, (req, res) => {
-  res.render("user/wishlist", { nav: true, foooter: true });
+router.get("/orders", verifyLogin, (req, res) => {
+  res.send('coming soon')
 });
 
 module.exports = router;
