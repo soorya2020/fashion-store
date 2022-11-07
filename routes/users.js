@@ -59,7 +59,7 @@ router.post("/login", (req, res) => {
       req.session.loggedIn = true;
       req.session.user = response.user;
       res.send({ value: "success"});
-    }else if(response){
+    }else if(response.blocked){
       res.send({value:'blocked'})
     }
      else {
@@ -70,7 +70,7 @@ router.post("/login", (req, res) => {
 });
 //-------------------------------------userLogout--------------------------------------
 router.get("/logout", (req, res) => {
-  req.session.destroy();
+  req.session.loggedIn=false;
   res.redirect("/login");
 });
 
@@ -98,20 +98,31 @@ router.get("/otpform", (req, res) => {
 });
 
 router.get("/otp-login", (req, res) => {
-  res.render("user/otp-login", { nav: false, footer: false });
-  client.verify
-    .services(config.serviceID)
-    .verifications.create({
-      to: `+91${req.query.phonenumber}`,
-      channel: "sms",
-    })
-    .then((data) => {
-      res.status(200).send(data);
-    });
+  
+  userHelpers.isUser(req.query.phonenumber).then((userExist)=>{
+    if(userExist){
+        console.log('if is working');
+        client.verify.services(config.serviceID).verifications.create({
+          to:`+91${req.query.phonenumber}`,
+          channel:'sms'
+        }).then((data)=>{
+          console.log(data);
+          res.status(200).send(data)
+        }).catch((data)=>{
+          console.log(data);
+          res.send({value:true})
+        })
+    }else{
+      console.log('else is working');
+      res.send({value:false})
+    }
+  })
+
+
+
 });
 
 router.get("/verify", (req, res) => {
-  console.log(res);
   client.verify
     .services(config.serviceID)
     .verificationChecks.create({

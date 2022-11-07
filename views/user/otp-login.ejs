@@ -17,7 +17,7 @@
 
 
                                 <div class="form-group">
-                                    <p id="err"></p>
+                                    <p id="error1"></p>
                                     <label for="register-email-2">Mobile number *</label>
                                     <input type="tel" class="form-control" id="mobile" name="mobile" required>
                                 </div><!-- End .form-group -->
@@ -29,7 +29,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <p id="err"></p>
+                                    <p id="error"></p>
                                     <label for="register-number-2">OTP *</label>
                                     <input type="tel" class="form-control" id="code" name="password" required>
                                 </div><!-- End .form-group -->
@@ -61,6 +61,7 @@
 
 <script>
 
+    //send opt to mobile
     function sendOtp() {
 
 
@@ -83,7 +84,6 @@
         }
 
         function submitMobile(mobileValue) {
-            //
 
             fetch(`/otp-login?phonenumber=${mobileValue}`, {
                 method: 'GET',
@@ -92,21 +92,44 @@
                 }
 
             })
+            .then((res) => res.json())
+            .then((res) => {
+                
+                 if(!res.value){
+                    let error=document.getElementById('error1')
+                     error.innerText="user does not exist"
+                 }else{
+                    error.innerText=''
+                 }
+                    
+                
+            })
 
         }
 
     }
 
-    function verify() {
+    //verify otp
+    function verify() {    
 
         const otp = document.getElementById('code')
         const otpValue = otp.value?.trim()
         const numberValue = document.getElementById('mobile').value?.trim();
 
+        const err2 = otp.parentElement.querySelector('p')
+        err2.innerText=''
+
+        let flag = 1
+        if (otpValue == '') {
+            err2.innerText = 'This field is required'
+            flag = 2
+        }
+
+        if (flag == 1) {
+            submit(otpValue,numberValue)
+        }
+
         function submit(otpValue, numberValue) {
-
-            console.log(`otp:${otpValue},numb:${numberValue}`);
-
             fetch(`/verify?phonenumber=${numberValue}&code=${otpValue}`, {
                 method: 'GET',
                 headers: {
@@ -115,22 +138,13 @@
             })
                 .then((res) => res.json())
                 .then((res) => {
-
-                  
-
                     if (res.value == "success") {
                         window.location.href = "/shop"
-                    } else {
-                        window.location.reload();
+                    } else if(res.value=='error') {
+                        let error=document.getElementById('error')
+                        error.innerText='Wrong otp'
                     }
-
                 })
-
         }
-
-        submit(otpValue, numberValue);
-
     }
-
-
 </script>

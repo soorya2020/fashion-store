@@ -28,6 +28,12 @@ module.exports = {
 
         })
     },
+    isUser:(userData)=>{
+        return new Promise(async(resolve,reject)=>{
+            let userExist=await db.users.findOne({mobile:userData})
+            resolve(userExist)
+        })
+    },
     doLogin: (userData) => {
         return new Promise(async (resolve, reject) => {
             let loginStatus = false
@@ -35,21 +41,26 @@ module.exports = {
             let response = {}
             let user = await db.users.findOne({ email: userData.email })
             if (user) {
-                bcrypt.compare(userData.password, user.password).then((status) => {
+                bcrypt.compare(userData.password, user.password).then((passwordcheck) => {
                     
-                    if (status && user.status) {
+                    if (passwordcheck) {
+
+                        if(user.status){
+                            console.log('login succes')
+                            response.user = user
+                            response.status = true
+                            resolve(response)
+                        }else{
+                            console.log('user is blocked')
+                            response.blocked=true
+                            resolve(response)
+                        }
                         
-                        console.log('login succes')
-                        response.user = user
-                        response.status = true
-                        resolve(response)
-                    }else if(!user.status){
-                        var blocked=true
-                        resolve(blocked)    //if user is blocked
                     }
-                     else {
+                    else {
                         console.log('password failed..');
-                        resolve({ status: false })
+                        response.status=false
+                        resolve(response)
                     }
                 })
 

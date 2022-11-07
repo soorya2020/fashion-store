@@ -31,7 +31,7 @@ router.post('/login',(req,res)=>{
 })
 
 router.get('/logout',(req,res)=>{
-  req.session.destroy()
+  req.session.adminLoggedIn=false
   res.redirect('/admin/login')
 })
 
@@ -132,8 +132,8 @@ router.get('/edit-products/:id', async(req, res) => {
 
 router.post('/edit-products/:id', (req, res) => {
   productHelpers.editProduct(req.params.id, req.body).then(()=>{
-    let image =req.files.image
-    const imgName =req.params.id
+     let image =req.files.image
+    const imgName =req.params.id 
 
     image.mv('./public/product-images/'+imgName+'.jpg',(err,done)=>{
       if(!err){
