@@ -57,3 +57,115 @@
         </div>
     </div>
 </div>
+
+<script>
+
+    function validation(){
+    
+        const name=document.getElementById('name')
+        const price=document.getElementById('price')
+        const category=document.getElementById('category')
+        const quantity=document.getElementById('quantity')
+        const description=document.getElementById('description')
+        const image=document.getElementById('image')
+
+    
+        const nameValue=name.value?.trim()
+        const priceValue=price.value?.trim()
+        const categoryValue=category.value?.trim()
+        const quantityValue=quantity.value?.trim()
+        const descriptionValue=description.value?.trim()
+        const imageValue=image.value?.trim()
+
+    
+        const err1=name.parentElement.querySelector('p')
+        err1.innerText=''
+        const err2=price.parentElement.querySelector('p')
+        err2.innerText=''
+        const err3=category.parentElement.querySelector('p')
+        err3.innerText=''
+        const err4=quantity.parentElement.querySelector('p')
+        err4.innerText=''
+        const err5=description.parentElement.querySelector('p')
+        err5.innerText=''
+        const err6=image.parentElement.querySelector('p')
+        err6.innerText=''
+    
+        let flag=1
+    
+        //name validation
+        if(nameValue==''){
+            err1.innerText='This field is required'
+            flag=2
+        }else if(!nameValue.match(/[a-zA-Z]/)){
+            err1.innerText='Enter a valid name'
+            flag=2
+        }else if(nameValue.length<3){
+            err1.innerText='name should be atleast 3 characters'
+            flag=2
+        }
+    
+        //email validatio
+        if (priceValue=='') {
+            err2.innerText='This field is required'
+            flag=2
+        }
+    
+        //password validation
+        if(categoryValue==''){
+            err3.innerText='This field is required'
+            flag=2
+        }  
+    
+        //mobile validation
+        if(!quantityValue){
+            err5.innerText='This field is required'
+            flag=2
+        }else if(!mobileValue.match(/^[1-10]/)){
+            err5.innerText='enter a valid price'
+            flag=2
+        }
+
+        //image validation
+        if(imageValue==""){
+            err6.innerText='uplad an image'
+        }
+    
+        if(flag==1){
+            submit(nameValue,priceValue,categoryValue,quantityValue,descriptionValue)
+        }
+    
+        function submit(nameValue,priceValue,categoryValue,quantityValue,descriptionValue) {
+            
+            fetch('/add-products',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify({
+                    name:nameValue,
+                    price:priceValue,
+                    category:categoryValue,
+                    quantity:quantityValue,
+                    description:descriptionValue,
+                   
+                })
+            })
+            .then((res)=>res.json())
+            .then((res)=>{
+    
+                console.log("res");
+    
+                if(res.value=='success'){
+                    window.location.href='/admin/products'
+                }else{
+                    window.location.reload()
+                }
+            })
+        }
+    
+    }
+    
+    
+    
+    </script>

@@ -1,3 +1,4 @@
+
 <main class="main">
     <div class="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17"
         style="background-image: url('/assets/images/backgrounds/login-bg.jpg')">
@@ -17,7 +18,7 @@
                               
                                    
                                 <div class="form-group">
-                                    <p id="err"></p>
+                                    <p id="error" class="text-danger"></p>
                                     <label for="register-email-2">Your email address *</label>
                                     <input type="email" class="form-control" id="email" name="email"
                                         required>
@@ -38,8 +39,8 @@
 
                                     <div class="ml-2">
                                         
-                                        <label class="custom-control-label" for="register-policy-2">Not Registered Yet ? <a
-                                                href="/signup"> Create An Account Now</a></label>
+                                        <label class="" for="register-policy-2">Not Registered Yet ? <a href="/signup">
+                                               Create An Account Now</a></label>
                                     </div><!-- End .custom-checkbox -->
                                 </div><!-- End .form-footer -->
                             </form>
@@ -74,6 +75,8 @@
 <script>
 
     function validation(){
+
+        
 
         const email=document.getElementById('email')
         const password=document.getElementById('password')
@@ -122,13 +125,20 @@
             .then((res)=>res.json())
             .then((res)=>{
 
-                console.log(res);
+                console.log('sdfghj');
 
                 if(res.value=="success"){
                     window.location.href="/shop"
-                }else{
-                    window.location.href="/shop"
+                }else if(res.value=='blocked' ){
+                    var errorMsg=document.getElementById('error')
+                    errorMsg.innerText="you have been blocked"
                 }
+                else{
+                    var errorMsg=document.getElementById('error')
+                    errorMsg.innerText="Credentials do not match"
+                    
+                }
+               
 
             })
         }

@@ -58,6 +58,28 @@
     <!-- Custom js for this page-->
     <script src="/js/dashboard.js"></script>
     <script src="/js/Chart.roundedBarCharts.js"></script>
+    <script>//image preview
+      const form = document.querySelector('#form')
+  const tagImage = document.querySelector('#image')
+  const inputFile = document.querySelector('#file')
+  
+  function renderImage(formData){
+    const file = formData.get('image')
+    const image = URL.createObjectURL(file)
+    tagImage.setAttribute('src', image)
+  }
+  
+  const userNameP = document.querySelector('#username')
+  function renderName(formData){
+    const username = formData.get('username')
+    userNameP.textContent = username
+  }
+  //para poder trocar a imagem antes de enviar
+  inputFile.addEventListener('change', ()=>{
+    const formData = new FormData(form)
+    renderImage(formData)
+  })
+  </script>
     <!-- End custom js for this page-->
 
 

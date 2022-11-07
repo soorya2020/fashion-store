@@ -20,8 +20,9 @@
 
             <form class="forms-sample text-center" action="/admin/add-category" method="post">
                 <div class="form-group">
+                    <p></p>
                     <label for="exampleInputUsername1">Category</label>
-                    <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Username" name="name">
+                    <input type="text" class="form-control" id="name" placeholder="Username" name="name">
                 </div>
                
                 <button type="submit" class="btn btn-primary mr-2">Submit</button>
@@ -30,3 +31,46 @@
         </div>
     </div>
 </div>
+
+<!-- <script>
+
+    function validation(){
+        const name=document.getElementById('name')
+        const nameValue=name.value?.trim()
+
+        const err=name.parentElement.querySelector('p')
+        err.innerText=""
+        let flag=1
+        if(nameValue==''){
+            err.innerText='please add category'
+            flag=2
+        }
+
+        if(flag==1){
+            submit(nameValue)
+        }
+
+        function submit(nameValue){
+            fetch('/admin/add-category',{
+                method:"POST",
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body.JSON.stringify({
+                    name:nameValue
+                })
+            })
+            .then((res)=>res.json())
+            .then((res)=>{
+                if(res.value=='success'){
+                    
+                }
+            })
+        }
+    }
+
+
+
+
+</script> -->
+

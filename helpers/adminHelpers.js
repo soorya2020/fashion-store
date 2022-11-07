@@ -55,7 +55,7 @@ blockUser:(userId)=>{
         try{
              db.users.updateOne({_id:userId},{
                 $set:{
-                    status:true
+                    status:false
                 }
             }).then((data)=>{
                 resolve(data)
@@ -72,7 +72,7 @@ unBlockUser:(userId)=>{
         try{
             await db.users.updateOne({_id:userId},{
                 $set:{
-                    status:false
+                    status:true
                 }
             }).then((data)=>{
                 resolve(data)
@@ -94,6 +94,7 @@ getAllCatagories:()=>{
 addCategory:(category)=>{
         
     return new Promise(async(resolve,reject)=>{
+        
         let data=await db.categories(category)
         data.save()
         resolve(data)

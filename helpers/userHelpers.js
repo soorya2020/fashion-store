@@ -29,7 +29,6 @@ module.exports = {
         })
     },
     doLogin: (userData) => {
-        console.log(userData);
         return new Promise(async (resolve, reject) => {
             let loginStatus = false
 
@@ -37,14 +36,19 @@ module.exports = {
             let user = await db.users.findOne({ email: userData.email })
             if (user) {
                 bcrypt.compare(userData.password, user.password).then((status) => {
-                    if (status) {
+                    
+                    if (status && user.status) {
                         
                         console.log('login succes')
                         response.user = user
                         response.status = true
                         resolve(response)
-                    } else {
-                        console.log('password failed');
+                    }else if(!user.status){
+                        var blocked=true
+                        resolve(blocked)    //if user is blocked
+                    }
+                     else {
+                        console.log('password failed..');
                         resolve({ status: false })
                     }
                 })

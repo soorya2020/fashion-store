@@ -23,7 +23,7 @@
                                 <div class="row">
                                     
                                     <div class="form-group col-md-12">
-                                        <p id="err"></p>
+                                        <p class="text-danger " id="error"></p>
                                         <label for="register-first-name">Name *</label>
                                         <input type="text" class="form-control" id="name" name="name"
                                             required>
@@ -189,7 +189,9 @@ function validation(){
             if(res.value=='success'){
                 window.location.href='/shop'
             }else{
-                window.location.href='/signup'
+                let error=document.getElementById('error')
+                error.innerText='user already exist'
+                
             }
         })
     }

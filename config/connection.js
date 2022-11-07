@@ -25,7 +25,7 @@ const userSchema=new mongoose.Schema({
     email:String,
     status:{
         type:Boolean,
-        default:false
+        default:true
     },
     role:{
         type:Number,

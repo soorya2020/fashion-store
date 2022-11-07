@@ -58,8 +58,11 @@ router.post("/login", (req, res) => {
     if (response.status) {
       req.session.loggedIn = true;
       req.session.user = response.user;
-      res.send({ value: "success" });
-    } else {
+      res.send({ value: "success"});
+    }else if(response){
+      res.send({value:'blocked'})
+    }
+     else {
       req.session.loginErr = true;
       res.send({ value: "failed" });
     }

@@ -1,3 +1,4 @@
+
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
@@ -6,24 +7,31 @@
 
             <br>
 
-            <form class="forms-sample" method="post" action="/admin/edit-products/<%= products._id  %> " enctype="multipart/form-data">
+            <form id="form" class="forms-sample" method="post" action="/admin/edit-products/<%= products._id  %> " enctype="multipart/form-data">
 
                 <div class="row">
+                    <div class="form-group col-md-10">
+                        <img style="width:100px ;" src=/product-images/<%= products._id %>.jpg  alt="" srcset="">
+                    </div>
+                    
                     <div class="form-group col-md-5">
+                        <p id="err"></p>
                         <label for="exampleInputName1">Name</label>
-                        <input value="<%=products.name%>" type="text" class="form-control" id="exampleInputName1" placeholder="name" name="name" value="<%= products.name  %>">
+                        <input value="<%=products.name%>" type="text" class="form-control" id="name" placeholder="name" name="name" value="<%= products.name  %>">
                     </div>
 
                     <div class="form-group col-md-5">
+                        <p id="err"></p>
                         <label for="exampleInputPassword4">Price</label>
-                        <input value="<%=products.price%>" type="text" class="form-control" id="exampleInputPassword4" placeholder="Price"
+                        <input value="<%=products.price%>" type="text" class="form-control" id="price" placeholder="Price"
                             name="price" >
                     </div>
  
 
                     <div class="form-group col-md-5">
+                        <p id="err"></p>
                         <label for="exampleSelectGender">Category</label>
-                        <select class="form-control" id="exampleSelectGender"  name="category"  >
+                        <select class="form-control" id="category"  name="category"  >
                             <% category.forEach((category)=>{ %> 
                             <option><%= category.name %> </option>
                             <% }) %> 
@@ -32,21 +40,41 @@
 
 
                     <div class="form-group col-md-5">
+                        <p id="err"></p>
                         <label for="exampleInputPassword4">Quantity</label>
-                        <input type="text" class="form-control" id="exampleInputPassword4" placeholder="quantity"
+                        <input type="text" class="form-control" id="quantity" placeholder="quantity"
                             name="quantity" value="<%=products.quantity%>"  >
                     </div>
 
 
                     <div class="form-group col-md-10">
+                        <p id="err"></p>
                         <label for="exampleTextarea1">Description</label>
-                        <textarea value="<%=products.description%>" class="form-control" id="exampleTextarea1" rows="5" name="description"><%- products.quantity%></textarea>
+                        <textarea value="<%=products.description%>" class="form-control" id="description" rows="5" name="description"><%- products.quantity%></textarea>
                     </div>
 
-                    <div class="form-group col-md-10">
+                    <div class="form-group col-md-5">
+                        <p id="err"></p>
                         <label for="">Image</label>
-                        <input  type="file" name="image" class="form-control">
+                        <input  type="file" name="image" id="file" class="form-control" >
                     </div>
+
+                    <!-- <div class="form-group col-md-5">
+                        <p id="err"></p>
+                        
+                       <div class="text-center" style="width:200px ;height:200px; border:solid black">image preview</div>
+                    </div> -->
+                    <div class="preview col-md-5">
+                        <!--UserName goes here-->
+                        <p id="username"> </p>
+                        <!--selected image goes here -->
+                        <img src="" 
+                                 id="image" 
+                                 width="250" 
+                                 height="auto">
+                 </div>
+
+                    
 
 
                     <button type="submit" class="btn btn-primary ml-3 mr-2 col-md-2">Submit</button>
@@ -56,4 +84,8 @@
         </div>
     </div>
 </div> 
+
+
+
+
 

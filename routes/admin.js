@@ -8,8 +8,12 @@ const router = express.Router();
 const layout = 'admin-layout'
 
 /*------------------------admin login------------------------------*/
+
 router.get('/login',(req,res)=>{
-  res.render('admin/login')
+  if(req.session.adminLoggedIn){
+    res.redirect("/admin")
+  }
+  res.render('admin/login',{admin:true})
 })
 
 router.post('/login',(req,res)=>{
@@ -34,7 +38,7 @@ router.get('/logout',(req,res)=>{
 
 
 
-/*------------------------------------------------------*/
+/*----------------------middlevare to check admin login--------------------------------*/
 const verifyAdminLogin = (req, res, next) => {
   if (req.session.adminLoggedIn) {
     next();
@@ -49,7 +53,7 @@ router.get('/',verifyAdminLogin, function (req, res, next) {
   })
 });
 
-router.get('/add-products', (req, res) => {
+router.get('/add-products', verifyAdminLogin,(req, res) => {
   adminHelpers.getAllCatagories().then((category)=>{
     res.render('admin/add_product',{layout,category})
   })
@@ -75,13 +79,13 @@ router.post('/add-products', (req, res) => {
   productHelpers.addProducts(req.body).then((insertedId) => {
     let image = req.files.image
     const imgName = insertedId;
-    console.log(imgName);
+    // console.log(imgName);
 
     image.mv('./public/product-images/' + imgName + '.jpg', (err, done) => {
       if (!err) {
         res.redirect('/admin/products')
       } else {
-        console.log(err)
+        res.send('upload an image')
       }
     })
 
@@ -92,7 +96,7 @@ router.post('/add-products', (req, res) => {
 /*------------------------products------------------------------*/
 
 
-router.get('/products', (req, res) => {
+router.get('/products',verifyAdminLogin ,(req, res) => {
   productHelpers.getAllProducts().then((products) => {
     res.render('admin/products', {
       products: products,
@@ -127,8 +131,18 @@ router.get('/edit-products/:id', async(req, res) => {
 })
 
 router.post('/edit-products/:id', (req, res) => {
-  productHelpers.editProduct(req.params.id, req.body).then((data)=>{
-    res.redirect('/admin/products')
+  productHelpers.editProduct(req.params.id, req.body).then(()=>{
+    let image =req.files.image
+    const imgName =req.params.id
+
+    image.mv('./public/product-images/'+imgName+'.jpg',(err,done)=>{
+      if(!err){
+        res.redirect('/admin/products')
+      }else{
+        res.send(err)
+      }
+    })
+    // res.redirect('/admin/products')
   })
 })
 
@@ -169,6 +183,7 @@ router.get('/unBlockUser/:id', (req, res) => {
 
 //-----------------------------------------------------//
 router.post('/edit-products/:id', (req, res) => {
+  console.log('helooo');
   productHelpers.editProduct(req.params.id, req.body).then((data)=>{
     res.redirect('/admin/products')
   })
@@ -183,7 +198,7 @@ router.get('/add-products', (req, res) => {
 })
 
 
-router.get('/users', (req, res) => {
+router.get('/users', verifyAdminLogin,(req, res) => {
   adminHelpers.getAllUsers().then((users)=>{
     console.log(users);
     res.render("admin/users",{users,layout})
@@ -192,7 +207,7 @@ router.get('/users', (req, res) => {
 })
 
 //--------------------------show categories---------------------------//
-router.get("/categories",(req,res)=>{
+router.get("/categories",verifyAdminLogin,(req,res)=>{
   adminHelpers.getAllCatagories().then((category)=>{
     console.log(category);
     res.render('admin/categories',{category,layout})
@@ -209,6 +224,8 @@ router.get('/add-category',(req,res)=>{
 
 router.post("/add-category",(req,res)=>{
   adminHelpers.addCategory(req.body).then((data)=>{
+    
+    console.log(req.body);
     res.redirect("/admin/categories")
   })
 })
