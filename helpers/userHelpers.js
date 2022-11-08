@@ -1,7 +1,7 @@
-const db = require('../config/connection')
+const db = require('../model/connection')
 
 const bcrypt = require('bcrypt')
-const { users } = require('../config/connection')
+const { users } = require('../model/connection')
 
 module.exports = {
     doSignup: (userData) => {

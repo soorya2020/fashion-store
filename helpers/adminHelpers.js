@@ -1,4 +1,4 @@
-const db = require('../config/connection')
+const db = require('../model/connection')
 const { response } = require('../app')
 const  bcrypt = require('bcrypt')
 const { ObjectID } = require('bson')
@@ -91,14 +91,23 @@ getAllCatagories:()=>{
     })
 },
 
-addCategory:(category)=>{
+addCategory:(data)=>{
         
     return new Promise(async(resolve,reject)=>{
-        
-        let data=await db.categories(category)
-        data.save()
-        resolve(data)
+        db.categories.findOne({name:data.name}).then(async(category)=>{
+            let response={}
+            console.log(category);
+            if(category==null){
+                let categories=await db.categories(data)
+                categories.save()
+                response.data=categories
+                response.status=true
+                resolve(response)
+            }else{
+                resolve({status:false})
+            }
         })
+    })
        
 },
 

@@ -7,32 +7,26 @@
             <!-- <p class="card-description">
                 Basic form layout
             </p> -->
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
+           
 
 
 
 
-
-            <form class="forms-sample text-center" action="/admin/add-category" method="post">
+            <form class="forms-sample text-center" action="" method="">
                 <div class="form-group">
-                    <p></p>
+                    <p id="error"></p>
                     <label for="exampleInputUsername1">Category</label>
                     <input type="text" class="form-control" id="name" placeholder="Username" name="name">
                 </div>
                
-                <button type="submit" class="btn btn-primary mr-2">Submit</button>
-                <button class="btn btn-light">Cancel</button>
+                <button type="button" onclick="validation()" class="btn btn-primary mr-2">Submit</button>
+                <a href="/admin/categories" class="btn btn-light">Cancel</a>
             </form>
         </div>
     </div>
 </div>
 
-<!-- <script>
+<script>
 
     function validation(){
         const name=document.getElementById('name')
@@ -52,18 +46,22 @@
 
         function submit(nameValue){
             fetch('/admin/add-category',{
-                method:"POST",
+                method:'POST',
                 headers:{
                     'Content-Type': 'application/json'
                 },
-                body.JSON.stringify({
+                body:JSON.stringify({
                     name:nameValue
                 })
             })
             .then((res)=>res.json())
             .then((res)=>{
-                if(res.value=='success'){
+                if(res.value=='failed'){
+                    let error=document.getElementById('error')
+                    error.innerText='Category already exist'
                     
+                }else{
+                    window.location.href='/admin/categories'
                 }
             })
         }
@@ -72,5 +70,7 @@
 
 
 
-</script> -->
+
+
+</script>
 

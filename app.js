@@ -11,7 +11,7 @@ const formidable = require('formidable');
 const mongoDbSesson = new ConnectMongoDBSession(session);
 
 const expressLayouts = require("express-ejs-layouts");
-const db = require("./config/connection");
+const db = require("./model/connection");
 const usersRouter = require("./routes/users");
 const adminRouter = require("./routes/admin");
 
