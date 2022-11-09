@@ -71,16 +71,12 @@ module.exports={
 
     postEditProduct:(req, res) => {
         productHelpers.editProduct(req.params.id, req.body).then(()=>{
-           let image =req.files.image
-          const imgName =req.params.id 
-      
-          image.mv('./public/product-images/'+imgName+'.jpg',(err,done)=>{
-            if(!err){
-              res.redirect('/admin/products')
-            }else{
-              res.send(err)
-            }
-          })
+          res.redirect('/admin/products')
+          if(req.files.image){
+             let image =req.files.image
+            const imgName =req.params.id 
+            image.mv('./public/product-images/'+imgName+'.jpg')
+          }
         })
       },
 

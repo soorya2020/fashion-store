@@ -1,3 +1,4 @@
+const { ObjectID } = require('bson');
 const mongoose=require('mongoose')
 
 //db connection
@@ -40,8 +41,19 @@ const catergorySchema=new mongoose.Schema({
     name:String
 })
 
+const cartSchema=new mongoose.Schema({
+    user:ObjectID,
+    products:[{
+        item:ObjectID,
+        quantity:Number
+        
+    }]
+        
+})
+
 module.exports={
     products:db.model("product",productSchema),
     users:db.model("user",userSchema),
-    categories:db.model("catergory",catergorySchema)
+    categories:db.model("catergory",catergorySchema),
+    carts:db.model('cart',cartSchema)
 }

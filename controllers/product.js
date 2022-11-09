@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 const userHelpers = require("../helpers/userHelpers");
 const productHelpers = require("../helpers/product-helpers");
+const cartHelpers=require('../helpers/cartHelpers')
 const config = require("../config/otpconfig");
 const client = require("twilio")(config.accountID, config.authToken);
 
@@ -12,8 +13,9 @@ var footer = true;
 
 
 module.exports={
-    shop:(req, res) => {
-        var user = req.session.user;
+    shop:async(req, res) => {
+      let user=req.session.user
+      let cartCount=await cartHelpers.getCartCount(req.session.user._id)
         productHelpers.getAllProducts().then((products) => {
           var value = req.session.loggedIn;
           res.render("user/shop", {
@@ -23,6 +25,7 @@ module.exports={
             value,
             nav,
             footer,
+            cartCount
           });
           
         });

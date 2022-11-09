@@ -5,12 +5,17 @@ const config = require("../config/otpconfig");
 
 const {login, getLogin,verifyLogin,logout,getSignup,signup,getOtp,verifyOtp}=require('../controllers/auth')
 const {shop,singleProduct}=require("../controllers/product")
+const {getCart, addToCart}=require('../controllers/cart');
+const cartHelpers = require("../helpers/cartHelpers");
+const productHelpers = require("../helpers/product-helpers");
 
 var nav = true;
 var footer = true;
 
 //home page
-router.get("/", function (req, res) {
+router.get("/",async function (req, res) {
+ 
+
   res.render("index", { nav, footer });
 });
 
@@ -39,6 +44,9 @@ router.get("/about-us", (req, res) => {
 router.get("/orders", verifyLogin, (req, res) => {
   res.send('coming soon')
 });
+
+router.get('/cart',verifyLogin,getCart)
+router.get('/add-to-cart/:id',verifyLogin,addToCart)
 
 
 

@@ -11,7 +11,7 @@
 
                 <div class="row">
                     <div class="form-group col-md-10">
-                        <img style="width:100px ;" src=/product-images/<%= products._id %>.jpg  alt="" srcset="">
+                        <img id="output" style="width:150px ;" src=/product-images/<%= products._id %>.jpg  alt="" srcset="">
                     </div>
                     
                     <div class="form-group col-md-5">
@@ -53,27 +53,13 @@
                         <textarea value="<%=products.description%>" class="form-control" id="description" rows="5" name="description"><%- products.quantity%></textarea>
                     </div>
 
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-10">
                         <p id="err"></p>
                         <label for="">Image</label>
-                        <input value="<%= products._id %>.jpg"  type="file" name="image" id="file" class="form-control" >
+                        <input   type="file" name="image" id="file" class="form-control" onchange="loadFile(event)"  >
                     </div>
 
-                    <!-- <div class="form-group col-md-5">
-                        <p id="err"></p>
-                        
-                       <div class="text-center" style="width:200px ;height:200px; border:solid black">image preview</div>
-                    </div> -->
-                    <div class="preview col-md-5">
-                        <!--UserName goes here-->
-                        <p id="username"> </p>
-                        <!--selected image goes here -->
-                        <img src="" 
-                                 id="image" 
-                                 width="250" 
-                                 height="auto">
-                 </div>
-
+                    
                     
 
 
@@ -85,7 +71,13 @@
     </div>
 </div> 
 
-
-
-
+<script>
+    var loadFile = function(event) {
+      var output = document.getElementById('output');
+      output.src = URL.createObjectURL(event.target.files[0]);
+      output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+      }
+    };
+  </script>
 
