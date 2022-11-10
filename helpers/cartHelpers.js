@@ -17,6 +17,7 @@ module.exports={
                 if(prodExist!=-1){
                     db.carts.updateOne(
                         {
+                            user:userId,
                             "products.item":prodId
                         },
                         {
@@ -79,6 +80,10 @@ module.exports={
                         foreignField:'_id',
                         as:'productInfo'
                     }
+                },
+                
+                {
+                    $project:{item:1,quantity:1,product:{$arrayElemAt:['$productInfo',0]}}
                 }
                 
             ]).then((productInfo)=>{
@@ -92,9 +97,109 @@ module.exports={
             let cart=await db.carts.findOne({user:userId})
             console.log(userId);
             if(cart){
-                count=cart.products.length
+                for(i=0;i<cart.products.length;i++){
+                    count += cart.products[i].quantity
+                }
             }
+            count = parseInt(count)
             resolve(count)
         })
+    },
+    changeProductQuantity:(data)=>{
+        
+        data.count=parseInt(data.count)
+        data.quantity=parseInt(data.quantity)
+        
+        return new Promise((resolve,reject)=>{
+            console.log(data);
+            if(data.count==-1 && data.quantity==1){
+                console.log('if is woeking');
+                db.carts.updateOne(
+                    {
+                        _id:data.cart, 
+                        // "products.item":data.product
+                    },
+                    {
+                        $pull:{products:{item:data.product}}
+                    }
+                ).then((response)=>{
+                    resolve({removeProduct:true})
+                })
+            }else{
+                
+                db.carts.updateOne(
+                    {
+                        _id:data.cart,
+                        "products.item":data.product
+                    },
+                    {
+                        $inc:{'products.$.quantity':data.count}                        
+                    }
+                ).then((response)=>{
+                    resolve({status:true})
+                })
+            }
+            
+        })
+    },
+    getTotalAmount:(userId)=>{
+        return new Promise((resolve,reject)=>{
+            db.carts.aggregate([
+                {
+                    $match:{user:userId}
+                },
+                {
+                    $unwind:'$products' 
+                },
+                {
+                    $project:{
+                        item:'$products.item',
+                        quantity:'$products.quantity'
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'products',
+                        localField:'item',
+                        foreignField:'_id',
+                        as:'productInfo'
+                    }
+                },
+                {
+                    $project:{
+                        item:1,
+                        quantity:1,
+                        product:{$arrayElemAt:['$productInfo',0]}
+                        }
+                },
+                {
+                    $group:{
+                        _id:null,
+                        total:{$sum:{$multiply:['$quantity','$product.price']}}
+                    }
+                }
+                
+            ]).then((totalAmount)=>{
+                
+                resolve(totalAmount[0]?.total)
+                })
+        })
+        
+    },
+    removeProduct:(data)=>{
+        return new Promise((resolve,reject)=>{
+            db.carts.updateOne(
+                {
+                    _id:data.cartId, 
+                    // "products.item":data.product
+                },
+                {
+                    $pull:{products:{item:data.productId}}
+                }
+            ).then((response)=>{
+                resolve(response)
+            })
+        })
+        
     }
 }

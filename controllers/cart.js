@@ -16,18 +16,34 @@ module.exports={
 
     getCart:async(req,res)=>{
         let cartCount=await cartHelpers.getCartCount(req.session.user._id)
-        cartHelpers.getCartProducts(req.session.user._id).then((cartItems)=>{
-            console.log("reached cart renmdrr");
-            
-            res.render("user/cart",{cartItems,nav,user:req.session.user,cartCount})
+        let total=await cartHelpers.getTotalAmount(req.session.user._id)
+  
+
+        cartHelpers.getCartProducts(req.session.user._id).then((cartItems)=>{  
+            res.render("user/cart",{cartItems,nav,user:req.session.user,cartCount,total})
         })
     },
     addToCart:(req,res)=>{
-        console.log("reached controler of addtocart");
         cartHelpers.addToCart(req.params.id,req.session.user._id).then(()=>{
             res.json({status:true})
         })
          
     },
-    
+    changePrdQty:(req,res)=>{
+        cartHelpers.changeProductQuantity(req.body).then(async(response)=>{
+            response.total= await cartHelpers.getTotalAmount(req.session.user._id)
+            console.log(response.total)
+            res.json(response)
+        })
+    },
+    deleteProduct:(req,res)=>{
+        cartHelpers.removeProduct(req.body).then((response)=>{
+            res.json(response)
+        })
+    },
+    placeOrder:async(req,res)=>{
+        let total=await cartHelpers.getTotalAmount(req.session.user._id)
+        res.send(total)
+    }
+     
 }

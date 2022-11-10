@@ -39,7 +39,7 @@ editProduct:(prodId,data)=>{
             name:data.name,
             price:data.price,
             category:data.category,
-            quantity:data.quantity,
+            stock:data.stock,
             description:data.description
         })
         resolve(data)

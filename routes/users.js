@@ -5,7 +5,7 @@ const config = require("../config/otpconfig");
 
 const {login, getLogin,verifyLogin,logout,getSignup,signup,getOtp,verifyOtp}=require('../controllers/auth')
 const {shop,singleProduct}=require("../controllers/product")
-const {getCart, addToCart}=require('../controllers/cart');
+const {getCart, addToCart,changePrdQty,deleteProduct,placeOrder}=require('../controllers/cart');
 const cartHelpers = require("../helpers/cartHelpers");
 const productHelpers = require("../helpers/product-helpers");
 
@@ -14,8 +14,6 @@ var footer = true;
 
 //home page
 router.get("/",async function (req, res) {
- 
-
   res.render("index", { nav, footer });
 });
 
@@ -47,6 +45,10 @@ router.get("/orders", verifyLogin, (req, res) => {
 
 router.get('/cart',verifyLogin,getCart)
 router.get('/add-to-cart/:id',verifyLogin,addToCart)
+router.post('/change-product-quantity',verifyLogin,changePrdQty)
+router.post('/remove-product',verifyLogin,deleteProduct)
+router.get('/place-order',verifyLogin,placeOrder)
+
 
 
 
