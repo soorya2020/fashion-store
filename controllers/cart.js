@@ -7,7 +7,10 @@ const config = require("../config/otpconfig");
 
 const client = require("twilio")(config.accountID, config.authToken);
 
-const db = require('../model/connection')//trial
+const db = require('../model/connection');//trial
+const { response } = require("../app");
+const { ObjectId } = require("mongodb");
+const { resolveInclude } = require("ejs");
 
 var nav = true;
 var footer = true;
@@ -32,7 +35,6 @@ module.exports={
     changePrdQty:(req,res)=>{
         cartHelpers.changeProductQuantity(req.body).then(async(response)=>{
             response.total= await cartHelpers.getTotalAmount(req.session.user._id)
-            console.log(response.total)
             res.json(response)
         })
     },
@@ -41,9 +43,57 @@ module.exports={
             res.json(response)
         })
     },
-    placeOrder:async(req,res)=>{
+    getCheckout:async(req,res)=>{
         let total=await cartHelpers.getTotalAmount(req.session.user._id)
-        res.send(total)
-    }
+        let address=await cartHelpers.getAddress(req.session.user._id)
+        console.log(address,"hei soosrya");
+        res.render('user/checkout',{total:total,user:req.session.user,address})
+    },
+    postCheckout:async(req,res)=>{
+        req.body.userId=req.session.user._id
+        let total=await cartHelpers.getTotalAmount(req.session.user._id)
+        cartHelpers.placeOrder(req.body,total).then((orderStatus)=>{
+            console.log("soorya",orderStatus);
+            res.json(orderStatus)
+        })
+        
+    },
+    getOrders:(req,res)=>{
+        let userId=req.session.user._id
+        cartHelpers.getOrders(userId).then((orders)=>{
+          res.render('user/orders',{nav,orders})
+        })
+      
+      },
+    postCancelOrder:(req,res)=>{
+        cartHelpers.cancelOrder(req.body.orderId,req.body.prodId).then((response)=>{
+            res.json(response)
+        })
+    },
+    getAddress:(req,res)=>{
+        return new Promise(async(resolve,reject)=>{
+
+            let userId=req.session.user._id
+            let addressId=req.params.id
+            console.log(addressId);
+            let data=await db.addresses.aggregate([
+                {
+                    $match:{userId:userId}
+                },
+                {
+                    $unwind:'$address'
+                },
+                {
+                    $match:{
+                        'address._id':ObjectId(addressId)
+                    }
+                }
+                
+            ])
+            res.send(data[0].address)
+        })
+        
+        }
+        
      
 }

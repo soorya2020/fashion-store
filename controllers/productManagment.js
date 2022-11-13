@@ -3,6 +3,7 @@ const { render } = require('../app');
 const { products } = require('../model/connection');
 const adminHelpers = require('../helpers/adminHelpers');
 const productHelpers = require('../helpers/product-helpers');
+const cartHelpers = require('../helpers/cartHelpers');
 
 
 const router = express.Router();
@@ -37,17 +38,20 @@ module.exports={
     addProducts:(req, res) => {
 
         productHelpers.addProducts(req.body).then((insertedId) => {
-          let image = req.files.image
+          let images = req.files.image
           const imgName = insertedId;
-          // console.log(imgName);
-      
-          image.mv('./public/product-images/' + imgName + '.jpg', (err, done) => {
-            if (!err) {
-              res.redirect('/admin/products')
-            } else {
-              res.send('upload an image')
-            }
+          images.forEach((image,index) => {
+            
+            image.mv('./public/product-images/' + imgName +index+ '.jpg', (err, done) => {
+              if (!err) {
+                console.log('image uploaded')
+              } else {
+                res.send('upload an image')
+              }
+
+            })
           })
+          res.redirect('/admin')
       
         })
       
@@ -55,6 +59,7 @@ module.exports={
 
     deleteProduct:(req, res) => {
         let prodId = req.params.id
+        cartHelpers.removeProduct(prodId)
         productHelpers.deleteProduct(prodId).then(() => {
           res.redirect('/admin/products')
         })

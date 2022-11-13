@@ -1,0 +1,123 @@
+<main class="main">
+    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        <div class="container">
+            <h1 class="page-title">Orders<span>Shop</span></h1>
+        </div><!-- End .container -->
+    </div><!-- End .page-header -->
+    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Wishlist</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    
+</main><!-- End .main -->
+
+<div class="page-content">
+    <div class="container">
+        <table class="table table-wishlist table-mobile">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>date</th>
+                    <th>Stock Status</th>
+                    <th>action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr><% for(let i=orders.length;i>=0;i--) {%> 
+                   
+                    <% orders[i]?.productDetails?.forEach(product=>{ %> 
+                    <td class="product-col">
+                        <div class="product">
+                            <figure class="product-media">
+                                <a href="/single-product/<% product._id %> ">
+                                    <img src="product-images/<%= product._id %>0.jpg " alt="Product image">
+                                </a>
+                            </figure>
+                            <div class="col">
+                                <p>
+                                    <a><%= product?.productsName %> </a>
+                                </p>
+                                <p>
+                                    <a >Price: ₹<%= product?.productsPrice %> </a>
+                                </p>
+                                <p>
+                                    <a >Qty: <%=product?.quantity  %> </a>
+                                </p>
+                            </div>
+                            
+                        </div><!-- End .product -->
+                    </td>
+                  
+                    
+                    <td class="font-weight-normal">$<%= product?.productsPrice*product?.quantity %> </td>
+                    <td class="font-weight-normal"><%= orders[i].crreatedAt.getDate()+"/"+orders[i].crreatedAt.getMonth()+'/'+orders[i].crreatedAt.getFullYear() %>  </td>
+                    <% if(product.orderStatus) {%> 
+                        <td class=""><p class="text-success font-weight-bold">Order Placed</p> </td>
+                    <% }else {%>
+                        <td class=""><p class="text-danger font-weight-bold">Order cancelled</p> </td>
+                        
+                    <% } %>  
+
+                   
+                    <td class="action-col">
+                        <div class="dropdown">
+                        <button class="btn btn-block btn-outline-primary-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="icon-list-alt"></i>Select Options
+                        </button>
+
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" >Track this order</a>
+                            <a onclick="cancelOrder('<%= product._id %>','<%= orders[i]._id%>')" id="<%= product._id %> " class="dropdown-item" >Cancel this order</a>
+                          </div>
+                        </div>
+                    </td>
+                    <td class="remove-col"><button class="btn-remove" onclick="cancelOrder('<%= product._id %>','<%= orders[i]._id%>')" id="<%= product._id %> "><i class="icon-close"></i></button></td>
+                </tr>
+                <% }) %>     
+                <% } %>     
+                
+                
+            </tbody>
+        </table><!-- End .table table-wishlist -->
+        <div class="wishlist-share">
+            <div class="social-icons social-icons-sm mb-2">
+                <label class="social-label">Share on:</label>
+                <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
+                <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
+                <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
+                <a href="#" class="social-icon" title="Youtube" target="_blank"><i class="icon-youtube"></i></a>
+                <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
+            </div><!-- End .soial-icons -->
+        </div><!-- End .wishlist-share -->
+    </div><!-- End .container -->
+</div><!-- End .page-content -->
+
+<script>
+    function cancelOrder(prodId,orderId){
+        console.log(orderId,prodId);
+
+        $.ajax({
+            url:'/cancel-order',
+            method:'post',
+            data:{
+                orderId:orderId,
+                prodId:prodId
+            },
+            beforeSend:()=>{
+                return confirm('this perticular order will be cancelled')
+            },
+            success:(response)=>{
+                
+                window.location.reload()
+            }
+        })
+    }
+</script>

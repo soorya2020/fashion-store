@@ -1,6 +1,6 @@
 const db = require('../model/connection')
 const { response } = require('../app');
-const { products } = require('../model/connection');
+const { products, orders } = require('../model/connection');
 
 
 module.exports={
@@ -186,7 +186,14 @@ module.exports={
         })
         
     },
+    getAddress:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            let address=await db.addresses.find({userId:userId})
+            resolve(address)
+        })
+    },
     removeProduct:(data)=>{
+        console.log(data,'removeproduct');
         return new Promise((resolve,reject)=>{
             db.carts.updateOne(
                 {
@@ -201,5 +208,161 @@ module.exports={
             })
         })
         
+    },
+    deleteCart:(prodId)=>{
+        return new Promise((resolve,reject)=>{
+            db.carts.updateMany(
+                {
+                    
+                }
+            )
+        })
+    },
+    placeOrder:(order,total)=>{
+        return new Promise(async(resolve,reject)=>{
+            let products=await db.carts.aggregate([
+                {
+                    $match:{user:order.userId}
+                },
+                {
+                    $unwind:'$products' 
+                },
+                {
+                    $project:{
+                        item:'$products.item',
+                        quantity:'$products.quantity'
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'products',
+                        localField:'item',
+                        foreignField:'_id',
+                        as:'cartItemsResult'
+                    }
+                },
+                {
+                    $unwind:'$cartItemsResult'
+                },
+                {
+                    $set:{cartItemsResult:{status:true}}
+                },
+                {
+                    $project:{
+                        _id:'$cartItemsResult._id',
+                        quantity:1,
+                        productsName:'$cartItemsResult.name',
+                        productsPrice:'$cartItemsResult.price',
+                        orderStatus:'$cartItemsResult.status'
+                        }
+                }
+            ])
+            
+            let address={
+                firstName:order.firstname,
+                lastName:order.lastname,
+                street:order.street,
+                appartment:order.appartment,
+                town:order.town,
+                state:order.state,
+                pincode:order.pincode,
+                mobile:order.mobile,
+                email:order.email
+                
+            }
+
+            let addressObj={
+                userId:order.userId,
+                address:[address]
+            }
+
+            db.addresses.find(
+                {
+                    "address.street":order.street,
+                    "address.pincode":order.pincode
+                }
+                ).then((res)=>{
+            
+                if(res.length==0){
+                    // db.addresses(addressObj).save()
+                    db.addresses.updateOne(
+                        {
+                            userId:order.userId
+                        },
+                        {
+                            $push:{address:address}
+                        } 
+                    ).then((e)=>{
+                       
+                    })
+                }
+            })
+
+            let orderAddress={
+                appartment:order.appartment,
+                street:order.street,
+                town:order.town,
+                state:order.state,
+                pincode:order.pincode,
+                mobile:order.mobile,
+                email:order.mobile
+            }
+
+            let orderObj={
+                userId:order.userId,
+                firstname:order.firstname,
+                lastname:order.lastname,
+                mobile:order.mobile,
+                paymentMethod:order.paymentMethod,
+                productDetails:products,
+                totalPrice:total,
+                shippingAddress:[orderAddress]
+            }
+
+            db.orders(orderObj).save()
+                
+                db.carts.deleteMany({}).then((res)=>{
+                    resolve({status:'success'})
+                })
+               
+            
+
+        })
+    },
+    getOrders:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            let orders=await db.orders.find({userId:userId})
+            console.log(orders,"sdf");
+            resolve(orders)
+        })
+    },
+    cancelOrder:(orderId,prodId)=>{
+        return new Promise(async(resolve,reject)=>{
+            let order=await db.orders.find({_id:orderId})
+           
+            if(order){
+                let indexOfProduct=order[0].productDetails.findIndex(product=>product._id==prodId)
+                console.log('index',indexOfProduct);
+
+                db.orders.updateOne(
+                    {
+                        _id:orderId
+                    },
+                    {
+                        $set:{
+                           [ 'productDetails.'+indexOfProduct+'.orderStatus']:false
+                        }
+                    }
+                    
+                    
+                    ).then((data)=>{
+                        
+                        resolve({status:true})
+                    })
+            }
+
+        })
     }
 }
+
+

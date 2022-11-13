@@ -29,34 +29,28 @@
                         <div class="product-gallery product-gallery-vertical">
                             <div class="row">
                                 <figure class="product-main-image">
-                                    <!-- todo-->
-                                    <div class="img_producto_container" data-scale="1.6">
-                                        <a
-                                          class="dslc-lightbox-image img_producto"
-                                          href="/product-images/<%= product._id  %>.jpg"
-                                          target="_self"
-                                          style="background-image:url('/product-images/<%= product._id  %>.jpg')"
-                                        >
-                                        </a>
-                                      </div>
-                                     <!-- todo end -->
-                                </figure><!-- End .product-main-image -->
+                                    <img id="product-zoom" src="/product-images/<%=product._id%>0.jpg" data-zoom-image="/product-images/<%=product._id%>0.jpg" alt="product image">
+    
+                                    <a href="#" id="btn-product-gallery" class="btn-product-gallery">
+                                        <i class="icon-arrows"></i>
+                                    </a>
+                                </figure>
 
                                 <div id="product-zoom-gallery" class="product-image-gallery">
-                                    <a class="product-gallery-item active" href="#" data-image="images/products/single/centered/1.jpg" data-zoom-image="images/products/single/centered/1-big.jpg">
-                                        <img src="/product-images/<%= product._id  %>.jpg " alt="product side">
+                                    <a class="product-gallery-item active" href="#" data-image="/product-images/<%= product._id  %>0.jpg " data-zoom-image="/product-images/<%= product._id  %>0.jpg ">
+                                        <img src="/product-images/<%= product._id  %>0.jpg " alt="product side">
                                     </a>
 
-                                    <a class="product-gallery-item" href="#" data-image="images/products/single/centered/2.jpg" data-zoom-image="images/products/single/centered/2-big.jpg">
-                                        <img src="/product-images/<%= product._id  %>.jpg " alt="product cross">
+                                    <a class="product-gallery-item" href="#" data-image="/product-images/<%= product._id  %>1.jpg " data-zoom-image="/product-images/<%= product._id  %>1.jpg ">
+                                        <img src="/product-images/<%= product._id  %>1.jpg " alt="product cross">
                                     </a>
 
-                                    <a class="product-gallery-item" href="#" data-image="images/products/single/centered/3.jpg" data-zoom-image="images/products/single/centered/3-big.jpg">
-                                        <img src="/product-images/<%= product._id  %>.jpg " alt="product with model">
+                                    <a class="product-gallery-item" href="#" data-image="/product-images/<%= product._id  %>2.jpg " data-zoom-image="/product-images/<%= product._id  %>2.jpg ">
+                                        <img src="/product-images/<%= product._id  %>2.jpg " alt="product with model">
                                     </a>
 
-                                    <a class="product-gallery-item" href="#" data-image="images/products/single/centered/4.jpg" data-zoom-image="images/products/single/centered/4-big.jpg">
-                                        <img src="/product-images/<%= product._id  %>.jpg " alt="product back">
+                                    <a class="product-gallery-item" href="#" data-image="/product-images/<%= product._id  %>3.jpg " data-zoom-image="/product-images/<%= product._id  %>3.jpg ">
+                                        <img src="/product-images/<%= product._id  %>3.jpg " alt="product back">
                                     </a>
                                 </div><!-- End .product-image-gallery -->
                             </div><!-- End .row -->

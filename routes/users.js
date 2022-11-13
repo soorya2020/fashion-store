@@ -1,13 +1,28 @@
 var express = require("express");
 var router = express.Router();
 
+const multer=require('multer')
+const storage=multer.diskStorage({
+  destination:(req,file,cb)=>{
+    cb(null,'Images')
+  },
+  filename:(req,file,cb)=>{
+    console.log(file);
+    cb(null,Date.now() + path.extname(file.originalname))
+  }
+})
+const upload=multer({storage:storage})
+
 const config = require("../config/otpconfig");
 
 const {login, getLogin,verifyLogin,logout,getSignup,signup,getOtp,verifyOtp}=require('../controllers/auth')
 const {shop,singleProduct}=require("../controllers/product")
-const {getCart, addToCart,changePrdQty,deleteProduct,placeOrder}=require('../controllers/cart');
+const {getCart, addToCart,changePrdQty,deleteProduct,getCheckout,postCheckout,getOrders,postCancelOrder,getAddress}=require('../controllers/cart');
 const cartHelpers = require("../helpers/cartHelpers");
 const productHelpers = require("../helpers/product-helpers");
+const { path } = require("../app");
+const { resolveInclude } = require("ejs");
+const { cancelOrder } = require("../helpers/cartHelpers");
 
 var nav = true;
 var footer = true;
@@ -39,18 +54,23 @@ router.get("/about-us", (req, res) => {
   res.send('coming soon')
 });
 
-router.get("/orders", verifyLogin, (req, res) => {
-  res.send('coming soon')
-});
+router.get('/ordersuccess',verifyLogin,(req,res)=>{
+  res.render('user/ordersuccess')
+})
 
 router.get('/cart',verifyLogin,getCart)
 router.get('/add-to-cart/:id',verifyLogin,addToCart)
 router.post('/change-product-quantity',verifyLogin,changePrdQty)
 router.post('/remove-product',verifyLogin,deleteProduct)
-router.get('/place-order',verifyLogin,placeOrder)
 
+router.get('/checkout',verifyLogin,getCheckout)
+router.post('/checkout',verifyLogin,postCheckout)
 
+router.get('/orders',verifyLogin,getOrders)
 
+router.post('/cancel-order',verifyLogin,postCancelOrder)
+
+router.get('/fill-address/:id',verifyLogin,getAddress)
 
 
 module.exports = router;

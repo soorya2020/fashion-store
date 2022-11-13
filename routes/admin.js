@@ -26,6 +26,9 @@ const {
   postEditCategory,
   deleteCategory}=require('../controllers/categoryManagement')
 
+const {
+  viewAllOrders,
+}=require('../controllers/orderManagement')
 const layout = 'admin-layout'
 
 
@@ -38,8 +41,7 @@ const verifyAdminLogin = (req, res, next) => {
   }
 };
 
-/*------------------------admin login------------------------------*/
-
+//admin-login
 router.get('/login',(req,res)=>{
   if(req.session.adminLoggedIn){
     res.redirect("/admin")
@@ -106,7 +108,8 @@ router.post("/edit-category/:id",postEditCategory)
 //delete category
 router.get("/delete-category/:id",deleteCategory)
 
-
+//orders
+router.get('/orders',verifyAdminLogin,viewAllOrders)
 
 
 
