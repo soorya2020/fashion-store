@@ -16,7 +16,7 @@
 
                 <div class="accordion-summary" id="accordion-payment">
                    
-                    <% address[0].address.forEach((address,index)=>{%> 
+                    <% address[0]?.address?.forEach((address,index)=>{%> 
                         <div class="card my-4">
                             <div class="card-header" id="heading-3">
                                 <h2 class="card-title">
@@ -32,12 +32,14 @@
                                     <strong>address :</strong> <%= address.street+" "+address.town+" "+address.state+" "+address.pincode%> <br>
                                     <strong>mobile :</strong> <%= address.mobile%> <br>
                                     <strong>email :</strong> <%= address.email%> <br>
+                                 
+                                    
                                 </div><!-- End .card-body -->
                             </div><!-- End .collapse -->
                         </div><!-- End .card -->
 
                     <% }) %>
-                    <button class="btn btn-outline-success btn-sm py-1 " > + New address</button> 
+                    <button onClick="window.location.reload()" class="btn btn-outline-success btn-sm py-1 " >New address</a> + </button> 
                 </div>
 
 <!-- end of address -->
@@ -72,13 +74,7 @@
                                     <input type="text" name="lastname" id="lastname" class="form-control" required>
                                 </div><!-- End .col-sm-6 -->
                             </div><!-- End .row -->
-                            <div>
-                                <div class="d-flex justify-content-between">
-                                    <label>Company Name (Optional)</label>
-                                    <p class="text-danger"></p>
-                                </div>
-                                <input type="text" name="companyname" id="companyname" class="form-control">
-                            </div>
+                            
 
                             <div>
                                 <div class="d-flex justify-content-between">
@@ -168,23 +164,31 @@
                                     <thead>
                                         <tr>
                                             <th>Product</th>
-                                            <th>Total</th>
+                                            <th></th>
+                                          
+                                            <th>Price</th>
+
                                         </tr>
                                     </thead>
 
                                     <tbody>
+                                        <% cartProducts.forEach(product=>{ %> 
                                         <tr>
-                                            <td><a href="#">Beige knitted elastic runner shoes</a></td>
-                                            <td>$84.00</td>
+                                           
+                                            <td><img style="width:50px ;" src="product-images/<%=product?.item  %>0.jpg " alt="image" srcset=""></td>
+                                            
+                                            <td>X <%= product?.quantity %> </td>
+                                            <td><%= product?.product?.price*product.quantity %> </td>
+                                           
                                         </tr>
+                                        <% }) %> 
 
-                                        <tr>
-                                            <td><a href="#">Blue utility pinafore denimdress</a></td>
-                                            <td>$76,00</td>
-                                        </tr>
+                                        
                                         <tr class="summary-subtotal">
+                                            
                                             <td>Subtotal:</td>
-                                            <td>$160.00</td>
+                                            <td></td>
+                                            <td><%= total %> </td>
                                         </tr><!-- End .summary-subtotal -->
                                         <tr>
                                             <td>Shipping:</td>
@@ -240,7 +244,7 @@
                                         <div class="card-header" id="heading-3">
                                             <h2 class="card-title">
                                                 <input type="radio" class="collapsed" role="button" data-toggle="collapse"
-                                                    href="#collapse-3" id="COD" aria-expanded="false" aria-controls="collapse-3">
+                                                    href="#collapse-3" id="COD" value="COD" aria-expanded="false" aria-controls="collapse-3">
                                                     <label for="cash on delivery">Cash on delivery</label> 
                                                 </input>
                                             </h2>
@@ -310,13 +314,11 @@
 
 <script>
     function validate() {
-        console.log();
+        console.log('validation funcuin callesd');
         const firstname = document.getElementById('firstname')
         const lastname = document.getElementById('lastname')
-        const companyname = document.getElementById('companyname')
         const country = document.getElementById('country')
         const address1 = document.getElementById('add')
-        // const address2 = document.getElementById('address2')
         const city = document.getElementById('town')
         const state = document.getElementById('state')
         const pincode = document.getElementById('pincode')
@@ -325,10 +327,9 @@
 
         const firstnameValue = firstname.value?.trim()
         const lastnameValue = lastname.value?.trim()
-        const companynameValue = companyname.value?.trim()
-        const countryValue = country.value?.trim()
+        const countryValue=country.value?.trim()
         const address1Value = address1.value?.trim()
-        // const address2Value = address2.value?.trim()
+
         const cityValue = city.value?.trim()
         const stateValue = state.value?.trim()
         const pincodeValue = pincode.value?.trim()
@@ -339,14 +340,12 @@
         err1.innerText = ""
         const err2 = lastname.parentElement.querySelector('p')
         err2.innerText = ""
-        const err3 = companyname.parentElement.querySelector('p')
-        err3.innerText = ""
+ 
         const err4 = country.parentElement.querySelector('p')
         err4.innerText = ""
         const err5 = address1.parentElement.querySelector('p')
         err5.innerText = ""
-        // const err6 = address2.parentElement.querySelector('p')
-        // err6.innerText = ""
+   
         const err7 = city.parentElement.querySelector('p')
         err7.innerText = ""
         const err8 = state.parentElement.querySelector('p')
@@ -377,11 +376,7 @@
             flag = 2
         }
 
-        //company
-        if (companynameValue == '') {
-            err3.innerText = "This field is required"
-            flag = 2
-        }
+        
 
         //country
         if (countryValue == '') {
@@ -431,6 +426,7 @@
             flag = 2
         } else if (!mobilevValue.match(/^[7-9][0-9]{9}$/)) {
             err10.innerText = "Enter a valid phone number"
+            flag=2
         }
 
         //email
@@ -443,11 +439,12 @@
         }
         
         if (flag == 1) {
-            let paymentMethod=document.getElementById('COD').value
+            // let paymentMethod=document.getElementById('COD').value
+            let paymentMethod="COD"
             submit(
                 firstnameValue,
                 lastnameValue,
-                companynameValue,
+                
                 countryValue,
                 address1Value,
                 // address2Value,
@@ -462,11 +459,9 @@
 
         function submit(
             firstnameValue,
-            lastnameValue,
-            companynameValue,
+            lastnameValue, 
             countryValue,
-            address1Value,
-            // address2Value,
+            streetValue,
             cityValue,
             stateValue,
             pincodeValue,
@@ -474,17 +469,15 @@
             emailValue,
             paymentMethod
         ) {
-            console.log('pressed');
+           
             $.ajax({
                 url: '/checkout',
                 method: 'post',
                 data: {
                     firstname: firstnameValue,
                     lastname: lastnameValue,
-                    companyName: companynameValue,
                     country: countryValue,
-                    street:address1Value,
-                    // appartment:address2Value,
+                    street:streetValue,
                     town:cityValue,
                     state:stateValue,
                     pincode:pincodeValue,
@@ -492,6 +485,7 @@
                     email:emailValue,
                     paymentMethod:paymentMethod
                 },
+                
                 
                 success: (response) => {
                     if(response.status=='success'){
@@ -514,10 +508,8 @@
                 console.log(response,"hi");
                 document.getElementById('firstname').value=response.firstName
                 document.getElementById('lastname').value=response.lastName
-                // document.getElementById('companyname').value=response.firstName
-                // document.getElementById('country').value=response.country
+                document.getElementById('country').value=response.country
                 document.getElementById('add').value=response.street
-              
                 document.getElementById('state').value=response.state
                 document.getElementById('town').value=response.town
                 document.getElementById('pincode').value=response.pincode

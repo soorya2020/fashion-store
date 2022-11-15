@@ -23,7 +23,7 @@ module.exports={
   
 
         cartHelpers.getCartProducts(req.session.user._id).then((cartItems)=>{  
-            res.render("user/cart",{cartItems,nav,user:req.session.user,cartCount,total})
+            res.render("user/cart",{cartItems,user:req.session.user,cartCount,total})
         })
     },
     addToCart:(req,res)=>{
@@ -44,14 +44,18 @@ module.exports={
         })
     },
     getCheckout:async(req,res)=>{
+
+        let cartProducts=await cartHelpers.getCartProducts(req.session.user._id)
+        console.log(cartProducts);
         let total=await cartHelpers.getTotalAmount(req.session.user._id)
         let address=await cartHelpers.getAddress(req.session.user._id)
         console.log(address,"hei soosrya");
-        res.render('user/checkout',{total:total,user:req.session.user,address})
+        res.render('user/checkout',{total:total,user:req.session.user,address,cartProducts})
     },
     postCheckout:async(req,res)=>{
         req.body.userId=req.session.user._id
         let total=await cartHelpers.getTotalAmount(req.session.user._id)
+     
         cartHelpers.placeOrder(req.body,total).then((orderStatus)=>{
             console.log("soorya",orderStatus);
             res.json(orderStatus)
@@ -71,28 +75,12 @@ module.exports={
         })
     },
     getAddress:(req,res)=>{
-        return new Promise(async(resolve,reject)=>{
-
-            let userId=req.session.user._id
-            let addressId=req.params.id
-            console.log(addressId);
-            let data=await db.addresses.aggregate([
-                {
-                    $match:{userId:userId}
-                },
-                {
-                    $unwind:'$address'
-                },
-                {
-                    $match:{
-                        'address._id':ObjectId(addressId)
-                    }
-                }
-                
-            ])
+        let userId=req.session.user._id
+        let addressId=req.params.id
+        cartHelpers.listAddress(userId,addressId).then((data)=>{
             res.send(data[0].address)
         })
-        
+
         }
         
      

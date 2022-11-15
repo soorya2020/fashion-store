@@ -57,7 +57,6 @@ const addressSchema=new mongoose.Schema({
         firstName:String,
         lastName:String,
         street:String,
-        apartment:String,
         town:String,
         country:String,
         state:String,
@@ -69,20 +68,28 @@ const addressSchema=new mongoose.Schema({
 
 const orderSchema=new mongoose.Schema({
     userId:ObjectID,
-    firstName:String,
-    lastName:String,
-    mobile:Number,
-    paymentMethod:String,
-    productDetails:Array,
-    shippingAddress:[{}],
-    crreatedAt:{
-        type:Date,
-        default:new Date()
-    },
-    status:{
-        type:Boolean,
-        default:true
-    }})
+    orders:[
+        {
+            firstName:String,
+            lastName:String,
+            mobile:Number,
+            paymentMethod:String,
+            productDetails:[{}],
+            totalPrice:Number,
+            shippingAddress:Object,
+            crreatedAt:{
+                type:Date,
+                default:new Date()
+            },
+            status:{
+                type:Boolean,
+                default:true
+            }
+
+        }
+    ]
+})
+
 
 module.exports={
     products:db.model("product",productSchema),

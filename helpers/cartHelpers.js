@@ -1,7 +1,7 @@
 const db = require('../model/connection')
 const { response } = require('../app');
 const { products, orders } = require('../model/connection');
-
+const ObjectId = require('mongodb').ObjectID;
 
 module.exports={
     addToCart:(prodId,userId)=>{
@@ -219,6 +219,7 @@ module.exports={
         })
     },
     placeOrder:(order,total)=>{
+       
         return new Promise(async(resolve,reject)=>{
             let products=await db.carts.aggregate([
                 {
@@ -258,11 +259,14 @@ module.exports={
                 }
             ])
             
-            let address={
+           
+            
+            let addressData={
+
                 firstName:order.firstname,
                 lastName:order.lastname,
                 street:order.street,
-                appartment:order.appartment,
+                country:order.country,
                 town:order.town,
                 state:order.state,
                 pincode:order.pincode,
@@ -270,65 +274,120 @@ module.exports={
                 email:order.email
                 
             }
-
-            let addressObj={
+         
+            let addressObj={                      
                 userId:order.userId,
-                address:[address]
+                address:addressData
+            }
+            console.log(addressObj,"test1",order.userId);
+            let addressExist= await db.addresses.find({userId:order.userId})
+           
+            if(!addressExist.length==0){
+                
+                db.addresses.find(
+                    {
+                        "address.street":order.street,
+                        "address.pincode":order.pincode,
+                    }
+                    ).then((res)=>{
+                
+                    if(res.length==0){
+                        // db.addresses(addressObj).save()
+                        db.addresses.updateOne(
+                            {
+                                userId:order.userId
+                            },
+                            {
+                                $push:{address:addressData}
+                            } 
+                        ).then((data)=>{
+                           console.log(data,"address pushing");
+                        })
+                    }
+                })
+            }else{
+                let data=await db.addresses(addressObj)
+                data.save()
+                console.log(data,"new address saved");
             }
 
-            db.addresses.find(
-                {
-                    "address.street":order.street,
-                    "address.pincode":order.pincode
-                }
-                ).then((res)=>{
-            
-                if(res.length==0){
-                    // db.addresses(addressObj).save()
-                    db.addresses.updateOne(
-                        {
-                            userId:order.userId
-                        },
-                        {
-                            $push:{address:address}
-                        } 
-                    ).then((e)=>{
-                       
-                    })
-                }
-            })
 
             let orderAddress={
                 appartment:order.appartment,
                 street:order.street,
                 town:order.town,
+                country:order.country,
                 state:order.state,
                 pincode:order.pincode,
                 mobile:order.mobile,
-                email:order.mobile
+                email:order.email
             }
 
-            let orderObj={
-                userId:order.userId,
-                firstname:order.firstname,
-                lastname:order.lastname,
+            let orderData={
+                firstName:order.firstname,
+                lastName:order.lastname,
                 mobile:order.mobile,
                 paymentMethod:order.paymentMethod,
                 productDetails:products,
                 totalPrice:total,
-                shippingAddress:[orderAddress]
+                shippingAddress:orderAddress,
             }
 
-            db.orders(orderObj).save()
+            let orderObj={
+                userId:order.userId,
+                orders:[orderData]
                 
+            }
+            
+            let orderExist=await db.orders.find({userId:order.userId})
+            if(!orderExist.length==0){
+             
+                db.orders.updateOne(
+                    {
+                        userId:order.userId
+                    },
+                    {
+                        $push:{orders:orderData}
+                    } 
+                ).then(()=>{
+                    db.carts.deleteMany({}).then((res)=>{
+                        resolve({status:'success'})
+                    })
+                    
+                })
+            }else{
+                db.orders(orderObj).save()
                 db.carts.deleteMany({}).then((res)=>{
                     resolve({status:'success'})
                 })
-               
-            
-
+            }
+                
         })
     },
+    
+    listAddress:(userId,addressId)=>{
+        return new Promise((resolve,reject)=>{
+            db.addresses.aggregate([
+                {
+                    $match:{userId:userId}
+                },
+                {
+                    $unwind:'$address'
+                },
+                {
+                    $match:{
+                        'address._id':ObjectId(addressId)
+                    }
+                }
+                
+            ]).then((data)=>{
+                resolve(data)
+            })
+            
+        })
+    },
+
+
     getOrders:(userId)=>{
         return new Promise(async(resolve,reject)=>{
             let orders=await db.orders.find({userId:userId})
