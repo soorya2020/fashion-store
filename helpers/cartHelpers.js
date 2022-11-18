@@ -3,6 +3,13 @@ const { response } = require('../app');
 const { products, orders } = require('../model/connection');
 const ObjectId = require('mongodb').ObjectID;
 
+const Razorpay = require('razorpay');
+const { resolve } = require('node:path');
+var instance = new Razorpay({
+    key_id: 'rzp_test_tUZpCht97wF71G',
+    key_secret: 'ggez8hbKtN3dnEXjRWW6XqZg',
+  });
+
 module.exports={
     addToCart:(prodId,userId)=>{
         let prodObj={
@@ -13,7 +20,7 @@ module.exports={
             let userCart=await db.carts.findOne({user:userId})
             if(userCart){
                 let prodExist=userCart.products.findIndex(product=> product.item==prodId)
-                console.log(prodExist)
+             
                 if(prodExist!=-1){
                     db.carts.updateOne(
                         {
@@ -95,7 +102,7 @@ module.exports={
         return new Promise(async(resolve,reject)=>{
             let count=0
             let cart=await db.carts.findOne({user:userId})
-            console.log(userId);
+         
             if(cart){
                 for(i=0;i<cart.products.length;i++){
                     count += cart.products[i].quantity
@@ -111,9 +118,9 @@ module.exports={
         data.quantity=parseInt(data.quantity)
         
         return new Promise((resolve,reject)=>{
-            console.log(data);
+    
             if(data.count==-1 && data.quantity==1){
-                console.log('if is woeking');
+          
                 db.carts.updateOne(
                     {
                         _id:data.cart, 
@@ -193,7 +200,7 @@ module.exports={
         })
     },
     removeProduct:(data)=>{
-        console.log(data,'removeproduct');
+      
         return new Promise((resolve,reject)=>{
             db.carts.updateOne(
                 {
@@ -258,7 +265,7 @@ module.exports={
                         }
                 }
             ])
-            
+          
            
             
             let addressData={
@@ -279,7 +286,7 @@ module.exports={
                 userId:order.userId,
                 address:addressData
             }
-            console.log(addressObj,"test1",order.userId);
+        
             let addressExist= await db.addresses.find({userId:order.userId})
            
             if(!addressExist.length==0){
@@ -301,14 +308,13 @@ module.exports={
                                 $push:{address:addressData}
                             } 
                         ).then((data)=>{
-                           console.log(data,"address pushing");
+                          
                         })
                     }
                 })
             }else{
-                let data=await db.addresses(addressObj)
+                data=await db.addresses(addressObj)
                 data.save()
-                console.log(data,"new address saved");
             }
 
 
@@ -331,6 +337,7 @@ module.exports={
                 productDetails:products,
                 totalPrice:total,
                 shippingAddress:orderAddress,
+                createdAt:new Date(),
             }
 
             let orderObj={
@@ -338,10 +345,10 @@ module.exports={
                 orders:[orderData]
                 
             }
+          
             
-            let orderExist=await db.orders.find({userId:order.userId})
-            if(!orderExist.length==0){
-             
+            let orderExist=await db.orders.findOne({userId:order.userId})
+            if(orderExist){
                 db.orders.updateOne(
                     {
                         userId:order.userId
@@ -349,21 +356,20 @@ module.exports={
                     {
                         $push:{orders:orderData}
                     } 
-                ).then(()=>{
-                    db.carts.deleteMany({}).then((res)=>{
-                        resolve({status:'success'})
-                    })
-                    
+                ).then((data)=>{
+                    // console.log(data,"pushe");
                 })
             }else{
-                db.orders(orderObj).save()
-                db.carts.deleteMany({}).then((res)=>{
-                    resolve({status:'success'})
-                })
+                let data=db.orders(orderObj)
+                await data.save()
             }
+            db.carts.deleteMany({}).then((res)=>{
+                resolve()
+            })
                 
         })
     },
+
     
     listAddress:(userId,addressId)=>{
         return new Promise((resolve,reject)=>{
@@ -391,37 +397,111 @@ module.exports={
     getOrders:(userId)=>{
         return new Promise(async(resolve,reject)=>{
             let orders=await db.orders.find({userId:userId})
-            console.log(orders,"sdf");
-            resolve(orders)
+            console.log(orders);
+            resolve(orders[0])
         })
     },
     cancelOrder:(orderId,prodId)=>{
         return new Promise(async(resolve,reject)=>{
-            let order=await db.orders.find({_id:orderId})
+            let order=await db.orders.find({'orders._id':orderId})
            
             if(order){
-                let indexOfProduct=order[0].productDetails.findIndex(product=>product._id==prodId)
-                console.log('index',indexOfProduct);
+                console.log(order,"test1");
+                let orderIndex=order[0].orders.findIndex(order=>order._id==orderId)
+                let productIndex=order[0].orders[orderIndex].productDetails.findIndex(product=>product._id==prodId)
+                console.log("orderIndex",orderIndex);
+                console.log("productIndex",productIndex);
+
+           
 
                 db.orders.updateOne(
                     {
-                        _id:orderId
+                        'orders._id':orderId
                     },
                     {
                         $set:{
-                           [ 'productDetails.'+indexOfProduct+'.orderStatus']:false
+                           ['orders.'+orderIndex+'.productDetails.'+productIndex+'.orderStatus']:false
                         }
                     }
                     
                     
                     ).then((data)=>{
-                        
+                        console.log(data);
                         resolve({status:true})
                     })
             }
 
         })
-    }
-}
+    },
 
+    generateRazorpay:async(userId,total)=>{
+        console.log(userId);
+        let data = userId
+        let orders=await db.orders.find({userId:`${data}`})
+            console.log(orders,"this is ir");
+            let myOrderId =await orders[0].orders.slice().reverse(); 
+            myOrderId = myOrderId[0]._id; 
+            
+            return new Promise((resolve,reject)=>{
+                var options = {
+                    amount: total*100,  // amount in the smallest currency unit
+                    currency: "INR",
+                    receipt: ""+myOrderId
+                  };
+                  instance.orders.create(options, function(err, order) {
+                    console.log(order,"new order raxorpay");
+                    resolve(order)
+                  });
+            })
+        
+        
+    },
+
+    verifyPayment:(details)=>{
+      
+        return new Promise(async(resolve,reject)=>{
+            const {
+                createHmac
+              } = await import('node:crypto');
+
+              let hmac = createHmac('sha256', 'ggez8hbKtN3dnEXjRWW6XqZg');
+              hmac.update(details['payment[razorpay_order_id]']+'|'+ details['payment[razorpay_payment_id]']);
+              hmac=hmac.digest("hex")
+            
+              if(hmac==details['payment[razorpay_signature]']){
+                resolve()
+              }else{
+                console.log('elsre of verify payment');
+                reject()
+              }
+        })
+    },
+
+    changePaymentStatus:(orderId)=>{
+       
+  
+        return new Promise(async(resolve,reject)=>{
+            let orders=await db.orders.find({'orders._id':orderId})
+            
+           
+            let orderIndex=orders[0].orders.findIndex(order=>order._id==orderId)
+                
+
+            db.orders.updateOne(
+                {
+                    'orders._id':orderId
+                },
+                {
+                    $set:{
+                        ['orders.'+orderIndex+'.paymentStatus']:1
+                    }
+                }
+            ).then(()=>{
+                resolve()
+            })
+           
+        })
+    }
+
+}
 

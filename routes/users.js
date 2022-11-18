@@ -15,9 +15,11 @@ const upload=multer({storage:storage})
 
 const config = require("../config/otpconfig");
 
+
+
 const {login, getLogin,verifyLogin,logout,getSignup,signup,getOtp,verifyOtp}=require('../controllers/auth')
 const {shop,singleProduct}=require("../controllers/product")
-const {getCart, addToCart,changePrdQty,deleteProduct,getCheckout,postCheckout,getOrders,postCancelOrder,getAddress}=require('../controllers/cart');
+const {getCart, addToCart,changePrdQty,deleteProduct,getCheckout,postCheckout,getOrders,postCancelOrder,getAddress,paymentVerification}=require('../controllers/cart');
 const cartHelpers = require("../helpers/cartHelpers");
 const productHelpers = require("../helpers/product-helpers");
 const { path } = require("../app");
@@ -71,6 +73,8 @@ router.get('/orders',verifyLogin,getOrders)
 router.post('/cancel-order',verifyLogin,postCancelOrder)
 
 router.get('/fill-address/:id',verifyLogin,getAddress)
+
+router.post("/verify-payment",verifyLogin,paymentVerification )
 
 
 module.exports = router;

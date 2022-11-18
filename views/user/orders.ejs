@@ -1,104 +1,98 @@
-<main class="main">
-    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
-        <div class="container">
-            <h1 class="page-title">Orders<span>Shop</span></h1>
-        </div><!-- End .container -->
-    </div><!-- End .page-header -->
-    <nav aria-label="breadcrumb" class="breadcrumb-nav">
-        <div class="container">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Wishlist</li>
-            </ol>
-        </div><!-- End .container -->
-    </nav><!-- End .breadcrumb-nav -->
 
+<% const dataToReadable=(date)=>{
     
-</main><!-- End .main -->
+    const date_=new Date(date);
+    let month=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+    let dd=date_.getDate()
+    let mm=date_.getMonth()
+    let monthText=date_.month(mm)
+    let yyyy=date_.getFullYear()
+    
+    return `${isNaN(dd)?'00':dd}-${monthText}-${isNaN(yyyy)?'0000':yyyy}`
+    
+ } %> 
 
-<div class="page-content">
-    <div class="container">
-        <table class="table table-wishlist table-mobile">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>date</th>
-                    <th>Stock Status</th>
-                    <th>action</th>
-                </tr>
-            </thead>
+<% orders?.orders?.slice()?.reverse()?.forEach(order=>{ %> 
+<section class=" gradient-custom-2">
+    <div class="container py-5 ">
+      <div class="row d-flex justify-content-strart align-items-center">
+        <div class="col-md-10 col-lg-8 col-xl-12">
+          <div class="card card-stepper" style="border-radius: 19px;">
+            <div class="card-header p-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <p class="text-muted mb-2"> Order ID  <span class="fw-bold text-body"><%= order._id %> </span></p>
+                  <p class="text-muted mb-0"> Place On <span class="fw-bold text-body"><%= order?.createdAt.getDate()+"/"+order?.createdAt.getMonth()+"/"+order?.createdAt.getFullYear()%> </span> </p>
+                  <p class="text-muted">Delivery Address : <span class="text-body"><%= order.shippingAddress.street%> </span></p>
+                  <p class="text-muted">pincode  : <span class="text-body"><%= order.shippingAddress.pincode%> </span></p>
+                  <p class="text-muted">Contact Number : <span class="text-body"><%= order.shippingAddress.mobile%> </span></p>
+                  <p class="text-muted">Email  : <span class="text-body"><%= order.shippingAddress.email%> </span></p>
 
-            <tbody>
-                <tr><% for(let i=orders.length;i>=0;i--) {%> 
-                   
-                    <% orders[i]?.productDetails?.forEach(product=>{ %> 
-                    <td class="product-col">
-                        <div class="product">
-                            <figure class="product-media">
-                                <a href="/single-product/<% product._id %> ">
-                                    <img src="product-images/<%= product._id %>0.jpg " alt="Product image">
-                                </a>
-                            </figure>
-                            <div class="col">
-                                <p>
-                                    <a><%= product?.productsName %> </a>
-                                </p>
-                                <p>
-                                    <a >Price: ₹<%= product?.productsPrice %> </a>
-                                </p>
-                                <p>
-                                    <a >Qty: <%=product?.quantity  %> </a>
-                                </p>
-                            </div>
-                            
-                        </div><!-- End .product -->
-                    </td>
+                </div>
+                <div>
+                  <h6 class="mb-0"> <a href="#">Download Invoice</a> </h6>
+              
+                </div>
+              </div>
+            </div>
+            <% order?.productDetails?.forEach(prodata=>{ %> 
+            <div class="card-body p-4">
+              <div class="d-flex flex-row mb-1 pb-1">
+                <div class="flex-fill">
+                  <h5 class="bold"><%= prodata.productsName %> </h5>
+                  <h6 class="fw-bold"> Qty: <%= prodata.quantity %>  item</p>
+                  <h5 class="mb-3"> $ <%= prodata?.productsPrice %>  <span class="small text-muted"> via (<%= order.paymentMethod %>)  </span></h4>
+                  <p class="text-muted">Tracking Status : <span class="text-body">arriving today</span></p>
+
+
                   
+                </div>
+                <div>
+                  <img class="align-self-center img-fluid"
+                    src="/product-images/<%= prodata._id  %>0.jpg " width="150">
+                    <% if(prodata.orderStatus){%>
+                      <button id="cancelBtn" onclick="cancelOrder('<%= prodata._id%>','<%= order._id %>')" style="width:10%;" class="btn btn-danger mt-1 p=0 border border-danger rounded">Cancel this item</button>
+                      <%}else{%>
+                      <button disabled id="cancelBtn" style="width:10%;" class="btn btn-danger mt-1 p=0 border border-danger rounded">Cancel this item</button>
+                        <%}%>
+                </div>
+              </div>
+              <ul id="progressbar-1" class="mx-0 mt-0 mb-5 px-0 pt-0 pb-0">
+                <li class="step0 active" id="step1"><span
+                    style="margin-left: 22px; margin-top: 12px;">PLACED</span></li>
+
+                <li class="step0 active text-center" id="step2"><span
+                    style="margin-left: 22px; margin-top: 12px;">SHIPPED</span></li>
                     
-                    <td class="font-weight-normal">$<%= product?.productsPrice*product?.quantity %> </td>
-                    <td class="font-weight-normal"><%= orders[i].crreatedAt.getDate()+"/"+orders[i].crreatedAt.getMonth()+'/'+orders[i].crreatedAt.getFullYear() %>  </td>
-                    <% if(product.orderStatus) {%> 
-                        <td class=""><p class="text-success font-weight-bold">Order Placed</p> </td>
-                    <% }else {%>
-                        <td class=""><p class="text-danger font-weight-bold">Order cancelled</p> </td>
-                        
-                    <% } %>  
+                <li class="step0 active text-muted text-end" id="step3"><span
+                    style="margin-right: 22px;">DELIVERED</span></li>
+              </ul>
+            </div>
+            <% }) %> 
+       
+            <div class="card-footer p-3">
+              <div class="d-flex justify-content-around  ">
+                <h5 class="fw-normal mb-0"><a href="#!"> </a></h5>
+                <div class="border-start h-100"></div>
+                <% if(order.paymentStatus==0){%>
+                  <h5 class="text-danger"><a href="#!">payment : pending </a></h5>
+                  <%}else{%>
+                    <h5 class=" text-success">payment : Completed </h5>
+                    <%}%>
+                <div class="border-start h-100"></div>
+                <h5 class="fw-normal mb-0"><a href="#!">Order Total: <%= order.totalPrice %> </a></h5>
+                <div class="border-start h-100"></div>
+                <h5 class="fw-normal mb-0"><a href="#!" class="text-muted"><i class="fas fa-ellipsis-v"></i></a>
+                </h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>   
+  </section>
+<% }) %> 
 
-                   
-                    <td class="action-col">
-                        <div class="dropdown">
-                        <button class="btn btn-block btn-outline-primary-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="icon-list-alt"></i>Select Options
-                        </button>
-
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" >Track this order</a>
-                            <a onclick="cancelOrder('<%= product._id %>','<%= orders[i]._id%>')" id="<%= product._id %> " class="dropdown-item" >Cancel this order</a>
-                          </div>
-                        </div>
-                    </td>
-                    <td class="remove-col"><button class="btn-remove" onclick="cancelOrder('<%= product._id %>','<%= orders[i]._id%>')" id="<%= product._id %> "><i class="icon-close"></i></button></td>
-                </tr>
-                <% }) %>     
-                <% } %>     
-                
-                
-            </tbody>
-        </table><!-- End .table table-wishlist -->
-        <div class="wishlist-share">
-            <div class="social-icons social-icons-sm mb-2">
-                <label class="social-label">Share on:</label>
-                <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
-                <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
-                <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
-                <a href="#" class="social-icon" title="Youtube" target="_blank"><i class="icon-youtube"></i></a>
-                <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
-            </div><!-- End .soial-icons -->
-        </div><!-- End .wishlist-share -->
-    </div><!-- End .container -->
-</div><!-- End .page-content -->
 
 <script>
     function cancelOrder(prodId,orderId){
@@ -115,9 +109,102 @@
                 return confirm('this perticular order will be cancelled')
             },
             success:(response)=>{
-                
+                if(response.status){
+                  document.querySelector('#cancelBtn').disabled = true;
+                }
                 window.location.reload()
             }
         })
     }
+
+
+ 
+
 </script>
+
+<style>
+    .gradient-custom-2 {
+/* fallback for old browsers */
+background: #f2ebeb;
+
+
+}
+
+#progressbar-1 {
+color: #455A64;
+}
+
+#progressbar-1 li {
+list-style-type: none;
+font-size: 13px;
+width: 33.33%;
+float: left;
+position: relative;
+}
+
+#progressbar-1 #step1:before {
+content: "1";
+color: #fff;
+width: 29px;
+margin-left: 22px;
+padding-left: 11px;
+}
+
+#progressbar-1 #step2:before {
+content: "2";
+color: #fff;
+width: 29px;
+}
+
+#progressbar-1 #step3:before {
+content: "3";
+color: #fff;
+width: 29px;
+margin-right: 22px;
+text-align: center;
+}
+
+#progressbar-1 li:before {
+line-height: 29px;
+display: block;
+font-size: 12px;
+background: #455A64;
+border-radius: 50%;
+margin: auto;
+}
+
+#progressbar-1 li:after {
+content: '';
+width: 121%;
+height: 2px;
+background: #455A64;
+position: absolute;
+left: 0%;
+right: 0%;
+top: 15px;
+z-index: -1;
+}
+
+#progressbar-1 li:nth-child(2):after {
+left: 50%
+}
+
+#progressbar-1 li:nth-child(1):after {
+left: 25%;
+width: 121%
+}
+
+#progressbar-1 li:nth-child(3):after {
+left: 25%;
+width: 50%;
+}
+
+#progressbar-1 li.active:before,
+#progressbar-1 li.active:after {
+background: #1266f1;
+}
+
+.card-stepper {
+z-index: 0
+}
+</style>

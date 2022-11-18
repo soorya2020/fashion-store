@@ -14,13 +14,14 @@
 
 <!-- end of address -->
 
-                <div class="accordion-summary" id="accordion-payment">
-                   
+                <div style="background-color:rgb(255, 250, 250) ;" class="accordion-summary " id="accordion-payment">
+                    <hr style="color: black;">
+                    <h5 class="ml-4">my address</h4>
                     <% address[0]?.address?.forEach((address,index)=>{%> 
-                        <div class="card my-4">
+                        <div class="card my-4 ml-4">
                             <div class="card-header" id="heading-3">
                                 <h2 class="card-title">
-                                    <input onclick="fillAddress('<%=address._id %>')" type="radio" name="address" class="collapsed" role="button" data-toggle="collapse"
+                                    <input  onclick="fillAddress('<%=address._id %>')" type="radio" name="address" class="collapsed" role="button" data-toggle="collapse"
                                         href="#collapse-<%= index+1 %>" id="address<%=index+1%>" aria-expanded="false" aria-controls="collapse-<%= index+1 %>">
                                         <label for="address<%=index+1%>"><%= address.firstName%> <%= address.lastName %> </label> 
                                     </input>
@@ -32,14 +33,17 @@
                                     <strong>address :</strong> <%= address.street+" "+address.town+" "+address.state+" "+address.pincode%> <br>
                                     <strong>mobile :</strong> <%= address.mobile%> <br>
                                     <strong>email :</strong> <%= address.email%> <br>
+                                    <hr>
                                  
                                     
                                 </div><!-- End .card-body -->
                             </div><!-- End .collapse -->
                         </div><!-- End .card -->
-
+                       
                     <% }) %>
-                    <button onClick="window.location.reload()" class="btn btn-outline-success btn-sm py-1 " >New address</a> + </button> 
+                    
+                    <button onClick="window.location.reload()" class="btn btn-outline-success btn-sm py-1 ml-4" >New address</a> + </button> 
+                    <hr>
                 </div>
 
 <!-- end of address -->
@@ -203,53 +207,20 @@
                                 </table><!-- End .table table-summary -->
 
                                 <div class="accordion-summary" id="accordion-payment">
-                                    <div class="card">
-                                        <div class="card-header" id="heading-1">
-                                            <h2 class="card-title">
-                                                <input type="radio" role="button" data-toggle="collapse" href="#collapse-1"
-                                                    aria-expanded="true" aria-controls="collapse-1">
-                                                    Direct bank transfer
-                                                </input >
-                                            </h2>
-                                        </div><!-- End .card-header -->
-                                        <div id="collapse-1" class="collapse show" aria-labelledby="heading-1"
-                                            data-parent="#accordion-payment">
-                                            <div class="card-body">
-                                                Make your payment directly into our bank account. Please use your Order
-                                                ID as the payment reference. Your order will not be shipped until the
-                                                funds have cleared in our account.
-                                            </div><!-- End .card-body -->
-                                        </div><!-- End .collapse -->
-                                    </div><!-- End .card -->
+                                   
 
-                                    <div class="card">
-                                        <div class="card-header" id="heading-2">
-                                            <h2 class="card-title">
-                                                <input type="radio" class="collapsed" role="button" data-toggle="collapse"
-                                                    href="#collapse-2" aria-expanded="false" aria-controls="collapse-2">
-                                                    Check payments
-                                                </input >
-                                            </h2>
-                                        </div><!-- End .card-header -->
-                                        <div id="collapse-2" class="collapse" aria-labelledby="heading-2"
-                                            data-parent="#accordion-payment">
-                                            <div class="card-body">
-                                                Ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque
-                                                volutpat mattis eros. Nullam malesuada erat ut turpis.
-                                            </div><!-- End .card-body -->
-                                        </div><!-- End .collapse -->
-                                    </div><!-- End .card -->
+                                    
 
                                     <div class="card">
                                         <div class="card-header" id="heading-3">
                                             <h2 class="card-title">
-                                                <input type="radio" class="collapsed" role="button" data-toggle="collapse"
+                                                <input type="radio" class="collapsed" name="payment" role="button" data-toggle="collapse"
                                                     href="#collapse-3" id="COD" value="COD" aria-expanded="false" aria-controls="collapse-3">
                                                     <label for="cash on delivery">Cash on delivery</label> 
                                                 </input>
                                             </h2>
                                         </div><!-- End .card-header -->
-                                        <div id="collapse-3" class="collapse" aria-labelledby="heading-3"
+                                        <div id="collapse-3" class="collapse"  aria-labelledby="heading-3"
                                             data-parent="#accordion-payment">
                                             <div class="card-body">Quisque volutpat mattis eros. Lorem ipsum dolor sit
                                                 amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis
@@ -261,8 +232,8 @@
                                     <div class="card">
                                         <div class="card-header" id="heading-4">
                                             <h2 class="card-title">
-                                                <input type="radio" class="collapsed" role="button" data-toggle="collapse"
-                                                    href="#collapse-4" aria-expanded="false" aria-controls="collapse-4">
+                                                <input type="radio" value="COD" id="paymentMode"  name="payment" class="collapsed" role="button" data-toggle="collapse"
+                                                    href="#collapse-4x" aria-expanded="false" aria-controls="collapse-4">
                                                     PayPal <small class="float-right paypal-link">What is
                                                         PayPal?</small>
                                                 </input >
@@ -281,10 +252,10 @@
                                     <div class="card">
                                         <div class="card-header" id="heading-5">
                                             <h2 class="card-title">
-                                                <input type="radio" class="collapsed" role="button" data-toggle="collapse"
+                                                <input  type="radio"  id="paymentMode"  value="UPI"  name="payment" class="collapsed" role="button" data-toggle="collapse"
                                                     href="#collapse-5" aria-expanded="false" aria-controls="collapse-5">
-                                                    Credit Card (Stripe)
-                                                    <img src="assets/images/payments-summary.png" alt="payments cards">
+                                                    razorpay
+                                                    
                                                 </input >
                                             </h2>
                                         </div><!-- End .card-header -->
@@ -300,9 +271,12 @@
 
                                 <button type="button" class="btn btn-outline-primary-2 btn-order btn-block"
                                     onclick="validate()">
-                                    <span class="btn-text">Place Order</span>
+                                    <span  class="btn-text">Place Order</span>
                                     <span class="btn-hover-text">Proceed to Checkout</span>
+                                   
+
                                 </button>
+                                
                             </div><!-- End .summary -->
                         </aside><!-- End .col-lg-3 -->
                     </div><!-- End .row -->
@@ -312,9 +286,14 @@
     </div><!-- End .page-content -->
 </main><!-- End .main -->
 
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+
+
+
     function validate() {
-        console.log('validation funcuin callesd');
+       
         const firstname = document.getElementById('firstname')
         const lastname = document.getElementById('lastname')
         const country = document.getElementById('country')
@@ -324,6 +303,9 @@
         const pincode = document.getElementById('pincode')
         const mobile = document.getElementById('mobile')
         const email = document.getElementById('email')
+     
+        const paymentMethod= document.querySelector('input[name="payment"]:checked')?.value ? document.querySelector('input[name="payment"]:checked').value:""
+    
 
         const firstnameValue = firstname.value?.trim()
         const lastnameValue = lastname.value?.trim()
@@ -335,6 +317,11 @@
         const pincodeValue = pincode.value?.trim()
         const mobilevValue = mobile.value?.trim()
         const emailValue = email.value?.trim()
+        
+
+        
+
+        // const paymentValue=document.getElementById()
 
         const err1 = firstname.parentElement.querySelector('p')
         err1.innerText = ""
@@ -437,10 +424,18 @@
             err2.innerText = 'Please enter a valid email'
             flag = 2
         }
+
+        //payment method
+        if(paymentMethod==""){
+            alert('setlect a payment method')
+            flag=2
+        }
+
+       
         
         if (flag == 1) {
-            // let paymentMethod=document.getElementById('COD').value
-            let paymentMethod="COD"
+      
+            
             submit(
                 firstnameValue,
                 lastnameValue,
@@ -469,7 +464,7 @@
             emailValue,
             paymentMethod
         ) {
-           
+        
             $.ajax({
                 url: '/checkout',
                 method: 'post',
@@ -485,16 +480,99 @@
                     email:emailValue,
                     paymentMethod:paymentMethod
                 },
-                
+             
                 
                 success: (response) => {
-                    if(response.status=='success'){
-                        console.log("success");
-                       window.location.href='/ordersuccess'
-                    }
+                   if(response?.status==true){   //no products to order
+                        Swal.fire({
+                        icon: 'error',
+                        title: 'Oops... Add Products plzzzzz',
+                        text: 'Something went wrong!',
+                        footer: '<a href="">Why do I have this issue?</a>'
+                        })
+                        setTimeout(() => {
+                            location.reload()
+                        }, 3000);
+                   }
+                   else if(response?.success==true){                 //cod
+                            window.location.href='/ordersuccess'
+                    }else{       
+                        console.log("payment testing");       //razorpay
+                         rozorpayPayment(response)
+                        }
+                    
 
                 }
             })
+
+
+            function rozorpayPayment(order){
+              
+                var options = {
+                "key": "rzp_test_tUZpCht97wF71G", 
+                "amount": order.amount, 
+                "currency": "INR",
+                "name": "soorya krishnanunni",
+                "description": "Test Transaction",
+                "image": "https://www.google.com/imgres?imgurl=https%3A%2F%2Fcdn.pixabay.com%2Fphoto%2F2016%2F12%2F26%2F18%2F33%2Flogo-1932539__340.png&imgrefurl=https%3A%2F%2Fpixabay.com%2Fimages%2Fsearch%2Flogo%2F&tbnid=2oNLvrjEyTXhzM&vet=12ahUKEwj3k8fz-rT7AhVMwXMBHTcRBpEQMygHegUIARDyAQ..i&docid=bVXxrJ-DMFgyIM&w=453&h=340&q=logo%20images&ved=2ahUKEwj3k8fz-rT7AhVMwXMBHTcRBpEQMygHegUIARDyAQ",
+                "order_id": order.id,
+                "handler": function (response){
+                   
+                    // alert(response.razorpay_payment_id);
+                    // alert(response.razorpay_order_id);
+                    // alert(response.razorpay_signature)
+                    verifyPayment(response,order)
+                },
+                "prefill": {
+                    "name": "soorya krishnanunni",
+                    "email": "sooryakrishnanunni@gmail.com",
+                    "contact": "7561071554"
+                },
+                "notes": {
+                    "address": "Razorpay Corporate Office"
+                },
+                "theme": {
+                    "color": "#ef4325"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.on('payment.failed', function (response){
+                    alert("payment failed")
+                    alert(response.error.code);
+                    alert(response.error.description);
+                    alert(response.error.source);
+                    alert(response.error.step);
+                    alert(response.error.reason);
+                    alert(response.error.metadata.order_id);
+                    alert(response.error.metadata.payment_id);
+            });
+            rzp1.open();
+            // document.getElementById('rzp-button1').onclick = function(e){
+            //     rzp1.open();
+            //     e.preventDefault();
+            // }
+            }
+
+            function verifyPayment(payment,order){
+                $.ajax({
+                    url:'/verify-payment',
+                    method:"post",
+                    data:{
+                        payment,
+                        order
+                    },
+                    success:(response)=>{
+                        if(response.status==true){
+                            alert('order successfull')
+                            window.location.href='/ordersuccess'
+                        }else{
+                            
+                            alert(response.status)
+                            window.location.href='/orders'
+                        }
+                    }
+                })
+             }
         }
     }
 
@@ -505,7 +583,8 @@
             url:'/fill-address/'+address_id,
             method:'get',
             success:(response)=>{
-                console.log(response,"hi");
+              
+
                 document.getElementById('firstname').value=response.firstName
                 document.getElementById('lastname').value=response.lastName
                 document.getElementById('country').value=response.country
@@ -520,5 +599,6 @@
         })
     }
 
+   
 
 </script>

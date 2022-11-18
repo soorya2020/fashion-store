@@ -52,7 +52,7 @@ const cartSchema=new mongoose.Schema({
 })
 
 const addressSchema=new mongoose.Schema({
-    userId:ObjectID,
+    userId:mongoose.Types.ObjectId,
     address:[{
         firstName:String,
         lastName:String,
@@ -67,7 +67,7 @@ const addressSchema=new mongoose.Schema({
 })
 
 const orderSchema=new mongoose.Schema({
-    userId:ObjectID,
+    userId:mongoose.Types.ObjectId,
     orders:[
         {
             firstName:String,
@@ -77,16 +77,19 @@ const orderSchema=new mongoose.Schema({
             productDetails:[{}],
             totalPrice:Number,
             shippingAddress:Object,
-            crreatedAt:{
-                type:Date,
-                default:new Date()
+            paymentStatus:{
+                type:Number,
+                default:0
+            },
+            createdAt:{
+                type:Date
             },
             status:{
-                type:Boolean,
-                default:true
-            }
-
-        }
+                type:Number,
+                default:1  //1 for order plced
+            }              //2 for cancelled
+                            //3 for order shipped
+        }                   //4 order delovered
     ]
 })
 

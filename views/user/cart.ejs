@@ -204,6 +204,7 @@
 					let cartCount=parseInt(document.getElementById('cart-count').innerHTML)
 					document.getElementById('cart-count').innerHTML=cartCount+count	
 					let total=parseInt(input.innerText)*price
+					console.log(total,"this is total");
 					input.parentElement.parentElement.parentElement.querySelector('td.total-col').innerText=total
 					document.getElementById('total').innerHTML='₹ '+response.total
 				

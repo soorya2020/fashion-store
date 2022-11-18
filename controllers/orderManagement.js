@@ -13,9 +13,10 @@ const layout = 'admin-layout'
 module.exports={
     viewAllOrders:(req,res)=>{
         let userId=req.session.user._id
+        let user=req.session.user
         cartHelpers.getOrders(userId).then((orders)=>{
-           
-            res.render('admin/orders',{orders,layout})
+           console.log(orders,"admin orders");
+            res.render('admin/orders',{orders,layout,user})
         })
     }
 }
