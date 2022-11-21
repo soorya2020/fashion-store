@@ -15,6 +15,7 @@ module.exports={
     verifyLogin : (req, res, next) => {
         if (req.session.loggedIn) {
           res.locals.loggedIn=true
+         
           next();
         } else {
           res.redirect("/login");

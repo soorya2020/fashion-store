@@ -28,6 +28,7 @@ module.exports = {
         user: req.session.user,
         cartCount,
         total,
+        nav
       });
     });
   },
@@ -39,6 +40,7 @@ module.exports = {
   changePrdQty: (req, res) => {
     cartHelpers.changeProductQuantity(req.body).then(async (response) => {
       response.total = await cartHelpers.getTotalAmount(req.session.user._id);
+    
       res.json(response);
     });
   },
@@ -57,6 +59,7 @@ module.exports = {
       user: req.session.user,
       address,
       cartProducts,
+      nav
     });
   },
   postCheckout: async (req, res) => {
@@ -64,9 +67,9 @@ module.exports = {
     let total = await cartHelpers.getTotalAmount(req.session.user._id)
       ? await cartHelpers.getTotalAmount(req.session.user._id)
       : 0;
-    console.log(total);
+    
     if (total == 0) {
-      console.log("totoal is zero");
+     
       res.json({ status: true });
     } else {
 
@@ -74,15 +77,13 @@ module.exports = {
 
 
       cartHelpers.placeOrder(req.body, total).then( () => {
-        console.log("thiss order status")
-      
-
+  
         if (req.body.paymentMethod === "COD") {
           res.json({ success: true });
         } else if(req.body.paymentMethod === "UPI") {
          
           cartHelpers.generateRazorpay(req.session.user._id, total).then((response) => {
-            console.log("tesing test1");
+           
             res.json(response);
           });
         }
@@ -119,10 +120,23 @@ module.exports = {
             res.send({ status: true }); 
         })
     }).catch((err)=>{
-        console.log('validation failed in verify payment hmac soes not match');
+    
         res.send({status:"payment failed"})
     })
   },
+  showProfile:async(req,res)=>{
+   
+    let address=await cartHelpers.getUserAddress(req.session.user._id)
+
+     
+      
+      res.render('user/profile',{nav,user:req.session.user,address:address[0]})
+  },
+  removeAddress:(req,res)=>{
+    cartHelpers.removeAddress(req.params.id).then(()=>{
+      res.send({staus:true})
+    })
+  }
 
 
 }

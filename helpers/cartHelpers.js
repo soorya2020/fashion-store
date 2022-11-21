@@ -129,7 +129,7 @@ module.exports={
                     {
                         $pull:{products:{item:data.product}}
                     }
-                ).then((response)=>{
+                ).then(()=>{
                     resolve({removeProduct:true})
                 })
             }else{
@@ -142,7 +142,7 @@ module.exports={
                     {
                         $inc:{'products.$.quantity':data.count}                        
                     }
-                ).then((response)=>{
+                ).then(()=>{
                     resolve({status:true})
                 })
             }
@@ -253,7 +253,7 @@ module.exports={
                     $unwind:'$cartItemsResult'
                 },
                 {
-                    $set:{cartItemsResult:{status:true}}
+                    $set:{cartItemsResult:{status:1}}
                 },
                 {
                     $project:{
@@ -289,16 +289,19 @@ module.exports={
         
             let addressExist= await db.addresses.find({userId:order.userId})
            
-            if(!addressExist.length==0){
+            if(addressExist){
+                console.log(addressExist,'addreExist');
                 
                 db.addresses.find(
                     {
                         "address.street":order.street,
                         "address.pincode":order.pincode,
+                        userId:order.userId
                     }
                     ).then((res)=>{
-                
+                        console.log(res,'this is res');
                     if(res.length==0){
+                        console.log(res,'line 303');
                         // db.addresses(addressObj).save()
                         db.addresses.updateOne(
                             {
@@ -308,13 +311,17 @@ module.exports={
                                 $push:{address:addressData}
                             } 
                         ).then((data)=>{
-                          
+                          resolve()
                         })
+                    }else{
+                        console.log('else is working');
                     }
                 })
             }else{
-                data=await db.addresses(addressObj)
-                data.save()
+                db.addresses(addressObj).save().then(()=>{
+                    resolve()
+                })
+               
             }
 
 
@@ -357,7 +364,7 @@ module.exports={
                         $push:{orders:orderData}
                     } 
                 ).then((data)=>{
-                    // console.log(data,"pushe");
+                   
                 })
             }else{
                 let data=db.orders(orderObj)
@@ -397,8 +404,19 @@ module.exports={
     getOrders:(userId)=>{
         return new Promise(async(resolve,reject)=>{
             let orders=await db.orders.find({userId:userId})
-            console.log(orders);
+           
             resolve(orders[0])
+        })
+    },
+    getAllOrders:()=>{
+        return new Promise(async(resolve,reject)=>{
+            let orders=await db.orders.aggregate([
+
+                {
+                    $unwind:"$orders"
+                }
+             ])
+            resolve(orders)
         })
     },
     cancelOrder:(orderId,prodId)=>{
@@ -406,11 +424,11 @@ module.exports={
             let order=await db.orders.find({'orders._id':orderId})
            
             if(order){
-                console.log(order,"test1");
+                
                 let orderIndex=order[0].orders.findIndex(order=>order._id==orderId)
                 let productIndex=order[0].orders[orderIndex].productDetails.findIndex(product=>product._id==prodId)
-                console.log("orderIndex",orderIndex);
-                console.log("productIndex",productIndex);
+            
+              
 
            
 
@@ -420,13 +438,13 @@ module.exports={
                     },
                     {
                         $set:{
-                           ['orders.'+orderIndex+'.productDetails.'+productIndex+'.orderStatus']:false
+                           ['orders.'+orderIndex+'.productDetails.'+productIndex+'.orderStatus']:0
                         }
                     }
                     
                     
                     ).then((data)=>{
-                        console.log(data);
+                      
                         resolve({status:true})
                     })
             }
@@ -435,10 +453,10 @@ module.exports={
     },
 
     generateRazorpay:async(userId,total)=>{
-        console.log(userId);
+        
         let data = userId
         let orders=await db.orders.find({userId:`${data}`})
-            console.log(orders,"this is ir");
+           
             let myOrderId =await orders[0].orders.slice().reverse(); 
             myOrderId = myOrderId[0]._id; 
             
@@ -449,7 +467,7 @@ module.exports={
                     receipt: ""+myOrderId
                   };
                   instance.orders.create(options, function(err, order) {
-                    console.log(order,"new order raxorpay");
+                   
                     resolve(order)
                   });
             })
@@ -471,7 +489,7 @@ module.exports={
               if(hmac==details['payment[razorpay_signature]']){
                 resolve()
               }else{
-                console.log('elsre of verify payment');
+                
                 reject()
               }
         })
@@ -501,7 +519,86 @@ module.exports={
             })
            
         })
+    },
+
+    getOrderById:(orderId,userId)=>{
+        return new Promise((resolve,reject)=>{
+            db.orders.aggregate([
+                {
+                    $unwind:'$orders'
+                },
+                {
+                    $unwind:'$orders.productDetails'
+                },
+                {
+                    $match:{'orders._id':ObjectId(orderId) }
+                },
+            ]).then((orderDetails)=>{
+                resolve(orderDetails)
+            })
+        })
+    },
+    updateOrderStatus:(value,orderId,prodId)=>{
+        let updateValue=parseInt(value)
+        return new Promise(async(resolve,reject)=>{
+            let order=await db.orders.find({'orders._id':orderId})
+            console.log(order,"this is ordeerb line 538 cart helpers");
+           
+            if(order){
+                
+                let orderIndex=order[0].orders.findIndex(order=>order._id==orderId)
+                let productIndex=order[0].orders[orderIndex].productDetails.findIndex(product=>product._id==prodId)
+            
+              
+
+           
+
+                db.orders.updateOne(
+                    {
+                        'orders._id':orderId
+                    },
+                    {
+                        $set:{
+                           ['orders.'+orderIndex+'.productDetails.'+productIndex+'.orderStatus']:updateValue
+                        }
+                    }
+                    
+                    
+                    ).then((data)=>{
+                      console.log(data,"line 560 cart helpers");
+                        resolve({status:true})
+                    })
+            }
+
+        })
+    },
+    getUserAddress:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            let address=await db.addresses.find({userId:userId})
+            resolve(address)
+        })
+    },
+    removeAddress:(addressId)=>{
+        return new Promise(async(resolve,reject)=>{
+           
+            console.log(address,"thsi is my addres to delete");
+          
+                
+
+                db.addresses.updateOne(
+                    {
+                        'address._id':addressId
+                    },
+                    {
+                        $pull:{address:{_id:addressId}}
+                    }
+                ).then((data)=>{
+                    console.log(data,"delted address");
+                })
+            
+        })
     }
 
 }
+
 

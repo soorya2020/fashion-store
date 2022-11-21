@@ -1,5 +1,5 @@
 <main class="main">
-    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+    <div class="page-header text-center" style="background-image: url('https://image.shutterstock.com/image-photo/credit-cards-on-hand-customers-260nw-1416251864.jpg')">
         <div class="container">
             <h1 class="page-title">Checkout<span>Shop</span></h1>
         </div><!-- End .container -->
@@ -427,8 +427,10 @@
 
         //payment method
         if(paymentMethod==""){
-            alert('setlect a payment method')
-            flag=2
+           alert('PLESE ENTER A PAYMENT METHOD')
+
+
+            flag=3
         }
 
        
@@ -483,12 +485,12 @@
              
                 
                 success: (response) => {
-                   if(response?.status==true){   //no products to order
+                   if(response.status==true){   //no products to order
                         Swal.fire({
                         icon: 'error',
                         title: 'Oops... Add Products plzzzzz',
                         text: 'Something went wrong!',
-                        footer: '<a href="">Why do I have this issue?</a>'
+                        footer: '<a href="">have agood day</a>'
                         })
                         setTimeout(() => {
                             location.reload()
@@ -497,7 +499,7 @@
                    else if(response?.success==true){                 //cod
                             window.location.href='/ordersuccess'
                     }else{       
-                        console.log("payment testing");       //razorpay
+                       
                          rozorpayPayment(response)
                         }
                     
@@ -545,6 +547,7 @@
                     alert(response.error.reason);
                     alert(response.error.metadata.order_id);
                     alert(response.error.metadata.payment_id);
+                    location.reload()
             });
             rzp1.open();
             // document.getElementById('rzp-button1').onclick = function(e){
@@ -563,8 +566,31 @@
                     },
                     success:(response)=>{
                         if(response.status==true){
-                            alert('order successfull')
-                            window.location.href='/ordersuccess'
+                            let timerInterval
+Swal.fire({
+  title: 'payment successfull',
+  html: 'you will be redirected in <b></b> milliseconds.',
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: () => {
+    Swal.showLoading()
+    const b = Swal.getHtmlContainer().querySelector('b')
+    timerInterval = setInterval(() => {
+      b.textContent = Swal.getTimerLeft()
+    }, 100)
+  },
+  willClose: () => {
+    clearInterval(timerInterval)
+  }
+}).then((result) => {
+  /* Read more about handling dismissals below */
+  if (result.dismiss === Swal.DismissReason.timer) {
+    console.log('do not press back')
+  }
+})
+                            setTimeout(() => {
+                                window.location.href='/ordersuccess'
+                            }, 3500);
                         }else{
                             
                             alert(response.status)
@@ -583,8 +609,6 @@
             url:'/fill-address/'+address_id,
             method:'get',
             success:(response)=>{
-              
-
                 document.getElementById('firstname').value=response.firstName
                 document.getElementById('lastname').value=response.lastName
                 document.getElementById('country').value=response.country

@@ -4,10 +4,13 @@ const { products } = require('../model/connection');
 const adminHelpers = require('../helpers/adminHelpers');
 const productHelpers = require('../helpers/product-helpers');
 const cartHelpers = require('../helpers/cartHelpers');
-
+const path=require('path')
 
 const router = express.Router();
 const layout = 'admin-layout'
+
+
+
 
 
 module.exports={
@@ -36,24 +39,23 @@ module.exports={
 
     
     addProducts:(req, res) => {
+      const files = req.files
 
-        productHelpers.addProducts(req.body).then((insertedId) => {
-          let images = req.files.image
-          const imgName = insertedId;
-          images.forEach((image,index) => {
-            
-            image.mv('./public/product-images/' + imgName +index+ '.jpg', (err, done) => {
-              if (!err) {
-                console.log('image uploaded')
-              } else {
-                res.send('upload an image')
-              }
+      // const file = files.map((file) => {
+      //   return file
+      // })
+    
+      const fileName = files.map((file) => {
+        return file.filename
+      })
+      const product = req.body
+      product.img = fileName
 
-            })
-          })
-          res.redirect('/admin')
-      
-        })
+      productHelpers.addProducts(product).then((response)=>{
+        res.redirect('/admin/products')
+      })
+
+     
       
       },
 

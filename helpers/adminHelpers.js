@@ -136,7 +136,8 @@ deleteCategory:(categoryId)=>{
             resolve()
         })
     })
-}
+},
+
 
 }
 

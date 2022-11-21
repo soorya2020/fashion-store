@@ -14,9 +14,21 @@ module.exports={
     viewAllOrders:(req,res)=>{
         let userId=req.session.user._id
         let user=req.session.user
-        cartHelpers.getOrders(userId).then((orders)=>{
-           console.log(orders,"admin orders");
+        cartHelpers.getAllOrders().then((orders)=>{
+           
             res.render('admin/orders',{orders,layout,user})
+        })
+    },
+    viewOrderDetails:(req,res)=>{
+        cartHelpers.getOrderById(req.params.id,req.session.user._id).then((orders)=>{
+        
+            res.render('admin/single-order-details',{layout,orders})
+        })
+    },
+    updateOrderStatus:(req,res)=>{
+        cartHelpers.updateOrderStatus(req.body.value,req.body.orderId,req.body.prodId).then((response)=>{
+            console.log('succeffully updated order status');
+            res.send(response)
         })
     }
 }
