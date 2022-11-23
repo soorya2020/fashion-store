@@ -35,7 +35,7 @@
                             <%= index+1 %>.<%= order.orders.productDetails.productsName %>
                         </h5>
                         <img class="rounded" style="width:150px ;"
-                            src="/product-images/<%=order.orders.productDetails._id  %>0.jpg " alt="">
+                            src="/product-images/<%=order.orders.productDetails.imageName[0]  %>" alt="">
                     </td>
                     <td>
                         <div class="col text-center">
@@ -93,7 +93,7 @@
                         <%if(order.orders.productDetails.orderStatus>0){%>
                             <button onclick="cancelOrder('<%= order.orders.productDetails._id%>', '<%= order.orders._id%>')" class="btn btn-danger " id="next" >cancel Order</button>
                             <%}else{%>
-                            <img style="width:150px ;" src="https://st.depositphotos.com/2274151/2584/i/950/depositphotos_25849685-stock-photo-cancelled-stamp.jpg" alt="">
+                            <img style="width:150px ;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWZJD5PBopryWB_o1vo03kVAbPok7drN9XZg&usqp=CAU" alt="">
                             <%}%>
                             <%}%>
                     </td>

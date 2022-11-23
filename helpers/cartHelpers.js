@@ -90,10 +90,11 @@ module.exports={
                 },
                 
                 {
-                    $project:{item:1,quantity:1,product:{$arrayElemAt:['$productInfo',0]}}
+                    $project:{item:1,quantity:1,img:1,product:{$arrayElemAt:['$productInfo',0]}}
                 }
                 
             ]).then((productInfo)=>{
+            //   console.log(productInfo,"my cart products");
                 resolve(productInfo)
                 })
         })
@@ -261,7 +262,8 @@ module.exports={
                         quantity:1,
                         productsName:'$cartItemsResult.name',
                         productsPrice:'$cartItemsResult.price',
-                        orderStatus:'$cartItemsResult.status'
+                        orderStatus:'$cartItemsResult.status',
+                        imageName:'$cartItemsResult.img'
                         }
                 }
             ])
@@ -289,7 +291,7 @@ module.exports={
         
             let addressExist= await db.addresses.find({userId:order.userId})
            
-            if(addressExist){
+            if(addressExist.length){
                 console.log(addressExist,'addreExist');
                 
                 db.addresses.find(
@@ -404,7 +406,7 @@ module.exports={
     getOrders:(userId)=>{
         return new Promise(async(resolve,reject)=>{
             let orders=await db.orders.find({userId:userId})
-           
+         
             resolve(orders[0])
         })
     },
@@ -457,7 +459,7 @@ module.exports={
         let data = userId
         let orders=await db.orders.find({userId:`${data}`})
            
-            let myOrderId =await orders[0].orders.slice().reverse(); 
+            let myOrderId =await orders[0]?.orders.reverse(); 
             myOrderId = myOrderId[0]._id; 
             
             return new Promise((resolve,reject)=>{
@@ -581,7 +583,7 @@ module.exports={
     removeAddress:(addressId)=>{
         return new Promise(async(resolve,reject)=>{
            
-            console.log(address,"thsi is my addres to delete");
+            
           
                 
 
@@ -597,8 +599,54 @@ module.exports={
                 })
             
         })
+    },
+    editAddress:(userId,data)=>{
+    
+        return new Promise(async(resolve,reject)=>{
+
+            let address=await db.addresses.find({'address._id':data._id})
+            let addressIndex=address[0].address.findIndex(index=>index._id==data._id)
+
+            let addressData={
+                firstName:data.firstname,
+                lastName:data.lastname,
+                country:data.country,
+                street:data.street,
+                town:data.town,
+                pincode:data.pincode,
+                mobile:data.mobile,
+                email:data.email,
+            }
+
+            db.addresses.updateOne(
+                {
+                    userId:userId
+                },
+                {
+                    $set:{
+                        ['address.'+addressIndex]:addressData
+                    }
+                }
+            ).then((data)=>{
+                console.log(data,"udatetion status");
+                resolve()
+            })
+        })
+    },
+    addAddress:async(userId,data)=>{
+       
+        db.addresses.updateOne(
+            {
+                userId:userId
+            },
+            {
+                $push:{address:data}
+            }
+        ).then((response)=>{
+            console.log(response);
+            resolve()
+        })
     }
 
 }
-
 

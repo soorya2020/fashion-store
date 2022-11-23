@@ -93,6 +93,7 @@ module.exports = {
   getOrders: (req, res) => {
     let userId = req.session.user._id;
     cartHelpers.getOrders(userId).then((orders) => {
+      console.log();
       res.render("user/orders", { nav, orders });
     });
   },
@@ -127,14 +128,26 @@ module.exports = {
   showProfile:async(req,res)=>{
    
     let address=await cartHelpers.getUserAddress(req.session.user._id)
+    let user= await db.users.findOne({_id:req.session.user._id})
+    
 
      
       
-      res.render('user/profile',{nav,user:req.session.user,address:address[0]})
+      res.render('user/profile',{nav,user:user,address:address[0]})
   },
   removeAddress:(req,res)=>{
     cartHelpers.removeAddress(req.params.id).then(()=>{
       res.send({staus:true})
+    })
+  },
+  updateAddress:(req,res)=>{
+    cartHelpers.editAddress(req.session.user._id,req.body).then(()=>{
+      res.send({status:true})
+    })
+  },
+  addAddress:(req,res)=>{
+    cartHelpers.addAddress(req.session.user._id,req.body).then(()=>{
+      res.send({status:true})
     })
   }
 

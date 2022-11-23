@@ -67,7 +67,7 @@
                     </div>
 
                     <div>
-                        <img class="align-self-center img-fluid" src="/product-images/<%= prodata._id  %>0.jpg " width="150">
+                        <img class="align-self-center img-fluid" src="/product-images/<%= prodata.imageName[0]  %> " width="150">
                         <%if(prodata.orderStatus==4){%>
                           <%}else{%>
                       <% if(prodata.orderStatus){%>
@@ -94,7 +94,7 @@
                         <% }else if(prodata.orderStatus==4) {%>
                           <a style="width:150px ;" class="btn btn-success py-2" href="">delivered</a>
                         <% }else{ %>
-                          <img class="text-center" style="margin-left:43% ;" width="150px" src="https://img.freepik.com/premium-vector/grunge-rubber-stamp-with-word-cancelled-inside-vector-illustration-cancelled-rectangle-stamp-isolated-white-background_175838-3421.jpg?w=2000" alt="">
+                          <img class="text-center" style="margin-left:43% ;" width="150px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWZJD5PBopryWB_o1vo03kVAbPok7drN9XZg&usqp=CAU" alt="">
                         <% } %>
                           <hr>
                         </div>

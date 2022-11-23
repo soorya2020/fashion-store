@@ -2,6 +2,7 @@ const db = require('../model/connection')
 
 const bcrypt = require('bcrypt')
 const { users } = require('../model/connection')
+const { ObjectID } = require('bson')
 
 module.exports = {
     doSignup: (userData) => {
@@ -70,5 +71,38 @@ module.exports = {
             }
         })
     },
+    updateUserDate:(data,user)=>{
+        console.log(user,data);
+      
+        return new Promise(async(resolve,reject)=>{
+
+            bcrypt.compare(data.password,user.password).then(async(passwordcheck)=>{
+                if(passwordcheck){
+                    console.log('eligible to change pass');
+                    data.newPassword=await bcrypt.hash(data.newPassword,10)
+                    db.users.updateOne(
+                        {
+                            _id:user._id
+                        },
+                        {
+                            $set:{
+                                password:data.newPassword,
+                                name:data.name,
+                                email:data.email
+                            }
+                        }
+                    ).then((data)=>{
+                        console.log("asdfghjk",data,"pass added");
+                        resolve(data)
+                    })
+                }else{
+                   resolve()
+                    console.log('old pass not match');
+                }
+            })
+            
+
+        })
+    }
 
 }

@@ -3,7 +3,11 @@ var router = express.Router();
 const userHelpers = require("../helpers/userHelpers");
 const productHelpers = require("../helpers/product-helpers");
 const config = require("../config/otpconfig");
+const { Db } = require("mongodb");
+const { response } = require("../app");
 const client = require("twilio")(config.accountID, config.authToken);
+
+const db = require('../model/connection')
 
 var nav = true;
 var footer = true;
@@ -117,6 +121,18 @@ module.exports={
         .catch((err) => {
           res.send({ value: "error" });
         });
+    },
+    updateUser:async(req,res)=>{
+      let user = await db.users.findOne({_id:req.session.user._id})
+      userHelpers.updateUserDate(req.body,user).then((response)=>{
+        if(response?.acknowledged){
+          console.log('reached response');
+          res.send({status:true})
+        }else{
+          console.log('reached response else');
+          res.send({status:false})
+        }
+      })
     }
 
 }

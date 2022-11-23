@@ -17,9 +17,9 @@ const config = require("../config/otpconfig");
 
 
 
-const {login, getLogin,verifyLogin,logout,getSignup,signup,getOtp,verifyOtp}=require('../controllers/auth')
+const {login, getLogin,verifyLogin,logout,getSignup,signup,getOtp,verifyOtp,updateUser}=require('../controllers/auth')
 const {shop,singleProduct}=require("../controllers/product")
-const {getCart, addToCart,changePrdQty,deleteProduct,getCheckout,postCheckout,getOrders,postCancelOrder,getAddress,paymentVerification,showProfile,removeAddress}=require('../controllers/cart');
+const {getCart, addToCart,changePrdQty,deleteProduct,getCheckout,postCheckout,getOrders,postCancelOrder,getAddress,paymentVerification,showProfile,removeAddress,updateAddress,addAddress}=require('../controllers/cart');
 const cartHelpers = require("../helpers/cartHelpers");
 const productHelpers = require("../helpers/product-helpers");
 const { path } = require("../app");
@@ -88,6 +88,9 @@ router.post("/verify-payment",verifyLogin,paymentVerification )
 router.get('/my-account',verifyLogin,showProfile)
 
 router.get('/remove-address/:id',verifyLogin,removeAddress)
+router.post('/edit-address',verifyLogin,updateAddress)
+router.post('/add-address',verifyLogin,addAddress)
+router.post('/update-user-info',verifyLogin,updateUser)
 
 
 module.exports = router;
