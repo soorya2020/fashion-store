@@ -10,6 +10,13 @@ var instance = new Razorpay({
     key_secret: 'ggez8hbKtN3dnEXjRWW6XqZg',
   });
 
+const paypal = require('paypal-rest-sdk');
+paypal.configure({
+  'mode': 'sandbox', //sandbox or live
+  'client_id': 'AdBqEBGG0O3Kqv7CpACr2MTC35CMT6sMILSPb1Jq_K6FvwrLMRBBLvvnuijtFLc-oYZZEMDhWHnu54oz',
+  'client_secret': 'EPzGRv0ycoo3vGSA0FtX_rGnOlq1CP0K0pWncMzwXsO6Un9bJVnNCceYP4rXyT2'
+});
+
 module.exports={
     addToCart:(prodId,userId)=>{
         let prodObj={
@@ -476,6 +483,9 @@ module.exports={
         
         
     },
+    generatePaypal:(userId,total)=>{
+        //do it 
+    },
 
     verifyPayment:(details)=>{
       
@@ -601,22 +611,25 @@ module.exports={
         })
     },
     editAddress:(userId,data)=>{
-    
+    console.log(data,"this si my edit address");
         return new Promise(async(resolve,reject)=>{
 
-            let address=await db.addresses.find({'address._id':data._id})
+            let address=await db.addresses.find({userId:userId})
             let addressIndex=address[0].address.findIndex(index=>index._id==data._id)
 
             let addressData={
-                firstName:data.firstname,
-                lastName:data.lastname,
+                firstName:data.firstName,
+                lastName:data.lastName,
                 country:data.country,
                 street:data.street,
                 town:data.town,
+                state:data.state,
                 pincode:data.pincode,
                 mobile:data.mobile,
                 email:data.email,
+                
             }
+            console.log(addressData,"this is address");
 
             db.addresses.updateOne(
                 {
@@ -628,7 +641,7 @@ module.exports={
                     }
                 }
             ).then((data)=>{
-                console.log(data,"udatetion status");
+                console.log('soorya reached line 641');
                 resolve()
             })
         })

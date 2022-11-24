@@ -1,3 +1,4 @@
+require('dotenv').config()
 var express = require("express");
 var router = express.Router();
 const userHelpers = require("../helpers/userHelpers");
@@ -14,6 +15,16 @@ const { response } = require("../app");
 const { ObjectId } = require("mongodb");
 const { resolveInclude } = require("ejs");
 
+
+const paypal = require("@paypal/checkout-server-sdk");
+const Environment =
+  process.env.NODE_ENV === "production"
+    ? paypal.core.LiveEnvironment
+    : paypal.core.SandboxEnvironment;
+
+const paypalClient = new paypal.core.PayPalHttpClient(new Environment
+  (process.env.PAYPAL_CLIENT_ID,process.env.PAYPAL_CLIENT_SECRET));
+
 var nav = true;
 var footer = true;
 
@@ -28,7 +39,7 @@ module.exports = {
         user: req.session.user,
         cartCount,
         total,
-        nav
+        nav,
       });
     });
   },
@@ -40,7 +51,7 @@ module.exports = {
   changePrdQty: (req, res) => {
     cartHelpers.changeProductQuantity(req.body).then(async (response) => {
       response.total = await cartHelpers.getTotalAmount(req.session.user._id);
-    
+
       res.json(response);
     });
   },
@@ -59,33 +70,29 @@ module.exports = {
       user: req.session.user,
       address,
       cartProducts,
-      nav
+      nav,
+      paypalClientId : process.env.PAYPAL_CLIENT_ID,
     });
   },
   postCheckout: async (req, res) => {
-   req.body.userId=await req.session.user._id
+    req.body.userId = await req.session.user._id;
     let total = await cartHelpers.getTotalAmount(req.session.user._id)
-      ? await cartHelpers.getTotalAmount(req.session.user._id)
-      : 0;
-    
+    let totalPrice=total
+
     if (total == 0) {
-     
       res.json({ status: true });
     } else {
-
- 
-
-
-      cartHelpers.placeOrder(req.body, total).then( () => {
-  
+      cartHelpers.placeOrder(req.body, total).then(() => {
         if (req.body.paymentMethod === "COD") {
-          res.json({ success: true });
-        } else if(req.body.paymentMethod === "UPI") {
-         
-          cartHelpers.generateRazorpay(req.session.user._id, total).then((response) => {
-           
-            res.json(response);
-          });
+          res.json({ cod: true });
+        } else if (req.body.paymentMethod === "UPI") {
+          cartHelpers
+            .generateRazorpay(req.session.user._id, total)
+            .then((response) => {
+              res.json(response);
+            });
+        } else if (req.body.paymentMethod === "PAYPAL") {
+          res.send({ paypal: true ,totalPrice:totalPrice});
         }
       });
     }
@@ -105,53 +112,77 @@ module.exports = {
       });
   },
   getAddress: (req, res) => {
+    console.log("called fill address");
     let userId = req.session.user._id;
     let addressId = req.params.id;
     cartHelpers.listAddress(userId, addressId).then((data) => {
-      res.send(data[0].address);
+      res.send(data[0]?.address);
     });
   },
 
   paymentVerification: (req, res) => {
-   
-   
-    cartHelpers.verifyPayment(req.body).then(()=>{
-        cartHelpers.changePaymentStatus(req.body['order[receipt]']).then(()=>{
-          
-            res.send({ status: true }); 
-        })
-    }).catch((err)=>{
-    
-        res.send({status:"payment failed"})
-    })
+    cartHelpers
+      .verifyPayment(req.body)
+      .then(() => {
+        cartHelpers.changePaymentStatus(req.body["order[receipt]"]).then(() => {
+          res.send({ status: true });
+        });
+      })
+      .catch((err) => {
+        res.send({ status: "payment failed" });
+      });
   },
-  showProfile:async(req,res)=>{
-   
-    let address=await cartHelpers.getUserAddress(req.session.user._id)
-    let user= await db.users.findOne({_id:req.session.user._id})
-    
+  showProfile: async (req, res) => {
+    let address = await cartHelpers.getUserAddress(req.session.user._id);
+    let user = await db.users.findOne({ _id: req.session.user._id });
 
-     
-      
-      res.render('user/profile',{nav,user:user,address:address[0]})
+    res.render("user/profile", { nav, user: user, address: address[0] });
   },
-  removeAddress:(req,res)=>{
-    cartHelpers.removeAddress(req.params.id).then(()=>{
-      res.send({staus:true})
-    })
+  removeAddress: (req, res) => {
+    cartHelpers.removeAddress(req.params.id).then(() => {
+      res.send({ staus: true });
+    });
   },
-  updateAddress:(req,res)=>{
-    cartHelpers.editAddress(req.session.user._id,req.body).then(()=>{
-      res.send({status:true})
-    })
+  updateAddress: (req, res) => {
+    cartHelpers.editAddress(req.session.user._id, req.body).then(() => {
+      res.send({ status: true });
+    });
   },
-  addAddress:(req,res)=>{
-    cartHelpers.addAddress(req.session.user._id,req.body).then(()=>{
-      res.send({status:true})
-    })
-  }
+  addAddress: (req, res) => {
+    cartHelpers.addAddress(req.session.user._id, req.body).then(() => {
+      res.send({ status: true });
+    });
+  },
+  paypalPayment: async (req, res) => {
+    console.log("reached here");
+    const request = new paypal.orders.OrdersCreateRequest();
+    const total = req.body.total
+    request.prefer("return=representation");
+    request.requestBody({
+      intent: "CAPTURE",
+      purchase_units: [
+        {
+          amount: {
+            currency_code: "USD",
+            value: total,
+            breakdown: {
+              item_total: {
+                currency_code: "USD",
+                value: total,
+              },
+            },
+          },
+        },
+      ],
+    });
 
-
-}
-
-
+    try {
+      const order = await paypalClient.execute(request);
+      res.json({id:order.result.id})
+      console.log(order);
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({error:e.message})
+    }
+  },
+};

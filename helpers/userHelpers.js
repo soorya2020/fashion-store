@@ -88,7 +88,8 @@ module.exports = {
                             $set:{
                                 password:data.newPassword,
                                 name:data.name,
-                                email:data.email
+                                email:data.email,
+                                mobile:data.mobile
                             }
                         }
                     ).then((data)=>{

@@ -19,12 +19,12 @@ const config = require("../config/otpconfig");
 
 const {login, getLogin,verifyLogin,logout,getSignup,signup,getOtp,verifyOtp,updateUser}=require('../controllers/auth')
 const {shop,singleProduct}=require("../controllers/product")
-const {getCart, addToCart,changePrdQty,deleteProduct,getCheckout,postCheckout,getOrders,postCancelOrder,getAddress,paymentVerification,showProfile,removeAddress,updateAddress,addAddress}=require('../controllers/cart');
+const {getCart, addToCart,changePrdQty,deleteProduct,getCheckout,postCheckout,getOrders,postCancelOrder,getAddress,paymentVerification,showProfile,removeAddress,updateAddress,addAddress,paypalPayment}=require('../controllers/cart');
 const cartHelpers = require("../helpers/cartHelpers");
 const productHelpers = require("../helpers/product-helpers");
 const { path } = require("../app");
 const { resolveInclude } = require("ejs");
-const { cancelOrder } = require("../helpers/cartHelpers");
+const { cancelOrder, generatePaypal } = require("../helpers/cartHelpers");
 
 var nav = true;
 var footer = true;
@@ -91,6 +91,8 @@ router.get('/remove-address/:id',verifyLogin,removeAddress)
 router.post('/edit-address',verifyLogin,updateAddress)
 router.post('/add-address',verifyLogin,addAddress)
 router.post('/update-user-info',verifyLogin,updateUser)
+
+router.post('/create-order',verifyLogin,paypalPayment)
 
 
 module.exports = router;
