@@ -11,6 +11,7 @@ var instance = new Razorpay({
   });
 
 const paypal = require('paypal-rest-sdk');
+const { ObjectID } = require('bson');
 paypal.configure({
   'mode': 'sandbox', //sandbox or live
   'client_id': 'AdBqEBGG0O3Kqv7CpACr2MTC35CMT6sMILSPb1Jq_K6FvwrLMRBBLvvnuijtFLc-oYZZEMDhWHnu54oz',
@@ -29,16 +30,18 @@ module.exports={
                 let prodExist=userCart.products.findIndex(product=> product.item==prodId)
              
                 if(prodExist!=-1){
-                    db.carts.updateOne(
+                    db.carts.findOneAndUpdate(
                         {
-                            user:userId,
+                            user:userId ,
                             "products.item":prodId
                         },
                         {
                             $inc:{"products.$.quantity":1}
                         }
-                    ).then(()=>{
-                        resolve()
+                    ).then((response)=>{
+                        productQuantity=response.products[prodExist].quantity
+                        console.log(productQuantity+1,"thsi si updated data");
+                        resolve(productQuantity)
                     })
                 }else{
                 db.carts.updateOne({user:userId},
@@ -101,6 +104,7 @@ module.exports={
                 }
                 
             ]).then((productInfo)=>{
+              
             //   console.log(productInfo,"my cart products");
                 resolve(productInfo)
                 })
@@ -274,8 +278,20 @@ module.exports={
                         }
                 }
             ])
-          
-           
+
+           for(let i=0;i<=products.length-1;i++){
+            console.log('count');
+                let status=await db.products.updateOne(
+                    {
+                    _id:products[i]?._id
+                    },
+                    {
+                        $inc:{stock:-products[i].quantity}
+                    }
+                )
+                console.log(status,'this is my status');
+           }
+        
             
             let addressData={
 
@@ -463,10 +479,9 @@ module.exports={
 
     generateRazorpay:async(userId,total)=>{
         
-        let data = userId
-        let orders=await db.orders.find({userId:`${data}`})
-           
-            let myOrderId =await orders[0]?.orders.reverse(); 
+        let orders=await db.orders.find({userId:userId})
+         
+            let myOrderId = orders[0]?.orders.reverse(); 
             myOrderId = myOrderId[0]._id; 
             
             return new Promise((resolve,reject)=>{
@@ -483,9 +498,7 @@ module.exports={
         
         
     },
-    generatePaypal:(userId,total)=>{
-        //do it 
-    },
+    
 
     verifyPayment:(details)=>{
       
@@ -507,16 +520,16 @@ module.exports={
         })
     },
 
-    changePaymentStatus:(orderId)=>{
+    changePaymentStatus:(orderId,userId)=>{
        
   
         return new Promise(async(resolve,reject)=>{
-            let orders=await db.orders.find({'orders._id':orderId})
+            let orders=await db.orders.find({userId:userId})
             
            
-            let orderIndex=orders[0].orders.findIndex(order=>order._id==orderId)
+            let orderIndex=orders[0].orders.findIndex(order=>order._id==""+orderId)
                 
-
+            console.log(orderIndex,""+orderId,'my order index and order id');
             db.orders.updateOne(
                 {
                     'orders._id':orderId
@@ -526,8 +539,13 @@ module.exports={
                         ['orders.'+orderIndex+'.paymentStatus']:1
                     }
                 }
-            ).then(()=>{
+            ).then((data)=>{
+                console.log('thsi is then');
+                console.log(data);
                 resolve()
+            }).catch((e)=>{
+                console.log(e);
+                reject()
             })
            
         })

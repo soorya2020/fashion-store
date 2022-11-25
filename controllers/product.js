@@ -15,7 +15,7 @@ var footer = true;
 module.exports={
     shop:async(req, res) => {
       let user=req.session.user
-      let cartCount=await cartHelpers.getCartCount(req.session.user._id)
+      let cartCount=await cartHelpers.getCartCount(req?.session?.user?._id)
         productHelpers.getAllProducts().then((products) => {
           var value = req.session.loggedIn;
           res.render("user/shop", {

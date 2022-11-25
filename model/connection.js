@@ -87,7 +87,7 @@ const orderSchema=new mongoose.Schema({
             },
             status:{
                 type:Number,
-                default:1  //1 for order plced
+                default:0  //1 for order plced
             }              //2 for cancelled
                             //3 for order shipped
         }                   //4 order delovered

@@ -1,4 +1,4 @@
-require('dotenv').config()
+require("dotenv").config();
 var express = require("express");
 var router = express.Router();
 const userHelpers = require("../helpers/userHelpers");
@@ -15,25 +15,29 @@ const { response } = require("../app");
 const { ObjectId } = require("mongodb");
 const { resolveInclude } = require("ejs");
 
-
 const paypal = require("@paypal/checkout-server-sdk");
 const Environment =
   process.env.NODE_ENV === "production"
     ? paypal.core.LiveEnvironment
     : paypal.core.SandboxEnvironment;
 
-const paypalClient = new paypal.core.PayPalHttpClient(new Environment
-  (process.env.PAYPAL_CLIENT_ID,process.env.PAYPAL_CLIENT_SECRET));
+const paypalClient = new paypal.core.PayPalHttpClient(
+  new Environment(
+    process.env.PAYPAL_CLIENT_ID,
+    process.env.PAYPAL_CLIENT_SECRET
+  )
+);
 
 var nav = true;
 var footer = true;
 
 module.exports = {
   getCart: async (req, res) => {
-    let cartCount = await cartHelpers.getCartCount(req.session.user._id);
-    let total = await cartHelpers.getTotalAmount(req.session.user._id);
-
-    cartHelpers.getCartProducts(req.session.user._id).then((cartItems) => {
+    let cartCount = await cartHelpers.getCartCount(req?.session?.user?._id);
+    let total = await cartHelpers.getTotalAmount(req?.session?.user?._id);
+    
+    cartHelpers.getCartProducts(req?.session?.user?._id).then((cartItems) => {
+      
       res.render("user/cart", {
         cartItems,
         user: req.session.user,
@@ -44,8 +48,8 @@ module.exports = {
     });
   },
   addToCart: (req, res) => {
-    cartHelpers.addToCart(req.params.id, req.session.user._id).then(() => {
-      res.json({ status: true });
+    cartHelpers.addToCart(req.params.id, req.session.user._id).then((quantity) => {
+      res.json({ status: true,quantity:quantity });
     });
   },
   changePrdQty: (req, res) => {
@@ -71,28 +75,37 @@ module.exports = {
       address,
       cartProducts,
       nav,
-      paypalClientId : process.env.PAYPAL_CLIENT_ID,
+      paypalClientId: process.env.PAYPAL_CLIENT_ID,
     });
   },
   postCheckout: async (req, res) => {
     req.body.userId = await req.session.user._id;
-    let total = await cartHelpers.getTotalAmount(req.session.user._id)
-    let totalPrice=total
+    let total = await cartHelpers.getTotalAmount(req.session.user._id);
+    let totalPrice = total;
 
     if (total == 0) {
       res.json({ status: true });
     } else {
-      cartHelpers.placeOrder(req.body, total).then(() => {
+      
+      cartHelpers.placeOrder(req.body, total).then(async() => {
+        
         if (req.body.paymentMethod === "COD") {
+
+          let orders = await db.orders.find({ userId: `${req.session.user._id}` });
+          let myOrderId =  orders[0]?.orders.reverse();
+          myOrderId = myOrderId[0]._id;
+          cartHelpers.changePaymentStatus(myOrderId,req.session.user._id).then(()=>{
           res.json({ cod: true });
+          })
+
         } else if (req.body.paymentMethod === "UPI") {
-          cartHelpers
-            .generateRazorpay(req.session.user._id, total)
-            .then((response) => {
+          cartHelpers.generateRazorpay(req.session.user._id, totalPrice).then((response) => {
+           
               res.json(response);
             });
+
         } else if (req.body.paymentMethod === "PAYPAL") {
-          res.send({ paypal: true ,totalPrice:totalPrice});
+          res.json({ paypal: true, totalPrice: totalPrice });
         }
       });
     }
@@ -124,7 +137,9 @@ module.exports = {
     cartHelpers
       .verifyPayment(req.body)
       .then(() => {
-        cartHelpers.changePaymentStatus(req.body["order[receipt]"]).then(() => {
+        console.log(req.body["order[receipt]"]);
+        console.log('thsis is orsdr id');
+        cartHelpers.changePaymentStatus(req.body["order[receipt]"],req.session.user._id).then(() => {
           res.send({ status: true });
         });
       })
@@ -154,9 +169,8 @@ module.exports = {
     });
   },
   paypalPayment: async (req, res) => {
-    console.log("reached here");
     const request = new paypal.orders.OrdersCreateRequest();
-    const total = req.body.total
+    const total = req.body.total;
     request.prefer("return=representation");
     request.requestBody({
       intent: "CAPTURE",
@@ -175,14 +189,31 @@ module.exports = {
         },
       ],
     });
-
+    //reach hrere after payment success
     try {
       const order = await paypalClient.execute(request);
-      res.json({id:order.result.id})
+      res.json({ id: order.result.id });
+
       console.log(order);
     } catch (e) {
       console.log(e);
-      res.status(500).json({error:e.message})
+      res.status(500).json({ error: e.message });
     }
+  },
+  verifyPaypal: async (req, res) => {
+    console.log("reached here line 191 cartjs");
+    let orders = await db.orders.find({ userId: `${req.session.user._id}` });
+
+    let myOrderId = await orders[0]?.orders.reverse();
+    myOrderId = myOrderId[0]._id;
+    console.log("my order id iss" + myOrderId);
+    cartHelpers
+      .changePaymentStatus(myOrderId, req.session.user._id)
+      .then(() => {
+        res.send({ status: true });
+      })
+      .catch(() => {
+        console.log("error while updating payament status");
+      });
   },
 };

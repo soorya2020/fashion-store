@@ -31,6 +31,7 @@
 											<th>Product</th>
 											<th>Price</th>
 											<th>Quantity</th>
+											<th style="visibility: hidden;">out of stock</th>
 											<th>Total</th>
 											<th></th>
 										</tr>
@@ -38,7 +39,7 @@
 
 									<tbody>
 									
-										<tr><% cartItems.forEach(item=>{ %> 
+										<tr><% cartItems.forEach((item,index)=>{ %> 
 											<td class="product-col">
 												<div class="product">
 													<figure class="product-media">
@@ -56,12 +57,15 @@
 											<td class="cart-col">
                                               
 												<div class="d-flex">
-												   <button id="dec-btn" style="border:0cm ;"  onclick="changeQuantity('<%=item._id %>','<%= item.product?._id%>',-1,'<%= user._id%>','<%= item.product?.price %>',this.parentElement.querySelector('span'))">-</button>
+												   <button id="dec-btn" style="border:0cm ;"  onclick="changeQuantity('<%=item._id %>','<%= item.product?._id%>',-1,'<%= user._id%>','<%= item.product?.price %>',this.parentElement.querySelector('span'),'<%= item.product.stock  %>',this)">-</button>
 												   <span id="<%= item.product?._id %>" class="text-center" style="width:50px ;" >  <%= item.quantity %> </span>
-												   <button id="inc-btn"  style="border:0cm ;" onclick="changeQuantity('<%=item._id %>','<%= item.product?._id%>',1,'<%= user._id%>','<%= item.product?.price %>',this.parentElement.querySelector('span'))">+</button>
+												   <button id="<%= item.product._id  %>"     style="border:0cm ;" onclick="changeQuantity('<%=item._id %>','<%= item.product?._id%>',1,'<%= user._id%>','<%= item.product?.price %>',this.parentElement.querySelector('span'),'<%= item.product.stock  %>',this)">+</button>
                                                </div>
                                                       
                                             </td>
+											<td >
+											<p class="outofstock text-danger"> </p>
+											</td>
 											<td id="<%= item?._id %> " class="total-col"><%= item?.product?.price * item?.quantity %> </td>
 											<td class="remove-col"><button onclick="removeProduct('<%= item?._id%>','<%= item.product?._id %>')" class="btn-remove"><i class="icon-close"></i></button></td>
 										</tr>
@@ -142,10 +146,11 @@
 	                					</tbody>
 	                				</table><!-- End .table table-summary -->
 									
-	                				<a href="/checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+	                				<a href="http://localhost:8000/checkout" id="proceedToCheckOut"  class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+								
 	                			</div><!-- End .summary -->
 
-		            			<a href="category.html" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
+		            			<a href="category.html"  class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
 								 
 									
 									
@@ -173,9 +178,38 @@
 </body>
 <script>
 	//change quantity and total
-    function changeQuantity(cartId,prodId,count,userId,price,input){
+    function changeQuantity(cartId,prodId,count,userId,price,input,stock,button){
+		
 		let quantity=parseInt(document.getElementById(prodId).innerHTML)
         count=parseInt(count)
+		let inputValue=parseInt(input.innerText)
+		let stockValue=parseInt(stock)
+
+		
+	
+		console.log(count,'-',inputValue)
+
+
+		
+		
+		if(count==1 && stockValue-inputValue>0){
+			console.log('if');
+			count=1
+		}else if(count==-1){
+			console.log('else if');
+		
+			count=-1
+		}else{
+			Swal.fire({
+			  icon: 'error',
+			  title: 'Item is out of stock...',
+			  text: 'happy shoping',
+			  footer: '<a href="">Why do I have this issue?</a>'
+			})
+			console.log('else')
+			count=0
+		}
+
 		
         $.ajax({
             url:'/change-product-quantity',
@@ -193,7 +227,7 @@
 				}
 			},
             success:(response)=>{
-				console.log(response.removeProduct);
+
 				
             	if(response.removeProduct){
 					
@@ -213,6 +247,9 @@
         }
         })
     }
+
+	
+	
 	//remove cart product
 	function removeProduct(cartId,prodId){
 		$.ajax({
@@ -229,6 +266,10 @@
 				location.reload()
 			}
 		})
+
+		
 	}
+
+	
 	
 </script>

@@ -256,6 +256,7 @@
                 <div id="paypal-button-container"></div>
                 <button type="button" class="btn btn-outline-primary-2 btn-order btn-block" onclick="validate()">
                   <span class="btn-text">Place Order</span>
+
                   <span class="btn-hover-text">Proceed to Checkout</span>
 
 
@@ -482,7 +483,7 @@
 
           } else if (response.paypal) {
             paypalPayment(response.totalPrice)
-          } else {
+          } else if(response) {
             rozorpayPayment(response)
           }
 
@@ -615,17 +616,39 @@
           },
           // Finalize the transaction after payer approval
           onApprove: (data, actions) => {
-            return actions.order.capture()
-            // .then(function(orderData) {
-            //   // Successful capture! For dev/demo purposes:
-            //   console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
-            //   const transaction = orderData.purchase_units[0].payments.captures[0];
-            //   alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
-            //   // When ready to go live, remove the alert and show a success message within this page. For example:
-            //   // const element = document.getElementById('paypal-button-container');
-            //   // element.innerHTML = '<h3>Thank you for your payment!</h3>';
-            //   // Or go to another URL:  actions.redirect('thank_you.html');
-            // });
+           $.ajax({
+            url:'/verify-paypal',
+            method:'get',
+            success:(response)=>{
+              if(response.status){
+                let timerInterval
+                    Swal.fire({
+                      title: 'Payment Successfull',
+                      html: 'I will close in <b></b> milliseconds.',
+                      timer: 2000,
+                      timerProgressBar: true,
+                      didOpen: () => {
+                        Swal.showLoading()
+                        const b = Swal.getHtmlContainer().querySelector('b')
+                        timerInterval = setInterval(() => {
+                          b.textContent = Swal.getTimerLeft()
+                        }, 100)
+                      },
+                      willClose: () => {
+                        clearInterval(timerInterval)
+                      }
+                    }).then((result) => {
+                      /* Read more about handling dismissals below */
+                      if (result.dismiss === Swal.DismissReason.timer) {
+                        console.log('I was closed by the timer')
+                        window.location.href='/orders'
+                      }
+                    })
+              }else{
+                alert('payment status not changed')
+              }
+            }
+           })
           }
         }).render('#paypal-button-container');
       }
