@@ -204,50 +204,50 @@
                                     <div class="col-sm-6">
                                       <p>dd</p>
                                       <label>First Name *</label>
-                                      <input id="firstname2" type="text" class="form-control" required>
+                                      <input id="firstname" type="text" class="form-control" required>
                                     </div><!-- End .col-sm-6 -->
 
                                     <div class="col-sm-6">
                                       <label>Last Name *</label>
-                                      <input id="lastname2" type="text" class="form-control" required>
+                                      <input id="lastname" type="text" class="form-control" required>
                                     </div><!-- End .col-sm-6 -->
                                   </div><!-- End .row -->
 
 
 
                                   <label>Country *</label>
-                                  <input id="country2" type="text" class="form-control" required>
+                                  <input id="country" type="text" class="form-control" required>
 
                                   <label>Street address *</label>
-                                  <input id="add2" type="text" class="form-control" placeholder="House number and Street name" required>
+                                  <input id="address" type="text" class="form-control" placeholder="House number and Street name" required>
 
 
                                   <div class="row">
                                     <div class="col-sm-6">
                                       <label>Town *</label>
-                                      <input id="town2" type="text" class="form-control" required>
+                                      <input id="town" type="text" class="form-control" required>
                                     </div><!-- End .col-sm-12 -->
 
                                     <div class="col-sm-6">
                                       <label>State *</label>
-                                      <input id="state2" type="text" class="form-control" required>
+                                      <input id="state" type="text" class="form-control" required>
                                     </div><!-- End .col-sm-6 -->
                                   </div><!-- End .row -->
 
                                   <div class="row">
                                     <div class="col-sm-6">
                                       <label>Postcode / ZIP *</label>
-                                      <input id="pincode2" type="text" class="form-control" required>
+                                      <input id="pincode" type="text" class="form-control" required>
                                     </div><!-- End .col-sm-6 -->
 
                                     <div class="col-sm-6">
                                       <label>Phone *</label>
-                                      <input id="mobile2" type="tel" class="form-control" required>
+                                      <input id="mobile" type="tel" class="form-control" required>
                                     </div><!-- End .col-sm-6 -->
                                   </div><!-- End .row -->
 
                                   <label>Email address *</label>
-                                  <input id="email2" type="email" class="form-control" required>
+                                  <input id="email" type="email" class="form-control" required>
 
 
                                 </div><!-- End .col-lg-9 -->
@@ -257,7 +257,7 @@
                           </div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button onclick="addAddress()" type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+                            <button onclick="addAddress(this)" type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
                           </div>
                         </div>
                       </div>
@@ -449,9 +449,6 @@
 			
           })
 
-
-		
-		 
         }
 
       })
@@ -575,24 +572,36 @@
 
     }
 
-    function addAddress(addressId) {
-      console.log('add address called');
+    function addAddress(input) {
+
+        const firstname= input.parentElement.parentElement.querySelector('#firstname').value 
+         const lastname= input.parentElement.parentElement.querySelector('#lastname').value 
+         const country=input.parentElement.parentElement.querySelector('#country').value 
+         const street=input.parentElement.parentElement.querySelector('#address').value 
+         const town= input.parentElement.parentElement.querySelector('#town').value 
+         const state= input.parentElement.parentElement.querySelector('#state').value 
+         const pincode=input.parentElement.parentElement.querySelector('#pincode').value 
+         const mobile= input.parentElement.parentElement.querySelector('#mobile').value 
+         const email=input.parentElement.parentElement.querySelector('#email').value 
+         console.log(firstname,lastname,country,street,town,state,pincode,mobile,email);
+     
 
       $.ajax({
         url: '/add-address',
         method: 'post',
         data: {
-          firstname: document.getElementById('firstname2').value,
-          lastname: document.getElementById('lastname2').value,
-          country: document.getElementById('country2').value,
-          street: document.getElementById('add2').value,
-          town: document.getElementById('town2').value,
-          state: document.getElementById('state2').value,
-          pincode: document.getElementById('pincode2').value,
-          mobile: document.getElementById('mobile2').value,
-          email: document.getElementById('email2').value,
+          firstName:firstname,
+          lastName: lastname,
+          country:country,
+          street:street,                  
+          town: town,
+          state: state,
+          pincode:pincode,
+          mobile: mobile,
+          email:email,
         },
         success: (response) => {
+          console.log('added address');
           location.reload()
         }
       })

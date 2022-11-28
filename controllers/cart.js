@@ -47,9 +47,17 @@ module.exports = {
       });
     });
   },
+  findProdQuantity:(req,res)=>{
+    let prodId=req.params.id
+    cartHelpers.findQuantity(prodId,req.session.user._id).then((quantity)=>{
+      res.json(quantity)
+    })
+  },
   addToCart: (req, res) => {
+  
     cartHelpers.addToCart(req.params.id, req.session.user._id).then((quantity) => {
-      res.json({ status: true,quantity:quantity });
+      console.log(quantity,'soorya');
+      res.json({ status: true });
     });
   },
   changePrdQty: (req, res) => {
@@ -83,11 +91,20 @@ module.exports = {
     let total = await cartHelpers.getTotalAmount(req.session.user._id);
     let totalPrice = total;
 
+    //check stock
+   
+    //check stock
+
+
     if (total == 0) {
       res.json({ status: true });
     } else {
       
-      cartHelpers.placeOrder(req.body, total).then(async() => {
+      cartHelpers.placeOrder(req.body, total).then(async(response) => {
+        console.log('this is my out of stock reaposen:',response);
+        if(response?.outOfStock){
+          res.json(response)
+        }else{
         
         if (req.body.paymentMethod === "COD") {
 
@@ -107,6 +124,7 @@ module.exports = {
         } else if (req.body.paymentMethod === "PAYPAL") {
           res.json({ paypal: true, totalPrice: totalPrice });
         }
+      }
       });
     }
   },
@@ -216,4 +234,10 @@ module.exports = {
         console.log("error while updating payament status");
       });
   },
+  retunProduct:(req,res)=>{
+  
+    cartHelpers.retunItem(req.body,req.session.user._id).then((response)=>{
+      res.send(response)
+    })
+  }
 };

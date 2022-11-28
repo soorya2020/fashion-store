@@ -16,9 +16,16 @@ const productSchema=new mongoose.Schema({
     name:String,
     price:Number,
     category:String,
-    stock:Number,
+    stock:{
+        type:Number,
+        min:0
+    },
     description:String,
-    img:Array
+    img:Array,
+    return:{
+        type:Boolean,
+        default:false
+    }
 })
 
 //user schema
@@ -34,7 +41,8 @@ const userSchema=new mongoose.Schema({
         default:0
     },
     password:String,
-    mobile:String
+    mobile:String,
+    wallet:Array
 })
 
 //catergory schema
@@ -88,9 +96,12 @@ const orderSchema=new mongoose.Schema({
             status:{
                 type:Number,
                 default:0  //1 for order plced
-            }              //2 for cancelled
+            },
+            
+                          //2 for cancelled
                             //3 for order shipped
         }                   //4 order delovered
+                            //5 order returned
     ]
 })
 

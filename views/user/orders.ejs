@@ -25,7 +25,7 @@
 
   } %>
 
-  <% orders?.orders?.slice()?.reverse()?.forEach(order=>{ %>
+  <% orders?.orders?.reverse()?.forEach(order=>{ %>
     <section class=" gradient-custom-2">
       <div class="container py-5 ">
         <div class="row d-flex justify-content-strart align-items-center">
@@ -75,7 +75,8 @@
                       <%}else{%>
                         <button  disabled id="cancelBtn" style="width:10%;" class="btn btn-danger mt-1 p=0 border border-danger rounded">Item cancelled</button>
                       <%}%>
-                      <%}%>
+                      <%}%> <br>
+                      <button id="cancelBtn" onclick="returnItem('<%= prodata._id%>','<%= order._id %>')" style="width:10%;" class="btn btn-success mt-1 p=0 border border-danger rounded">return</button>
 
                     </div>
 
@@ -132,6 +133,7 @@
 
 
       <script>
+
         function cancelOrder(prodId, orderId) {
           console.log(orderId, prodId);
 
@@ -154,8 +156,25 @@
           })
         }
 
-
-
+        function returnItem(proId,orderId){
+         
+          $.ajax({
+            url:'/return',
+            method:'post',
+            data:{
+              prodId:proId,
+              orderId:orderId
+            },
+            success:(response)=>{
+              if(response.status){
+                alert('priduct returned')
+              }else{
+                alert('prodct already returned')
+              }
+            }
+            
+          })
+        }
 
       </script>
 

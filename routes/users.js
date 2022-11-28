@@ -30,6 +30,7 @@ const {
 const { shop, singleProduct } = require("../controllers/product");
 const {
   getCart,
+  findProdQuantity,
   addToCart,
   changePrdQty,
   deleteProduct,
@@ -45,12 +46,14 @@ const {
   addAddress,
   paypalPayment,
   verifyPaypal,
+  retunProduct
 } = require("../controllers/cart");
 const cartHelpers = require("../helpers/cartHelpers");
 const productHelpers = require("../helpers/product-helpers");
 const { path } = require("../app");
 const { resolveInclude } = require("ejs");
 const { cancelOrder, generatePaypal } = require("../helpers/cartHelpers");
+const { route } = require("./admin");
 
 var nav = true;
 var footer = true;
@@ -92,9 +95,11 @@ router.get("/ordersuccess", verifyLogin, (req, res) => {
 });
 
 router.get("/cart", verifyLogin, getCart);
+router.get('/find-prodQuantity/:id',verifyLogin,findProdQuantity)
 router.get("/add-to-cart/:id", verifyLogin, addToCart);
 router.post("/change-product-quantity", verifyLogin, changePrdQty);
 router.post("/remove-product", verifyLogin, deleteProduct);
+
 
 router.get("/checkout", verifyLogin, getCheckout);
 router.post("/checkout", verifyLogin, postCheckout);
@@ -116,5 +121,7 @@ router.post("/update-user-info", verifyLogin, updateUser);
 
 router.post("/create-order", verifyLogin, paypalPayment);
 router.get("/verify-paypal", verifyLogin, verifyPaypal);
+
+router.post('/return',retunProduct)
 
 module.exports = router;

@@ -6,34 +6,101 @@
 
 function addToCart(prodId,stock){
   
-
-  
-    
-
     $.ajax({
-        
-        url:'/add-to-cart/'+prodId,
+        url:'/find-prodQuantity/'+prodId,
         method:'get',
-        success:(response)=>{
+        success(response){
             if(response.status){
-                if(stock-response.quantity<=0){
-                    Swal.fire('Any fool can use a computer')
+                console.log(response);
+                if(stock - response.quantity<=0){
+                    toast2()
                 }else{
-                    let count=$('#cart-count').html()
-                    count=parseInt(count)+1
-                    $('#cart-count').html(count)
+                    
+                    $.ajax({
+                        url:'/add-to-cart/'+prodId,
+                        method:'get',
+                        success:async(response)=>{
+                            console.log('added');
+                            if(response.status){
+
+                                    let count=$('#cart-count').html()
+                                    count=parseInt(count)+1
+                                    $('#cart-count').html(count)
+                                    toast()
+
+                            }
+                        }
+                    })
                 }
+            }else if(!response.status && stock==0){
+                toast2()
             }
+            else{
+                $.ajax({
+                    url:'/add-to-cart/'+prodId,
+                    method:'get',
+                    success:async(response)=>{
+                        console.log('added');
+                        if(response.status){                  
+                                let count=$('#cart-count').html()
+                                count=parseInt(count)+1
+                                $('#cart-count').html(count)
+                                toast()                       
+                        }else{
+                            alert('error occured')
+                        }
+                    }
+                })
+            }
+            
+               
+            
         }
     })
+    async function toast() {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            iconColor: 'white',
+            customClass: {
+              popup: 'colored-toast'
+            },
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true
+          })
+          await Toast.fire({
+            icon: 'success',
+            title: 'Item added'
+          })
+          
+    }
+    async function toast2() {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'bottom',
+            iconColor: 'white',
+            customClass: {
+              popup: 'colored-toast'
+            },
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true
+          })
+          await Toast.fire({
+            icon: 'error',
+            title: 'Out of stock'
+          })
+          
+    }
+
+    
 }
-   
 
-
-async function toast() {
+async function toast(messa){
     const Toast = Swal.mixin({
         toast: true,
-        position: 'top-right',
+        position: 'top',
         iconColor: 'white',
         customClass: {
           popup: 'colored-toast'
@@ -44,8 +111,12 @@ async function toast() {
       })
       await Toast.fire({
         icon: 'success',
-        title: 'Item added'
+        title: messa
       })
-      
 }
+   
+
+
+
+
 

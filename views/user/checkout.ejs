@@ -21,7 +21,7 @@
             <div class="card my-4 ml-4">
               <div class="card-header" id="heading-3">
                 <h2 class="card-title">
-                  <input onclick="fillAddress('<%=address._id %>')" type="radio" name="address" class="collapsed" role="button" data-toggle="collapse" href="#collapse-<%= index+1 %>" id="address<%=index+1%>" aria-expanded="false" aria-controls="collapse-<%= index+1 %>">
+                  <input onclick="fillAddress('<%=address._id %>');toast('address auto filled')" type="radio" name="address" class="collapsed" role="button" data-toggle="collapse" href="#collapse-<%= index+1 %>" id="address<%=index+1%>" aria-expanded="false" aria-controls="collapse-<%= index+1 %>">
                   <label for="address<%=index+1%>"><%= address.firstName%> <%= address.lastName %> </label>
                   </input>
                 </h2>
@@ -468,7 +468,10 @@
 
 
         success: (response) => {
-          if (response.status == true) { //no products to order
+          if(response.outOfStock){
+            alert('item was out of stock')
+          }
+          else if (response.status == true) { //no products to order
             Swal.fire({
               icon: 'error',
               title: 'Oops... Add Products plzzzzz',
