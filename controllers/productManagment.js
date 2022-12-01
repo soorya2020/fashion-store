@@ -75,13 +75,15 @@ module.exports={
       },
 
     postEditProduct:(req, res) => {
+      console.log(req.body,req.params,'ds');
         productHelpers.editProduct(req.params.id, req.body).then(()=>{
-          res.redirect('/admin/products')
-          if(req.files.image){
-             let image =req.files.image
-            const imgName =req.params.id 
-            image.mv('./public/product-images/'+imgName+'.jpg')
-          }
+          // res.redirect('/admin/products')
+          res.send('success')
+          // if(req?.files?.image){
+          //    let image =req.files.image
+          //   const imgName =req.params.id 
+          //   image.mv('./public/product-images/'+imgName+'.jpg')
+          // }
         })
       },
 

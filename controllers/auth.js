@@ -33,6 +33,8 @@ module.exports = {
         res.send({ value: "failed" });
       } else {
         req.session.loggedIn = true; //user can view product after signup
+        req.session.user=response.user
+        res.locals.loggedIn = true;
         res.send({ value: "success" });
       }
     });
@@ -69,6 +71,7 @@ module.exports = {
 
   logout: (req, res) => {
     req.session.loggedIn = false;
+    req.session.user=''
     res.redirect("/login");
   },
 

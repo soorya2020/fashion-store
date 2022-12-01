@@ -17,7 +17,7 @@
                     <div class="form-group col-md-5">
                         <p id="err"></p>
                         <label for="exampleInputName1">Name</label>
-                        <input value="<%=products.name%>" type="text" class="form-control" id="name" placeholder="name" name="name" value="<%= products.name  %>">
+                        <input value="<%=products.name%>" type="text" class="form-control" id="name" placeholder="name" name="name" >
                     </div>
 
                     <div class="form-group col-md-5">
@@ -43,21 +43,21 @@
                         <p id="err"></p>
                         <label for="exampleInputPassword4">Stock</label>
                         <input type="text" class="form-control" id="stock" placeholder="stock"
-                            name="stock" value="<%=products.quantity%>"  >
+                            name="stock" value="<%=products.stock%>"  >
                     </div>
 
 
                     <div class="form-group col-md-10">
                         <p id="err"></p>
                         <label for="exampleTextarea1">Description</label>
-                        <textarea value="<%=products.description%>" class="form-control" id="description" rows="5" name="description"><%- products.quantity%></textarea>
+                        <textarea value="<%=products.description%>" class="form-control" id="description" rows="5" name="description"><%- products.description%></textarea>
                     </div>
 
-                    <div class="form-group col-md-10">
+                    <!-- <div class="form-group col-md-10">
                         <p id="err"></p>
                         <label for="">Image</label>
                         <input   type="file" name="image" id="file" class="form-control" onchange="loadFile(event)"  >
-                    </div>
+                    </div> -->
 
                     
                     

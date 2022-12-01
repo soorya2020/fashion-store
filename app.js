@@ -11,7 +11,7 @@ const multer=require('multer')
 
 const mongoDbSesson = new ConnectMongoDBSession(session);
 
-const expressLayouts = require("express-ejs-layouts");
+const expressLayouts = require("express-ejs-layouts")
 const db = require("./model/connection");
 const usersRouter = require("./routes/users");
 const adminRouter = require("./routes/admin");

@@ -50,13 +50,12 @@
 
                     </div>
                     <div>
-                      <h6 class="mb-0"> <a href="#">Download Invoice</a> </h6>
                     </div>
                   </div>
               </div>
 
 
-              <% order?.productDetails?.forEach(prodata=>{ %>
+              <% order?.productDetails?.forEach((prodata,index)=>{ %>
                 <div class="card-body p-4">
                   <div class="d-flex flex-row mb-1 pb-1">
 
@@ -64,6 +63,8 @@
                       <h5 class="bold"><%= prodata.productsName %></h5>
                       <h6 class="fw-bold"> Qty: <%= prodata.quantity %> item</h6>
                       <h5 class="mb-3"> $ <%= prodata?.productsPrice %> <span class="small text-muted"> via (<%= order.paymentMethod %>) </span></h5>
+                      <h6 class="mb-0"> <button class="btn"  onclick="downloadInvoice('<%= order._id %>','<%= index %>')" href="#">Download Invoice</a> </h6>
+
                     </div>
 
                     <div>
@@ -132,6 +133,9 @@
     <% }) %>
 
 
+
+    <script src="https://unpkg.com/easyinvoice/dist/easyinvoice.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/easyinvoice/dist/easyinvoice.min.js"></script>
       <script>
 
         function cancelOrder(prodId, orderId) {
@@ -175,6 +179,103 @@
             
           })
         }
+
+        function downloadInvoice(orderId,index) {
+
+          let timerInterval
+              Swal.fire({
+                title: 'Downloading !',
+                html: 'download in<b></b> milliseconds.',
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: () => {
+                  Swal.showLoading()
+                  const b = Swal.getHtmlContainer().querySelector('b')
+                  timerInterval = setInterval(() => {
+                    b.textContent = Swal.getTimerLeft()
+                  }, 100)
+                },
+                willClose: () => {
+                  clearInterval(timerInterval)
+                }
+              }).then((result) => {
+                /* Read more about handling dismissals below */
+                if (result.dismiss === Swal.DismissReason.timer) {
+                  console.log('I was closed by the timer')
+                }
+          })
+   
+
+          $.ajax({
+            url:'/get-order-data/'+orderId,
+            method:'get',
+            success:(response)=>{
+              console.log(response.orders.productDetails);
+              let orderData=response.orders
+              var data = getSampleData(orderData,index);
+              easyinvoice.createInvoice(data, function(result) {
+                easyinvoice.download('myInvoice.pdf', result.pdf);
+                console.log('downloading');
+    
+              });
+            }
+          })
+        }  
+
+        function getSampleData(orderData,index) {
+
+        return {
+
+        images: {
+            logo: 'https://designs.bobcares.com/wp-content/uploads/2018/01/Dress-Up_new.png',
+            // background: 'https://public.easyinvoice.cloud/img/watermark-draft.jpg'
+        },
+        sender: {
+            company: 'Dress Up',
+            address: 'Infopark Street 24',
+            zip: '680712',
+            city: 'Kochi',
+            country: 'India'
+            // "custom1": "custom value 1",
+            // "custom2": "custom value 2",
+            // "custom3": "custom value 3"
+        },
+        client: {
+            company: orderData.firstName+' '+orderData.lastName,
+            address: orderData.shippingAddress.street,
+            zip: orderData.shippingAddress.pincode,
+            city: orderData.shippingAddress.town,
+            country: orderData.shippingAddress.country,
+            // "custom1": "custom value 1",
+            // "custom2": "custom value 2",
+            // "custom3": "custom value 3"
+        },
+        
+        
+        information: {
+            number: orderData.mobile,
+            date: orderData.createdAt,
+            'due-date': '31-12-2021'
+        },
+       
+        products: [
+            {
+                quantity: orderData?.productDetails[index]?.quantity,
+                description: orderData?.productDetails[index]?.productsName,
+                'tax-rate': 0,
+                price: orderData?.productDetails[index]?.productsPrice
+            },
+            
+        ],
+       
+        'bottom-notice': 'Kindly pay your invoice within 15 days.',
+        settings: {
+            currency: 'INR' // See documentation 'Locales and Currency' for more info. Leave empty for no currency.
+          
+        }
+  
+      };
+    } 
 
       </script>
 

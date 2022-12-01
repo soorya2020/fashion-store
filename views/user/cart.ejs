@@ -44,7 +44,7 @@
 												<div class="product">
 													<figure class="product-media">
 														<a href="/single-product/<%= item?.item  %> ">
-															<img  src="/product-images/<%= item?.product.img[0] %>" alt="Product image">
+															<img  src="/product-images/<%= item?.product?.img[0] %>" alt="Product image">
 														</a>
 													</figure>
 
@@ -57,9 +57,9 @@
 											<td class="cart-col">
                                               
 												<div class="d-flex">
-												   <button id="dec-btn" style="border:0cm ;"  onclick="changeQuantity('<%=item._id %>','<%= item.product?._id%>',-1,'<%= user._id%>','<%= item.product?.price %>',this.parentElement.querySelector('span'),'<%= item.product.stock  %>',this)">-</button>
-												   <span id="<%= item.product?._id %>" class="text-center" style="width:50px ;" >  <%= item.quantity %> </span>
-												   <button id="<%= item.product._id  %>"     style="border:0cm ;" onclick="changeQuantity('<%=item._id %>','<%= item.product?._id%>',1,'<%= user._id%>','<%= item.product?.price %>',this.parentElement.querySelector('span'),'<%= item.product.stock  %>',this)">+</button>
+												   <button id="dec-btn" style="border:0cm ;"  onclick="changeQuantity('<%=item?._id %>','<%= item?.product?._id%>',-1,'<%= user?._id%>','<%= item?.product?.price %>',this.parentElement.querySelector('span'),'<%= item?.product?.stock  %>',this)">-</button>
+												   <span id="<%= item.product?._id %>" class="text-center" style="width:50px ;" >  <%= item?.quantity %> </span>
+												   <button id="<%= item?.product?._id  %>"     style="border:0cm ;" onclick="changeQuantity('<%=item?._id %>','<%= item?.product?._id%>',1,'<%= user?._id%>','<%= item?.product?.price %>',this.parentElement.querySelector('span'),'<%= item?.product?.stock  %>',this)">+</button>
                                                </div>
                                                       
                                             </td>
@@ -147,7 +147,7 @@
 	                				</table><!-- End .table table-summary -->
 									<% let value=0 %> 
 	                				<a <% cartItems.forEach((element,index)=>{%> 
-										<% if(element.product.stock==0 || (element.product.stock-element.quantity)<0) {%>
+										<% if(element?.product?.stock==0 || (element?.product?.stock-element?.quantity)<0) {%>
 											onclick="alert('out of stock')"
 											<% }else{ %>
 												<% value+=1 %>  
@@ -157,7 +157,7 @@
 												<% console.log('soorya'); %> 
 												href="/checkout"
 												<% } %> 
-												<% }) %>   
+												<% })%>   
 									href="" id="proceedToCheckOut"  class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
 								
 	                			</div><!-- End .summary -->

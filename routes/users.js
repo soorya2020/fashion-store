@@ -37,6 +37,7 @@ const {
   getCheckout,
   postCheckout,
   getOrders,
+  getOrderDetails,
   postCancelOrder,
   getAddress,
   paymentVerification,
@@ -104,6 +105,9 @@ router.post("/remove-product", verifyLogin, deleteProduct);
 router.get("/checkout", verifyLogin, getCheckout);
 router.post("/checkout", verifyLogin, postCheckout);
 
+// router.get("/orders", verifyLogin, cartCount, getOrders);
+
+// this is my new order page 
 router.get("/orders", verifyLogin, cartCount, getOrders);
 
 router.post("/cancel-order", verifyLogin, postCancelOrder);
@@ -122,6 +126,12 @@ router.post("/update-user-info", verifyLogin, updateUser);
 router.post("/create-order", verifyLogin, paypalPayment);
 router.get("/verify-paypal", verifyLogin, verifyPaypal);
 
-router.post('/return',retunProduct)
 
+router.post('/return',retunProduct)
+router.get('/get-order-data/:id',getOrderDetails)
+
+
+// router.get('/new-order',(req,res)=>{
+//   res.render('user/neworder')
+// })
 module.exports = router;

@@ -44,7 +44,7 @@ module.exports = {
           category: data.category,
           stock: data.stock,
           description: data.description,
-          img:data.img
+          // img:data.img
         }
       );
       resolve(data);

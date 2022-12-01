@@ -85,6 +85,7 @@ const orderSchema=new mongoose.Schema({
             paymentMethod:String,
             productDetails:[{}],
             totalPrice:Number,
+            totalQuantity:Number,
             shippingAddress:Object,
             paymentStatus:{
                 type:Number,

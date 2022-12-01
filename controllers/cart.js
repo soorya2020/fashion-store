@@ -12,7 +12,7 @@ const client = require("twilio")(config.accountID, config.authToken);
 
 const db = require("../model/connection"); //trial
 const { response } = require("../app");
-const { ObjectId } = require("mongodb");
+const { ObjectId, ObjectID } = require("mongodb");
 const { resolveInclude } = require("ejs");
 
 const paypal = require("@paypal/checkout-server-sdk");
@@ -54,7 +54,7 @@ module.exports = {
     })
   },
   addToCart: (req, res) => {
-  
+   
     cartHelpers.addToCart(req.params.id, req.session.user._id).then((quantity) => {
       console.log(quantity,'soorya');
       res.json({ status: true });
@@ -91,9 +91,6 @@ module.exports = {
     let total = await cartHelpers.getTotalAmount(req.session.user._id);
     let totalPrice = total;
 
-    //check stock
-   
-    //check stock
 
 
     if (total == 0) {
@@ -108,9 +105,9 @@ module.exports = {
         
         if (req.body.paymentMethod === "COD") {
 
-          let orders = await db.orders.find({ userId: `${req.session.user._id}` });
+          let orders = await db.orders.find({ userId:req.session.user._id });
           let myOrderId =  orders[0]?.orders.reverse();
-          myOrderId = myOrderId[0]._id;
+          myOrderId = myOrderId[0]?._id;
           cartHelpers.changePaymentStatus(myOrderId,req.session.user._id).then(()=>{
           res.json({ cod: true });
           })
@@ -132,8 +129,17 @@ module.exports = {
     let userId = req.session.user._id;
     cartHelpers.getOrders(userId).then((orders) => {
       console.log();
-      res.render("user/orders", { nav, orders });
+      // res.render("user/orders", { nav, orders });
+      res.render('user/neworder',{ nav, orders })
     });
+  },
+  getOrderDetails:(req,res)=>{
+    let orderId=req.params.id
+    let userId=req.session.user._id
+    cartHelpers.getOrderDetails(orderId,userId).then((d)=>{
+      
+      res.send(d[0])
+    })
   },
   postCancelOrder: (req, res) => {
     cartHelpers
@@ -239,5 +245,6 @@ module.exports = {
     cartHelpers.retunItem(req.body,req.session.user._id).then((response)=>{
       res.send(response)
     })
-  }
+  },
+  
 };

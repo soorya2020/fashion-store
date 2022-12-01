@@ -43,6 +43,7 @@ module.exports = {
     });
   },
   addToCart: (prodId, userId) => {
+    console.log(userId,'this is useid for cart items adding line 46 carthelpers');
     let prodObj = {
       item: prodId,
       quantity: 1,
@@ -188,48 +189,57 @@ module.exports = {
     });
   },
   getTotalAmount: (userId) => {
-    return new Promise((resolve, reject) => {
-      db.carts
-        .aggregate([
-          {
-            $match: { user: userId },
-          },
-          {
-            $unwind: "$products",
-          },
-          {
-            $project: {
-              item: "$products.item",
-              quantity: "$products.quantity",
+    try {
+      
+      return new Promise((resolve, reject) => {
+        db.carts
+          .aggregate([
+            {
+              $match: { user: userId },
             },
-          },
-          {
-            $lookup: {
-              from: "products",
-              localField: "item",
-              foreignField: "_id",
-              as: "productInfo",
+            {
+              $unwind: "$products",
             },
-          },
-          {
-            $project: {
-              item: 1,
-              quantity: 1,
-              product: { $arrayElemAt: ["$productInfo", 0] },
+            {
+              $project: {
+                item: "$products.item",
+                quantity: "$products.quantity",
+              },
             },
-          },
-          {
-            $group: {
-              _id: null,
-              total: { $sum: { $multiply: ["$quantity", "$product.price"] } },
+            {
+              $lookup: {
+                from: "products",
+                localField: "item",
+                foreignField: "_id",
+                as: "productInfo",
+              },
             },
-          },
-        ])
-        .then((totalAmount) => {
-          resolve(totalAmount[0]?.total);
-        });
-    });
+            {
+              $project: {
+                item: 1,
+                quantity: 1,
+                product: { $arrayElemAt: ["$productInfo", 0] },
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                total: { $sum: { $multiply: ["$quantity", "$product.price"] } },
+              },
+            },
+          ])
+          .then((totalAmount) => {
+            resolve(totalAmount[0]?.total);
+          }).catch((err)=>{
+            console.log(err,"saleshelpers line 233");
+          });
+      });
+    } catch (error) {
+      console.log(error);
+      
+    }
   },
+
   getAddress: (userId) => {
     return new Promise(async (resolve, reject) => {
       let address = await db.addresses.find({ userId: userId });
@@ -303,6 +313,14 @@ module.exports = {
           },
         },
       ]);
+
+      let totalQuantity=0                           //total quantity
+      for(let i =0 ; i<products.length; i++){
+        totalQuantity+=products[i].quantity
+
+      }
+
+     
 
       for (let i = 0; i <= products.length - 1; i++) {
         console.log("count");
@@ -388,6 +406,9 @@ module.exports = {
         email: order.email,
       };
 
+     
+
+
       let orderData = {
         firstName: order.firstname,
         lastName: order.lastname,
@@ -395,6 +416,7 @@ module.exports = {
         paymentMethod: order.paymentMethod,
         productDetails: products,
         totalPrice: total,
+        totalQuantity:totalQuantity,
         shippingAddress: orderAddress,
         createdAt: new Date(),
       };
@@ -454,6 +476,37 @@ module.exports = {
 
       resolve(orders[0]);
     });
+  },
+  getOrderDetails:(orderId,userId)=>{
+    
+
+    return new Promise(async(resolve,reject)=>{
+      
+      try {
+
+        let orders = await db.orders.find({ userId: userId });
+        let orderIndex = orders[0].orders.findIndex((order) => order._id == orderId)
+        db.orders.aggregate([
+          {
+            $match:{userId:userId}
+          },
+          {
+            $unwind:"$orders"
+          },
+          {
+            $match:{'orders._id':ObjectID(orderId) }
+          }
+        ]).then((data)=>{
+          resolve(data)
+        })
+
+      } catch (error) {
+
+        console.log(error);
+      }
+
+     
+    })
   },
   getAllOrders: () => {
     return new Promise(async (resolve, reject) => {
@@ -553,7 +606,7 @@ module.exports = {
           },
           {
             $set: {
-              ["orders." + orderIndex + ".paymentStatus"]: 1,
+              ["orders." + orderIndex + ".paymentStatus"]: 0,
             },
           }
         )
@@ -591,16 +644,17 @@ module.exports = {
   updateOrderStatus: (value, orderId, prodId) => {
     let updateValue = parseInt(value);
     return new Promise(async (resolve, reject) => {
-      let order = await db.orders.find({ "orders._id": orderId });
+      let order = await db.orders.findOne({ "orders._id": orderId });
       console.log(order, "this is ordeerb line 538 cart helpers");
 
       if (order) {
-        let orderIndex = order[0].orders.findIndex(
+        let orderIndex = order.orders.findIndex(
           (order) => order._id == orderId
         );
-        let productIndex = order[0].orders[orderIndex].productDetails.findIndex(
+        let productIndex = order.orders[orderIndex].productDetails.findIndex(
           (product) => product._id == prodId
         );
+        console.log(order.orders[orderIndex],"test soorya");
 
         db.orders
           .updateOne(
@@ -619,6 +673,23 @@ module.exports = {
           )
           .then((data) => {
             console.log(data, "line 560 cart helpers");
+            if(order.orders[orderIndex].paymentMethod=='COD' && updateValue==4){
+              db.orders.updateOne(
+                {
+                  "orders._id": orderId,
+                },
+                {
+                  $set: {
+                    ["orders." + orderIndex + ".paymentStatus"]: 1,
+                  },
+                }
+              )
+              .then((data) => {
+               
+                console.log(data,'payment status update ffor cod');
+                resolve();
+              })
+            }
             resolve({ status: true });
           });
       }

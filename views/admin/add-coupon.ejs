@@ -1,0 +1,267 @@
+<div class="col-10 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title pb-5">Add new coupon</h4>
+                  <form class="form-sample">
+                    <!-- <p class="card-description">
+                      Personal info
+                    </p> -->
+                    <div class="alert alert-warning" id="errorDisplay" role="alert">
+                      This is a warning alert—check it out!
+                    </div>
+                    <div class="col">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Coupon Code</label>
+                          <div class="col-sm-9">
+                            <input name=""  id="coupenName" type="text" class="form-control" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Offer Range</label>
+                          <div class="col-sm-9">
+                            <select id="amountValidity" class="form-control">
+                              <option>2000-3000</option>
+                              <option>3000-5000</option>
+                              <option>5000-6000</option>
+                              <option>6000-8000</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Discount</label>
+                          <div class="col-sm-4">
+                            <div class="form-check">
+                              <label class="form-check-label">
+                                <input value="Percentage"  type="radio" class="form-check-input" onclick="showdPercentage()" name="discountType" id="" >
+                                Percentage
+                              </label>
+                            </div>
+                          </div>
+                          <div class="col-sm-5">
+                            <div class="form-check">
+                              <label class="form-check-label">
+                                <input  value="Amount" type="radio" class="form-check-input" onclick="showAmount()" name="discountType" id="" >
+                                Amount
+                              </label>
+                            </div>
+                          </div>
+                         
+                          
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Description</label>
+                        <div class="col-sm-9">
+                          <textarea name="" id="description" cols="45" rows="5"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                    
+               
+                   
+                    <div   class="col ">
+                      
+                      <div  class="col-md-6 discPer " hidden>
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Discount %</label>
+                          <div class="col-sm-9">
+                            <input type="text" class="form-control" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div  class="col-md-6 discAmount" hidden>
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Amount</label>
+                          <div class="col-sm-9">
+                            <input type="text" class="form-control" />
+                          </div>
+                        </div>
+                      </div>
+
+
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Max Use</label>
+                          <div class="col-sm-9">
+                            <input id="validity" type="text" class="form-control" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <button onclick="validatorCoupen()" class="btn btn-outline-primary">submit</button>
+                    </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+
+<script>
+
+function showdPercentage() {
+
+  let discA=document.querySelector('div.discAmount')
+  let discP=document.querySelector('div.discPer')
+  discP.removeAttribute('hidden')
+  discA.setAttribute('hidden','')
+}
+
+function showAmount(){
+
+  let discA=document.querySelector('div.discAmount')
+  let discP=document.querySelector('div.discPer')
+  discP.setAttribute('hidden','')
+  discA.removeAttribute('hidden')
+}
+
+function validatorCoupen(){
+    const coupenName = document.getElementById('coupenName').value
+    const amountValidity = document.getElementById('amountValidity')
+    const amountValidityValue = amountValidity.options[amountValidity.selectedIndex].text
+    const redeemTime = document.getElementById('usageMax').value
+    const validity = document.getElementById('validity').value
+    const description = document.getElementById('description').value
+    const discType = document.querySelector("input[name='discountType']:checked")
+    const discTypeValue = discType?.value
+    let discountAmount = document.getElementById('discountAmount').value
+    let discountPercentage = document.getElementById('discountPercentage').value
+
+    const amountValue = amountValidityValue.split("-")
+
+    const error = document.getElementById('errorDisplay')
+
+    let flag = 1
+
+
+    if (coupenName == "") {
+      error.innerText = "Generate coupen"
+      error.style.background = "rgb(200,0,0,0.1)"
+      error.style.width = "100%"
+      flag = 2
+    } else if (amountValidityValue == "Select an amount") {
+      error.innerText = "Please select an amount"
+      error.style.background = "rgb(200,0,0,0.1)"
+      error.style.width = "100%"
+      flag = 2
+    } else if (discType == null) {
+      error.innerText = "Select Discount type"
+      error.style.background = "rgb(200,0,0,0.1)"
+      error.style.width = "100%"
+      flag = 2
+    } else if (discountAmount == "" && discountPercentage == "") {
+      error.innerText = "Discount value is required"
+      error.style.background = "rgb(200,0,0,0.1)"
+      error.style.width = "100%"
+      flag = 2
+    } else if (!discountAmount.match(/^\d+$/) && !discountPercentage.match(/^\d+$/)) {
+      error.innerText = "Discount value should be a number"
+      error.style.background = "rgb(200,0,0,0.1)"
+      error.style.width = "100%"
+      flag = 2
+    } else if (redeemTime == "") {
+      error.innerText = "Max usage cannot be empty"
+      error.style.background = "rgb(200,0,0,0.1)"
+      error.style.width = "100%"
+      flag = 2
+    } else if (!redeemTime.match(/^\d+$/)) {
+      error.innerText = "Max usage should be a number"
+      error.style.background = "rgb(200,0,0,0.1)"
+      error.style.width = "100%"
+      flag = 2
+    } else if (redeemTime <= 0) {
+      error.innerText = "Max usage should be a greater than 0"
+      error.style.background = "rgb(200,0,0,0.1)"
+      error.style.width = "100%"
+      flag = 2
+    }
+    else if (validity == "") {
+      error.innerText = "Expiry is required"
+      error.style.background = "rgb(200,0,0,0.1)"
+      error.style.width = "100%"
+      flag = 2
+    } else if (new Date(validity) - new Date() < 0) {
+      error.innerText = "This date is already expired"
+      error.style.background = "rgb(200,0,0,0.1)"
+      error.style.width = "100%"
+      flag = 2
+    } else if (description == "") {
+      error.innerText = "Description is required"
+      error.style.background = "rgb(200,0,0,0.1)"
+      error.style.width = "100%"
+      flag = 2
+    } else {
+      if (discTypeValue == "Amount" && discountAmount > parseInt(amountValue[0])) {
+        error.innerText = "Discount value should be less than selected amount"
+        error.style.background = "rgb(200,0,0,0.1)"
+        error.style.width = "100%"
+        flag = 2
+      } else if (discountPercentage > 100 && discTypeValue == "Percentage") {
+        error.innerText = "Discount percentage should be less than 100"
+        error.style.background = "rgb(200,0,0,0.1)"
+        error.style.width = "100%"
+        flag = 2
+      } else {
+        error.innerText = "Coupen Sucess"
+        error.style.background = "rgb(53,200,0,0.1)"
+        error.style.width = "100%"
+      }
+    }
+
+    if (flag == 1) {
+      sumbitCoupon(coupenName, amountValidityValue, discTypeValue, discountAmount, discountPercentage,redeemTime, new Date(validity), description)
+    }
+  }
+
+  function sumbitCoupon(coupen,amountValidityValue,amountValue, discountType, discountAmount, discountPercentage,redeemTime,expiryDate, description) {
+
+    $.ajax({
+      url: '/admin/addcoupon',
+      method: 'POST',
+      data: {
+        coupen: coupen,
+        amountValidity:amountValidityValue,
+        amount: amountValue,
+        discountType: discountType,
+        discountAmount: discountAmount,
+        redeemTime:redeemTime,
+        discountPercentage: discountPercentage,
+        validity: expiryDate,
+        description: description
+      },
+      success: (response) => {
+        if (response.status == true) {
+          console.log("success");
+          location.href = "/admin_panel/coupen_management"
+        }
+      }
+
+    })
+  }
+
+  function generateCoupen() {
+    console.log("hey");
+    $.ajax({
+      url: '/admin_panel/coupen_management/generate_coupen',
+      method: 'get',
+      success: (response) => {
+        console.log(response.coupenCode[0]);
+        document.getElementById('coupenName').value = response.coupenCode[0]
+      }
+    }).then(() => {
+
+    })
+  }
+
+
+
+</script>

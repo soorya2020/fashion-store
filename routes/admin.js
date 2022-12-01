@@ -57,7 +57,12 @@ const {
 const {
   viewAllOrders,
   viewOrderDetails,
-  updateOrderStatus
+  updateOrderStatus,
+  getSalesReport,
+  revenueGraph,
+  coupon,
+  addCoupon,
+  addCouponPost
 }=require('../controllers/orderManagement')
 const layout = 'admin-layout'
 
@@ -143,6 +148,15 @@ router.get('/orders',verifyAdminLogin,viewAllOrders)
 router.get("/single-order/:id",verifyAdminLogin,viewOrderDetails)
 
 router.post('/update-order-status',verifyAdminLogin,updateOrderStatus)
+
+router.get('/sales-report',getSalesReport)
+
+router.get('/chartGraph',revenueGraph)
+
+router.get('/coupon',verifyAdminLogin,coupon)
+
+router.get('/add-coupon',verifyAdminLogin,addCoupon)
+router.post('/add-coupon',verifyAdminLogin,addCouponPost)
 
 
 

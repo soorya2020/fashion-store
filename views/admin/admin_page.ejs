@@ -250,10 +250,10 @@
         <div class="col-md-6 grid-margin stretch-card">
           <div class="card">
             <div class="card-body">
-              <p class="card-title">Order Details</p>
-              <p class="font-weight-500">The total number of sessions within the date range. It is the period time a
-                user is actively engaged with your website, page or app, etc</p>
-              <div class="d-flex flex-wrap mb-5">
+              <p class="card-title">Monthly Revenue</p>
+              <!-- <p class="font-weight-500">The total number of sessions within the date range. It is the period time a
+                user is actively engaged with your website, page or app, etc</p> -->
+              <!-- <div class="d-flex flex-wrap mb-5">
                 <div class="mr-5 mt-3">
                   <p class="text-muted">Order value</p>
                   <h3 class="text-primary fs-30 font-weight-medium">12.3k</h3>
@@ -270,8 +270,9 @@
                   <p class="text-muted">Downloads</p>
                   <h3 class="text-primary fs-30 font-weight-medium">34040</h3>
                 </div>
-              </div>
+              </div> -->
               <canvas id="order-chart"></canvas>
+              
             </div>
           </div>
         </div>
@@ -285,7 +286,9 @@
               <p class="font-weight-500">The total number of sessions within the date range. It is the period time a
                 user is actively engaged with your website, page or app, etc</p>
               <div id="sales-legend" class="chartjs-legend mt-4 mb-2"></div>
-              <canvas id="sales-chart"></canvas>
+              <!-- <canvas id="sales-chart"></canvas> -->
+              <canvas id="myChart" style="width:500px !important;max-width:600px !i"></canvas>
+
             </div>
           </div>
         </div>
@@ -900,3 +903,30 @@
   <!-- main-panel ends -->
   </div>
   <!-- page-body-wrapper ends -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  <script>
+    var xValues = [1,'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    
+    new Chart("myChart", {
+      type: "line",
+      data: {
+        labels: xValues,
+        datasets: [{ 
+          data: [860,1140,1060,1060,1070,1110,1330,2210,7830,2478],
+          borderColor: "red",
+          fill: false
+        }, { 
+          data: [1600,1700,1700,1900,2000,2700,4000,5000,6000,7000],
+          borderColor: "green",
+          fill: false
+        }, { 
+          data: [300,700,2000,5000,6000,4000,2000,1000,200,100],
+          borderColor: "blue",
+          fill: false
+        }]
+      },
+      options: {
+        legend: {display: false}
+      }
+    });
+    </script>

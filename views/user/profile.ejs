@@ -1,3 +1,98 @@
+<style>
+ 
+
+.wallet-container {
+	background-color: #fff;
+		width: 320px;
+		color: #fff;
+		font-size: 15px;
+		padding: 20px 20px 0;
+		top: 55%;
+		left: 50%;
+		transform: translate(-50%,-50%);
+		position: absolute;
+  
+  
+}
+
+.page-title {
+	text-align: left;
+}
+
+.fa-user {
+	float: right;
+}
+
+.fa-align-left {
+	margin-right: 15px;
+}
+
+.amount-box img {
+	width: 50px;
+}
+
+.amount {
+	font-size: 35px;
+}
+
+.amount-box p {
+	margin-top: 10px;
+	margin-bottom: -10px;
+}
+
+.btn-group {
+	margin: 20px 0;
+}
+
+.btn-group .btn {
+	margin: 8px;
+	border-radius: 20px !important;
+	font-size: 12px;
+}
+
+.txn-history {
+	text-align: left;
+}
+
+.txn-list {
+	background-color: #fff;
+	padding: 12px 10px; 
+	color: #777;
+	font-size: 14px;
+	margin: 7px 0;
+}
+
+.debit-amount {
+	color: red;
+	float: right;
+}
+
+.credit-amount {
+	color: green;
+	float: right;
+
+}
+
+.footer-menu {
+	margin: 20px -20px 0;
+	bottom: 0;
+	border-top: 1px solid #ccc;
+	padding: 10px 10px 0;
+}
+
+.footer-menu p {
+	font-size: 12px;
+}
+
+@media screen and (max-width: 800px){
+  .wallet-container {
+    height: 115%;
+    bottom: 20px;
+    margin-top: 100px;
+  }
+  
+}
+</style>
 <body>
   <div class="page-wrapper">
 
@@ -23,7 +118,7 @@
                     <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">Downloads</a>
+                    <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">Wallet</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
@@ -52,8 +147,28 @@
                   </div><!-- .End .tab-pane -->
 
                   <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
-                    <p>No downloads available yet.</p>
-                    <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+                    <div class="wallet-container text-center">
+                      <p class="page-title"><i class="fa fa-align-left"></i>My E-wallet<i class="fa fa-user"></i></p>
+                  
+                      <div class="amount-box text-center">
+                        <img src="https://lh3.googleusercontent.com/ohLHGNvMvQjOcmRpL4rjS3YQlcpO0D_80jJpJ-QA7-fQln9p3n7BAnqu3mxQ6kI4Sw" alt="wallet">
+                        <p>Total Balance</p>
+                        <% function add(accumulator, a) {
+                          return accumulator + a;
+                        } %> 
+                        <p class="amount">$<%= user.wallet.reduce(add, 0)  %> </p>
+                      </div>
+                  
+                      <div class="btn-group text-center">
+                        <button type="button" class="btn btn-outline-light">Add Money</button>
+                        <button type="button" class="btn btn-outline-light">Widthdraw</button>
+                        </div>
+                  
+                        
+                  
+                        
+                  </div>
+                  
                   </div><!-- .End .tab-pane -->
 
                   <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
@@ -614,8 +729,9 @@
       const currentPassword = document.getElementById('currentpassword').value
       const password = document.getElementById('password').value
       const password2 = document.getElementById('password2').value
-	  const mobile=document.getElementById('mobile3').value
+	    const mobile=document.getElementById('mobile3').value
 
+      
 	  console.log(mobile,"this is mobile");
       let flag = 2
       if (password != password2) {
@@ -630,6 +746,12 @@
         })
         flag = 1
       }
+    
+      if(password2.lenght<5){
+        Swal.fire('password must be atlest 5 characters')
+        flag = 1
+      }
+      
 
       if (flag == 2) {
 
@@ -641,7 +763,7 @@
             email: email,
             password: currentPassword,
             newPassword: password2,
-			mobile:mobile
+			      mobile:mobile
 
           },
 

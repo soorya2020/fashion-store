@@ -172,7 +172,7 @@
                     <% cartProducts.forEach(product=>{ %>
                     <tr>
 
-                      <td><img style="width:50px ;" src="product-images/<%=product.product.img[0]  %> " alt="image" srcset=""></td>
+                      <td><img style="width:50px ;" src="product-images/<%=product?.product?.img[0]  %> " alt="image" srcset=""></td>
 
                       <td>X <%= product?.quantity %> </td>
                       <td><%= product?.product?.price*product.quantity %> </td>
