@@ -1,48 +1,48 @@
 const db = require("../model/connection");
 const { response } = require("../app");
 
-module.exports={
-    monthlySales:()=>{
-        let date=new Date()
-        let thisMonth= date.getMonth()
+module.exports = {
+    monthlySales: () => {
+        let date = new Date()
+        let thisMonth = date.getMonth()
 
-        return new Promise((resolve , reject)=>{
+        return new Promise((resolve, reject) => {
             try {
                 db.orders.aggregate([
                     {
-                        $unwind:"$orders"
+                        $unwind: "$orders"
                     },
                     {
-                        $unwind:'$orders.productDetails'
+                        $unwind: '$orders.productDetails'
                     },
                     {
-                        $match:{'orders.productDetails.orderStatus':4}
+                        $match: { 'orders.productDetails.orderStatus': 4 }
                     },
                     {
-                        $match:{
-                            $expr:{
-                                $eq:[
+                        $match: {
+                            $expr: {
+                                $eq: [
                                     {
-                                        $month:'$orders.createdAt'
+                                        $month: '$orders.createdAt'
                                     },
-                                    thisMonth+1
+                                    thisMonth + 1
                                 ]
                             }
                         }
                     },
                     {
-                        $group:{
-                            _id:null,
-                            total:{$sum:'$orders.totalPrice'},
-                            orders:{$sum:'$orders.productDetails.quantity'},
+                        $group: {
+                            _id: null,
+                            total: { $sum: '$orders.totalPrice' },
+                            orders: { $sum: '$orders.productDetails.quantity' },
                             // totalOrders:{$sum:"$orders.totalQuantity"},
-                            count:{$sum:1}
-                            
-                            
+                            count: { $sum: 1 }
+
+
                         }
                     }
-                ]).then((data)=>{
-                  
+                ]).then((data) => {
+
                     resolve(data)
                 })
             } catch (error) {
@@ -51,113 +51,129 @@ module.exports={
         })
     },
 
-    monthWiseSales:()=>{
-     
-        return new Promise(async(resolve,reject)=>{
+    monthWiseSales: () => {
+
+        return new Promise(async (resolve, reject) => {
             try {
-                let data=[]
-                for(let i=0;i<12;i++){
-                     await db.orders.aggregate([
+                let data = []
+                for (let i = 0; i < 12; i++) {
+                    await db.orders.aggregate([
                         {
-                            $unwind:"$orders"
+                            $unwind: "$orders"
                         },
                         {
-                            $unwind:'$orders.productDetails'
+                            $unwind: '$orders.productDetails'
                         },
                         {
-                            $match:{'orders.productDetails.orderStatus':4}
+                            $match: { 'orders.productDetails.orderStatus': 4 }
                         },
                         {
-                            $match:{
-                                $expr:{
-                                    $eq:[
+                            $match: {
+                                $expr: {
+                                    $eq: [
                                         {
-                                            $month:'$orders.createdAt'
+                                            $month: '$orders.createdAt'
                                         },
-                                        i+1
+                                        i + 1
                                     ]
                                 }
                             }
                         },
                         {
-                            $group:{
-                                _id:null,
-                                total:{$sum:'$orders.totalPrice'},
-                                orders:{$sum:'$orders.productDetails.quantity'},
-                                count:{$sum:1} 
+                            $group: {
+                                _id: null,
+                                total: { $sum: '$orders.totalPrice' },
+                                orders: { $sum: '$orders.productDetails.quantity' },
+                                count: { $sum: 1 }
                             }
-                        }
-                    ]).then((monthlyData)=>{
-                      
-                        data[i+1]=monthlyData[0]
-                       
+                        },
+
+                    ]).then((monthlyData) => {
+
+                        data[i + 1] = monthlyData[0]
+
                     })
-                    
+
 
                 }
-              
-                for(let j=0;j<12;j++){
-                    
-                    if(data[j+1]==undefined){
-                        data[j+1]={
-                            _id:null,
-                            total:0,
-                            orders:0,
-                            count:0
+
+                for (let j = 0; j < 12; j++) {
+
+                    if (data[j + 1] == undefined) {
+                        data[j + 1] = {
+                            _id: null,
+                            total: 0,
+                            orders: 0,
+                            count: 0
                         }
-                    }else{
+                    } else {
                         data[j]
                     }
                 }
-             
+
                 resolve(data)
             } catch (error) {
                 console.log(error);
             }
         })
     },
-    getRevenueByDay:()=>{
-        
+    getRevenueByDay: () => {
+
         try {
-            let date=new Date()
-            
-            let thismonth=date.getMonth()
-            let month=thismonth+1
+            let date = new Date()
+
+            let thismonth = date.getMonth()
+            let month = thismonth + 1
             let year = date.getFullYear()
 
-            return new Promise((resolve,reject)=>{
-             
+            return new Promise((resolve, reject) => {
+
                 db.orders.aggregate([
                     {
-                        $unwind:"$orders"
+                        $unwind: "$orders"
                     },
                     {
-                        $unwind:'$orders.productDetails'
+                        $unwind: '$orders.productDetails'
                     },
                     {
-                        $match:{'orders.createdAt':{$gt:new Date(`${year}-${month}-01`),$lt:new Date(`${year}-${month}-31`)}}
+                        $match: { 'orders.createdAt': {
+                             $gt: new Date(`${year}-${month}-01`), 
+                             $lt: new Date(`${year}-${month}-31`) 
+                            } }
                     },
                     {
-                        $match:{'orders.productDetails.orderStatus':4}
+                        $match: { 'orders.productDetails.orderStatus': 4 }
                     },
                     {
-                        $group:{
-                            _id:{'$dayOfMonth':'$orders.createdAt'},
-                            totalRevenue:{$sum:{$multiply:['$orders.productDetails.productsPrice','$orders.productDetails.quantity']}},
-                            orders:{$sum:1},
-                            totalQuantity:{$first:'$orders.totalQuantity'}
+                        $group: {
+                            _id: { '$dayOfMonth': '$orders.createdAt' },
+                            totalRevenue: { $sum: { $multiply: ['$orders.productDetails.productsPrice', '$orders.productDetails.quantity'] } },
+                            orders: { $sum: 1 },
+                            totalQuantity: { $first: '$orders.totalQuantity' }
                         }
                     },
                     {
-                        $sort:{
+                        $sort: {
                             '_id': 1
                         }
                     }
 
-                ]).then((data)=>{
-                    console.log(data,'this is server');
+                ]).then((data) => {
+                    // for(let i=0;i<=data.length;i++){
+                    //     if(data[i]._id!=i+1){
+                    //         data[i]={
+                    //             _id:i+1,
+                    //             totalRevenue:data[i].totalRevenue,
+                    //             orders:data[i].orders,
+                    //             totalQuantity:data[i].totalQuantity
+                    //         }
+                    //     }else{
+                            
+                    //     }
+                    // }
+                    
                     resolve(data)
-                }).catch((e)=>{
+                }).catch((e) => {
                     console.log('error in catch');
                 })
             })
@@ -165,48 +181,48 @@ module.exports={
             console.log(error);
         }
     },
-    getRevenueByear:()=>{
-        
+    getRevenueByear: () => {
+
         try {
-            let date=new Date()
-            
-            let thismonth=date.getMonth()
-            let month=thismonth+1
+            let date = new Date()
+
+            let thismonth = date.getMonth()
+            let month = thismonth + 1
             let year = date.getFullYear()
 
-            return new Promise((resolve,reject)=>{
-             
+            return new Promise((resolve, reject) => {
+
                 db.orders.aggregate([
                     {
-                        $unwind:"$orders"
+                        $unwind: "$orders"
                     },
                     {
-                        $unwind:'$orders.productDetails'
+                        $unwind: '$orders.productDetails'
                     },
                     {
-                        $match:{'orders.createdAt':{$gt:new Date(`${year-5}-${month}-01`),$lt:new Date(`${year}-${month}-31`)}}
+                        $match: { 'orders.createdAt': { $gt: new Date(`${year - 5}-${month}-01`), $lt: new Date(`${year}-${month}-31`) } }
                     },
                     {
-                        $match:{'orders.productDetails.orderStatus':4}
+                        $match: { 'orders.productDetails.orderStatus': 4 }
                     },
                     {
-                        $group:{
-                            _id:{'$year':'$orders.createdAt'},
-                            totalRevenue:{$sum:{$multiply:['$orders.productDetails.productsPrice','$orders.productDetails.quantity']}},
-                            orders:{$sum:1},
-                            totalQuantity:{$first:'$orders.totalQuantity'}
+                        $group: {
+                            _id: { '$year': '$orders.createdAt' },
+                            totalRevenue: { $sum: { $multiply: ['$orders.productDetails.productsPrice', '$orders.productDetails.quantity'] } },
+                            orders: { $sum: 1 },
+                            totalQuantity: { $first: '$orders.totalQuantity' }
                         }
                     },
                     {
-                        $sort:{
+                        $sort: {
                             '_id': 1
                         }
                     }
 
-                ]).then((data)=>{
-               
+                ]).then((data) => {
+
                     resolve(data)
-                }).catch((e)=>{
+                }).catch((e) => {
                     console.log('error in catch');
                 })
             })
@@ -214,5 +230,5 @@ module.exports={
             console.log(error);
         }
     }
-    
+
 }

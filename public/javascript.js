@@ -47,7 +47,11 @@ function addToCart(prodId,stock){
                                 $('#cart-count').html(count)
                                 toast()                       
                         }else{
-                            alert('error occured')
+                            Swal.fire(
+                                'Please login',
+                                'Register or login to make shoping better?',
+                                'question'
+                              )
                         }
                     }
                 })

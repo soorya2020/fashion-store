@@ -1,143 +1,148 @@
-const db = require('../model/connection')
-const { response } = require('../app')
-const  bcrypt = require('bcrypt')
-const { ObjectID } = require('bson')
-const data=require('../config/adminpass')
+const db = require("../model/connection");
+const { response } = require("../app");
+const bcrypt = require("bcrypt");
+const { ObjectID } = require("bson");
+const data = require("../config/adminpass");
 
+module.exports = {
+  doLogin: (userData) => {
+    return new Promise(async (resolve, reject) => {
+      //   data.password = await bcrypt.hash(userData.password,10)
+      //   console.log(data.password);
+      if (data.email == userData.email) {
+        bcrypt.compare(userData.password, data.password).then((loginTrue) => {
+          let response = {};
+          if (loginTrue) {
+            console.log("login successful");
+            response.admin = data;
+            response.status = true;
+            resolve(response);
+          } else {
+            console.log("login failed");
+            resolve({ status: false });
+          }
+        });
+      } else {
+        console.log("Login failed email");
+        resolve({ status: false });
+      }
+    });
+  },
+  addUser: (userData) => {
+    return new Promise(async (resolve, reject) => {
+      userData.password = await bcrypt.hash(userData.password, 10);
+      let data = await db.users(userData);
+      data.save();
+      resolve(data._id);
+    });
+  },
+  getAllUsers: () => {
+    return new Promise(async (resolve, reject) => {
+      let user = await db.users.find({});
+      resolve(user);
+    });
+  },
 
-module.exports={
-    doLogin:(userData)=>{
-        return new Promise(async(resolve, reject) => {
-         
-         //   data.password = await bcrypt.hash(userData.password,10)
-         //   console.log(data.password);
-           if(data.email == userData.email){
-              bcrypt.compare(userData.password, data.password).then((loginTrue)=>{
-                 let response={}
-                 if(loginTrue){
-                    console.log('login successful');
-                    response.admin=data;
-                    response.status=true;
-                    resolve(response);
-                 }else{
-                    console.log("login failed");
-                    resolve({status:false});
-                 }
-              })
-           }else{
-              console.log('Login failed email');
-               resolve({status:false});
-           }
-           
-        })
-   },
-    addUser:(userData)=>{
-        
-        return new Promise(async(resolve,reject)=>{
-            userData.password=await bcrypt.hash(userData.password,10)
-            let data=await db.users(userData)
-            data.save()
-            resolve(data._id)
-            })
-           
-        
-    },
-    getAllUsers:()=>{
-    return new Promise(async(resolve,reject)=>{
-        let user=await db.users.find({})
-        resolve(user)
-    })
-},
-
-
-blockUser:(userId)=>{
-    return new Promise(async(resolve,reject)=>{
-        try{
-             db.users.updateOne({_id:userId},{
-                $set:{
-                    status:false
-                }
-            }).then((data)=>{
-                resolve(data)
-            })
-            
-        } catch(error){
-            console.log(error);
-        }
-    })
-},
-
-unBlockUser:(userId)=>{
-    return new Promise(async(resolve,reject)=>{
-        try{
-            await db.users.updateOne({_id:userId},{
-                $set:{
-                    status:true
-                }
-            }).then((data)=>{
-                resolve(data)
-            })
-            
-        } catch(error){
-            console.log(error);
-        }
-    })
-},
-
-getAllCatagories:()=>{
-    return new Promise((resolve,reject)=>{
-        let categories=db.categories.find({})
-        resolve(categories)
-    })
-},
-
-addCategory:(data)=>{
-        
-    return new Promise(async(resolve,reject)=>{
-        db.categories.findOne({name:data.name}).then(async(category)=>{
-            let response={}
-            console.log(category);
-            if(category==null){
-                let categories=await db.categories(data)
-                categories.save()
-                response.data=categories
-                response.status=true
-                resolve(response)
-            }else{
-                resolve({status:false})
+  blockUser: (userId) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        db.users
+          .updateOne(
+            { _id: userId },
+            {
+              $set: {
+                status: false,
+              },
             }
-        })
-    })
-       
-},
+          )
+          .then((data) => {
+            resolve(data);
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  },
 
-getCategoryDetails:(categoryId)=>{
-    return new Promise((resolve,reject)=>{
-        db.categories.findOne({_id:categoryId}).then((category)=>{
-            resolve(category)
-        })
-    })
-},
-
-editCategory:(categoryId,data)=>{
-    return new Promise(async(resolve,reject)=>{
-       await db.categories.updateOne({_id:categoryId},{
-            $set:{
-                name:data.name
+  unBlockUser: (userId) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await db.users
+          .updateOne(
+            { _id: userId },
+            {
+              $set: {
+                status: true,
+              },
             }
-        })
-        resolve(data)
-    })
-},
+          )
+          .then((data) => {
+            resolve(data);
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  },
 
-deleteCategory:(categoryId)=>{
-    return new Promise((resolve,reject)=>{
-        db.categories.findByIdAndDelete({_id:categoryId}).then((data)=>{
-            resolve()
-        })
-    })
-},
+  getAllCatagories: () => {
+    return new Promise((resolve, reject) => {
+      let categories = db.categories.find({});
+      resolve(categories);
+    });
+  },
 
+  addCategory: async (data) => {
+    try {
+      let userData = data.name.toLowerCase();
 
-}
+      const category = await db.categories.findOne({ name: userData });
 
+      if (!category) {
+
+        const categories = await db.categories({ name: userData });
+
+        await categories.save();
+        
+        return {
+            data:categories,
+            status:true
+        };
+
+      } else return { status: false };
+ 
+    } catch (error) {
+      throw error;
+    };
+  },
+
+  getCategoryDetails: (categoryId) => {
+    return new Promise((resolve, reject) => {
+      db.categories.findOne({ _id: categoryId }).then((category) => {
+        resolve(category);
+      });
+    });
+  },
+
+  editCategory: (categoryId, data) => {
+    return new Promise(async (resolve, reject) => {
+      await db.categories.updateOne(
+        { _id: categoryId },
+        {
+          $set: {
+            name: data.name,
+          },
+        }
+      );
+      resolve(data);
+    });
+  },
+
+  deleteCategory: (categoryId) => {
+    return new Promise((resolve, reject) => {
+      db.categories.findByIdAndDelete({ _id: categoryId }).then((data) => {
+        resolve();
+      });
+    });
+  },
+};

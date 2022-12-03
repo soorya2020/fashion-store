@@ -12,7 +12,7 @@ const layout = 'admin-layout'
 module.exports={
     viewAllCategories:(req,res)=>{
         adminHelpers.getAllCatagories().then((category)=>{
-          console.log(category);
+        
           res.render('admin/categories',{category,layout})
         })
       },
@@ -30,6 +30,8 @@ module.exports={
           }else{
             res.send({value:'failed'})
           }
+        }).catch((error)=>{
+          res.send(error)
         })
       },
     

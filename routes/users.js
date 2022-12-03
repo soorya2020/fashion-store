@@ -84,8 +84,8 @@ router.get("/otp-login", getOtp);
 router.get("/verify", verifyOtp);
 
 //shop
-router.get("/shop", verifyLogin, shop);
-router.get("/single-product/:id", verifyLogin, cartCount, singleProduct);
+router.get("/shop", shop);
+router.get("/single-product/:id", cartCount, singleProduct);
 
 router.get("/about-us", (req, res) => {
   res.send("coming soon");

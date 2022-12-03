@@ -11,16 +11,16 @@
         <div class="card-header">
           <ul class="nav nav-tabs nav-tabs-neutral justify-content-center" role="tablist" data-background-color="orange">
               <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#messages1" role="tab">Daily</a>
+                <a class="nav-link " data-toggle="tab" href="#daily" role="tab">Daily</a>
               </li>
             <!-- <li class="nav-item">
               <a class="nav-link active"  data-toggle="tab" href="#home1" role="tab">Monthly  </a>
             </li> -->
             <li class="nav-item">
-              <a class="nav-link" data-toggle="tab" href="#profile1" role="tab">Monthly</a>
+              <a class="nav-link" data-toggle="tab" href="#monthly" role="tab">Monthly</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-toggle="tab" href="#settings1" role="tab">Yearly</a>
+              <a class="nav-link" data-toggle="tab" href="#yearly" role="tab">Yearly</a>
             </li>
           </ul>
         </div>
@@ -49,11 +49,45 @@
                     </tbody>
                    
                   </table> -->
-                  <button class="btn btn-primary mt-5" onclick="generatePdf('<%= monthlyData.total%>','<%= monthlyData.orders%>','<%= monthlyData.count%>')">Download PDF</button>
+                 <p>select any </p>
             </div>
-            <div class="tab-pane" id="profile1" role="tabpanel">
+
+            <div class="tab-pane" id="daily" role="tabpanel">
+                <table id="daily-table" class="table  table-striped">
+                    <% const dateToFullDate=(date)=>{
+                        let mm=parseInt(new Date().getMonth())+1
+                        return `${date}-${mm}-${new Date().getFullYear()}`
+                    } %> 
+
+                 
+                    <thead> 
+                       
+                      <tr>
+                        <th scope="col">DAY</th>
+                        <th scope="col">REVENUE</th>
+                        <th scope="col">NO OF PRODUCRS SOLD</th>
+                        <th scope="col">NO OF ORDERS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <% dailyWise.forEach((data,index)=>{  %> 
+                      <tr>
+                        <th scope="row"><%= dateToFullDate(data._id)   %> </th>
+                        <td>Rs.<%= data.totalRevenue %></td>
+                        <td><%=data.orders  %> </td>
+                        <td><%= data.totalQuantity  %> </td>
+                      </tr>
+                      <% }) %> 
+                      
+                    </tbody>
+                   
+                  </table>
+                  <button class="btn btn-primary mt-5" onclick="dailyReport()">Download PDF</button>
+            </div>
+
+            <div class="tab-pane" id="monthly" role="tabpanel">
              
-                <table id="my-table" class="table table-striped">
+                <table id="monthly-table" class="table table-striped">
                     <thead><% const mothToMonth=(mm)=>{
                          var month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                          return month[mm-1]
@@ -81,43 +115,12 @@
                     </tbody>
                    
                   </table>
-                  <button class="btn btn-primary mt-5" onclick="generateAllMonthPdf()">Download PDF</button>
+                  <button class="btn btn-primary mt-5" onclick="monthlyReport()">Download PDF</button>
             </div>
-            <div class="tab-pane" id="messages1" role="tabpanel">
-                <table id="my-table" class="table table-striped">
-                    <% const dateToFullDate=(date)=>{
-                        let mm=parseInt(new Date().getMonth())+1
-                        return `${date}-${mm}-${new Date().getFullYear()}`
-                    } %> 
-
-                    Revenue by day
-                    <thead> 
-                       
-                      <tr>
-                        <th scope="col">DAY</th>
-                        <th scope="col">REVENUE</th>
-                        <th scope="col">NO OF PRODUCRS SOLD</th>
-                        <th scope="col">NO OF ORDERS</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                        <% dailyWise.forEach((data,index)=>{  %> 
-                      <tr>
-                        <th scope="row"><%= dateToFullDate(data._id)   %> </th>
-                        <td>Rs.<%= data.totalRevenue %></td>
-                        <td><%=data.orders  %> </td>
-                        <td><%= data.totalQuantity  %> </td>
-                      </tr>
-                      <% }) %> 
-                      
-                    </tbody>
-                   
-                  </table>
-                  <button class="btn btn-primary mt-5" onclick="generateAllMonthPdf()">Download PDF</button>
-            </div>
-            <div class="tab-pane" id="settings1" role="tabpanel">
-              <div class="tab-pane" id="messages1" role="tabpanel">
-                <table id="my-table" class="table table-striped">
+            
+            <div class="tab-pane" id="yearly" role="tabpanel">
+              <div class="tab-pane active "  id="messages1" role="tabpanel">
+                <table id="yearly-table" class="table table-striped">
                    
                     <% const dateToFullYear=(date)=>{
                         let mm=parseInt(new Date().getMonth())+1
@@ -146,9 +149,10 @@
                       
                     </tbody>
                    
-                  </table>
-                  <button class="btn btn-primary mt-5" onclick="generateAllMonthPdf()">Download PDF</button>
+                    </table>
+                    <button class="btn btn-primary mt-5" onclick="yearlyReport()">Download PDF</button>
             </div>
+
             </div>
           </div>
         </div>
@@ -167,35 +171,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script>
 <script>
-    function generatePdf(rev,noOfProd,noOfOrders){
-
-        // const doc = new jsPDF()
-        
-        // // It can parse html:
-        // // <table id="my-table"><!-- ... --></table>
-
-        
-        // // Or use javascript directly:
-        // doc.autoTable({
-        //   head: [['Revenue', 'No of Products Sold', 'no of orders']],
-        //   body: [
-        //     [rev, noOfOrders, noOfOrders],
-           
-        //     // ...
-        //   ],
-        // })
-        
-        // doc.save('table.pdf')
+    function monthlyReport(){
         const doc = new jsPDF()
-        doc.autoTable({html:'#my-table1'})
-        doc.save('this month report')
+        doc.autoTable({html:'#monthly-table'})
+        doc.save('MonthlyReport')
     }
 
 
-    function generateAllMonthPdf(){
+    function dailyReport(){
         const doc = new jsPDF()
-        doc.autoTable({html:'#my-table'})
-        doc.save('allMonthReport')
+        doc.autoTable({html:'#daily-table'})
+        doc.save('dailyReport')
+    }
+
+     function yearlyReport(){
+        const doc = new jsPDF()
+        doc.autoTable({html:'#yearly-table'})
+        doc.save('yeatlyReport')
     }
 
 

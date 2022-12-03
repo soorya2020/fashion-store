@@ -32,9 +32,7 @@ module.exports = {
       if (!response.status) {
         res.send({ value: "failed" });
       } else {
-        req.session.loggedIn = true; //user can view product after signup
-        req.session.user=response.user
-        res.locals.loggedIn = true;
+        // req.session.loggedIn = true; 
         res.send({ value: "success" });
       }
     });

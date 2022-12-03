@@ -271,7 +271,7 @@
                   <h3 class="text-primary fs-30 font-weight-medium">34040</h3>
                 </div>
               </div> -->
-              <canvas id="order-chart"></canvas>
+              <canvas id="monthly-sales-chart"></canvas>
               
             </div>
           </div>
@@ -283,11 +283,56 @@
                 <p class="card-title">Sales Report</p>
                 <a href="#" class="text-info">View all</a>
               </div>
-              <p class="font-weight-500">The total number of sessions within the date range. It is the period time a
-                user is actively engaged with your website, page or app, etc</p>
+             
               <div id="sales-legend" class="chartjs-legend mt-4 mb-2"></div>
-              <!-- <canvas id="sales-chart"></canvas> -->
-              <canvas id="myChart" style="width:500px !important;max-width:600px !i"></canvas>
+          
+              <canvas id="daily-sales-chart"></canvas>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <p class="card-title">Monthly Revenue</p>
+              <!-- <p class="font-weight-500">The total number of sessions within the date range. It is the period time a
+                user is actively engaged with your website, page or app, etc</p> -->
+              <!-- <div class="d-flex flex-wrap mb-5">
+                <div class="mr-5 mt-3">
+                  <p class="text-muted">Order value</p>
+                  <h3 class="text-primary fs-30 font-weight-medium">12.3k</h3>
+                </div>
+                <div class="mr-5 mt-3">
+                  <p class="text-muted">Orders</p>
+                  <h3 class="text-primary fs-30 font-weight-medium">14k</h3>
+                </div>
+                <div class="mr-5 mt-3">
+                  <p class="text-muted">Users</p>
+                  <h3 class="text-primary fs-30 font-weight-medium">71.56%</h3>
+                </div>
+                <div class="mt-3">
+                  <p class="text-muted">Downloads</p>
+                  <h3 class="text-primary fs-30 font-weight-medium">34040</h3>
+                </div>
+              </div> -->
+              <canvas id="yearly-sales-chart"></canvas>
+              
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <p class="card-title">Sales Report</p>
+                <a href="#" class="text-info">View all</a>
+              </div>
+             
+              <div id="sales-legend" class="chartjs-legend mt-4 mb-2"></div>
+          
+              <canvas id="pi-sales-chart"></canvas>
 
             </div>
           </div>
@@ -905,28 +950,136 @@
   <!-- page-body-wrapper ends -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
   <script>
-    var xValues = [1,'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    (()=>{
+      
+      fetch('/admin/chartGraph',{
+        method:'GET',
+            Headers:{
+              'Content-Type':'application/json'
+            }
+          })
+          .then((res)=>res.json())
+          .then((res)=>{
+            let price=res.priceStat
+            let daily=res.daily
+            let year=res.year
+
+            let dailyArr=[]
+            for(let i=1;i<=30;i++){
+              for(let j=0;j<=30;j++){
+                if(daily[j]?._id==i){
+                  dailyArr[i]=daily[j]?.totalRevenue
+                  break
+                }else{
+                  dailyArr[i]=0
+                }
+              }
+            }
+            console.log(daily,dailyArr,'yearly data');
+            
+            // [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
+            var xValues = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            new Chart("daily-sales-chart", {
+              type: "line",
+              data: {
+                labels: xValues,
+                datasets: [{ 
+                  data: [price[1].total, price[2].total, price[3].total, price[4].total, price[5].total, price[6].total, price[7].total, price[8].total, price[9].total, price[10].total, price[11].total, price[12].total],
+                  borderColor: "red",
+                  fill: false
+                }]
+              },
+              options: {
+                legend: {display: false}
+              }
+            });
+            
+         
+
+            
+            
+          
+          
+          var xValues = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
+     
+          new Chart("monthly-sales-chart", {
+            type: "line",
+            data: {
+              labels: xValues,
+              datasets: [ { 
+                data: [dailyArr[1],dailyArr[2],dailyArr[3],dailyArr[4],dailyArr[5],dailyArr[6],dailyArr[7],dailyArr[8],dailyArr[9],dailyArr[10],dailyArr[11],dailyArr[12],dailyArr[13],dailyArr[14],dailyArr[15],dailyArr[16],dailyArr[17],dailyArr[18],dailyArr[19],dailyArr[20],dailyArr[21],dailyArr[22],dailyArr[23],dailyArr[24],dailyArr[25],dailyArr[26],dailyArr[27],dailyArr[28],dailyArr[29],dailyArr[30],dailyArr[31]],
+                borderColor: "blue",
+                fill: false
+              }]
+            },
+            options: {
+              legend: {display: false}
+            }
+          });
+        
+
+
+          var xValues = [year[0]._id,year[1]._id,year[2]._id,year[3]._id,year[4]._id];
+
+            new Chart("yearly-sales-chart", {
+              type: "bar",
+              data: {
+                labels: xValues,
+                datasets: [{
+                  data: [year[0].totalRevenue,year[1].totalRevenue,year[2].totalRevenue,year[3].totalRevenue,year[4].totalRevenue],
+                  borderColor: "green",
+                  fill: false
+                }]
+              },
+              options: {
+                legend: {display: false}
+              }
+            });
+
+
+            var xValues = ["Italy", "France", "Spain", "USA", "Argentina"];
+                var yValues = [55, 49, 44, 24, 15];
+                var barColors = [
+                  "#b91d47",
+                  "#00aba9",
+                  "#2b5797",
+                  "#e8c3b9",
+                  "#1e7145"
+                ];
+
+                new Chart("pi-sales-chart", {
+                  type: "pie",
+                  data: {
+                    labels: xValues,
+                    datasets: [{
+                      backgroundColor: barColors,
+                      data: yValues
+                    }]
+                  },
+                  options: {
+                    title: {
+                      display: true,
+                      text: "World Wide Wine Production 2018"
+                    }
+                  }
+                });
+
+
+                })
+          
+        })()
+        
+        
+        
+        
+        
+        
+        
+        
+        
     
-    new Chart("myChart", {
-      type: "line",
-      data: {
-        labels: xValues,
-        datasets: [{ 
-          data: [860,1140,1060,1060,1070,1110,1330,2210,7830,2478],
-          borderColor: "red",
-          fill: false
-        }, { 
-          data: [1600,1700,1700,1900,2000,2700,4000,5000,6000,7000],
-          borderColor: "green",
-          fill: false
-        }, { 
-          data: [300,700,2000,5000,6000,4000,2000,1000,200,100],
-          borderColor: "blue",
-          fill: false
-        }]
-      },
-      options: {
-        legend: {display: false}
-      }
-    });
+
+
+
+
     </script>

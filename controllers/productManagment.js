@@ -40,9 +40,6 @@ module.exports={
     
     addProducts:(req, res) => {
       const files = req.files
-
-      
-    
       const fileName = files.map((file) => {
         return file.filename
       })

@@ -149,12 +149,11 @@ router.get("/single-order/:id",verifyAdminLogin,viewOrderDetails)
 
 router.post('/update-order-status',verifyAdminLogin,updateOrderStatus)
 
+//chart and sales
 router.get('/sales-report',getSalesReport)
-
 router.get('/chartGraph',revenueGraph)
 
 router.get('/coupon',verifyAdminLogin,coupon)
-
 router.get('/add-coupon',verifyAdminLogin,addCoupon)
 router.post('/add-coupon',verifyAdminLogin,addCouponPost)
 
