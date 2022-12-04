@@ -1,5 +1,6 @@
 const { ObjectID } = require('bson');
-const mongoose=require('mongoose')
+const mongoose=require('mongoose');
+const { stringify } = require('uuid');
 
 //db connection
 const db=mongoose.createConnection("mongodb://localhost:27017/tshirts")
@@ -15,6 +16,8 @@ db.once("open",()=>{
 const productSchema=new mongoose.Schema({
     name:String,
     price:Number,
+    offerPrice:Number,
+    offerPercentage:Number,
     category:String,
     stock:{
         type:Number,
@@ -106,6 +109,14 @@ const orderSchema=new mongoose.Schema({
     ]
 })
 
+const bannerSchema=new mongoose.Schema({
+    title:String,
+    subtitle:String,
+    description:String,
+    offer:String,
+    image:Array
+})
+
 
 module.exports={
     products:db.model("product",productSchema),
@@ -113,5 +124,6 @@ module.exports={
     categories:db.model("catergory",catergorySchema),
     carts:db.model('cart',cartSchema),
     addresses:db.model('address',addressSchema),
-    orders:db.model('order',orderSchema)
+    orders:db.model('order',orderSchema),
+    banners:db.model('banner',bannerSchema)
 }

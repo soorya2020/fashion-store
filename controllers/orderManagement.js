@@ -46,7 +46,7 @@ module.exports={
     revenueGraph:async(req,res)=>{
         try {
             let monthly=await salesHelpers.monthWiseSales()
-            let yeaely=await salesHelpers.yearlyWise
+            // let yeaely=await salesHelpers.yearlyWise
             let daily=await salesHelpers.getRevenueByDay()
             let year=await salesHelpers.getRevenueByear()
   

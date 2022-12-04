@@ -6,24 +6,29 @@
 
             <br>
 
-            <form class="forms-sample" method="post" action="/admin/add-products" enctype="multipart/form-data">
+            <form class="forms-sample" id="addProductsForm" method="post" action="/admin/add-products" enctype="multipart/form-data">
 
                 <div class="row">
                     <div class="form-group col-md-5">
+                        <strong><p class="text-danger"></p></strong>
                         <label for="exampleInputName1">Name</label>
-                        <input type="text" class="form-control" id="exampleInputName1" placeholder="name" name="name" required>
+                        <input type="text"  class="form-control" id="name" placeholder="name" name="name" required>
                     </div>
 
+                    
                     <div class="form-group col-md-5">
-                        <label for="exampleInputPassword4">Price</label>
-                        <input type="text" class="form-control" id="exampleInputPassword4" placeholder="Price"
-                            name="price" required>
+                        <strong><p class="text-danger"></p></strong>
+                        <label for="exampleInputPassword4">Stock</label>
+                        <input type="text" class="form-control" id="stock" placeholder="stock"
+                            name="stock" required>
                     </div>
 
 
                     <div class="form-group col-md-5">
+                        <strong><p class="text-danger"></p></strong>
                         <label for="exampleSelectGender">Category</label>
-                        <select class="form-control" id="exampleSelectGender" name="category">
+                       
+                        <select class="form-control" id="category" name="category">
                             <% category.forEach((category)=>{  %> 
                             <option><%= category.name %> </option>
                             <% }) %> 
@@ -31,42 +36,62 @@
                       
                     </div>
 
-
                     <div class="form-group col-md-5">
-                        <label for="exampleInputPassword4">Stock</label>
-                        <input type="text" class="form-control" id="exampleInputPassword4" placeholder="stock"
-                            name="stock" required>
+                        <strong><p class="text-danger"></p></strong>
+                        <label for="exampleInputPassword4">Price</label>
+                        <input type="text" class="form-control" id="price" placeholder="Price"
+                            name="price" required>
                     </div>
 
+                    
+
+                    <div class="form-group col-md-5">
+                        <strong><p class="text-danger"></p></strong>
+                        <label for="exampleInputPassword4">Offer Percentage</label>
+                        <input type="number" class="form-control" id="offerPercentage" name="offerPercentage" 
+                             onkeyup="calculateOffer()">
+                    </div>
+
+                    <div class="form-group col-md-5">
+                        <strong><p class="text-danger"></p></strong>
+                        <label for="exampleInputPassword4">Offer Price</label>
+                        <input type="number" readonly class="form-control" id="offerPrice" placeholder="stock"
+                           name="offerPrice" required>
+                    </div>
 
                     <div class="form-group col-md-10">
+                        <strong><p class="text-danger"></p></strong>
                         <label for="exampleTextarea1">Description</label>
-                        <textarea class="form-control" id="exampleTextarea1" rows="5" name="description"></textarea>
+                        <textarea class="form-control" id="description" rows="5" name="description"></textarea>
                     </div>
 
                     <!-- image upload -->
                     <div class="form-group col-md-10">
+                     
                         <label for="">Image</label>
-                        <input type="file" name="image" class="form-control">
+                        <input type="file"  name="image" class="form-control image" required>
                     </div>
 
                     <div class="form-group col-md-10">
+                    
                         <label for="">Image</label>
-                        <input type="file" name="image" class="form-control">
+                        <input type="file"  name="image" class="form-control image">
                     </div>
 
                     <div class="form-group col-md-10">
+                        
                         <label for="">Image</label>
-                        <input type="file" name="image" class="form-control">
+                        <input type="file" name="image" class="form-control image">
                     </div>
 
                     <div class="form-group col-md-10">
+                      
                         <label for="">Image</label>
-                        <input type="file" name="image" class="form-control">
+                        <input type="file" name="image" class="form-control image">
                     </div>
 
 
-                    <button type="submit" class="btn btn-primary ml-3 mr-2 col-md-2">Submit</button>
+                    <button type="button" onclick="validation()" class="btn btn-primary ml-3 mr-2 col-md-2">Submit</button>
                     <a href="/admin/products" class="btn btn-light">Cancel</a>
                 </div>
             </form>
@@ -75,37 +100,46 @@
 </div>
 
 <script>
+    function calculateOffer(){
+        const price=document.getElementById('price').value
+        const offerPrice=document.getElementById('offerPrice')
+        const offerPercentage=document.getElementById('offerPercentage').value
+        offerPrice.value=price-price*offerPercentage/100
+       
+    }
 
     function validation(){
+     
     
         const name=document.getElementById('name')
         const price=document.getElementById('price')
         const category=document.getElementById('category')
-        const quantity=document.getElementById('quantity')
+        const stock=document.getElementById('stock')
         const description=document.getElementById('description')
-        const image=document.getElementById('image')
+        const image=document.getElementsByClassName('image')
 
     
         const nameValue=name.value?.trim()
         const priceValue=price.value?.trim()
         const categoryValue=category.value?.trim()
-        const quantityValue=quantity.value?.trim()
+        const stockValue=stock.value?.trim()
         const descriptionValue=description.value?.trim()
-        const imageValue=image.value?.trim()
+        // const imageValue=image.value?.trim()
+        // console.log(imageValue,'fsdgh');
 
     
         const err1=name.parentElement.querySelector('p')
         err1.innerText=''
         const err2=price.parentElement.querySelector('p')
         err2.innerText=''
-        const err3=category.parentElement.querySelector('p')
+        const err3=category.parentElement.querySelector('p')    
         err3.innerText=''
-        const err4=quantity.parentElement.querySelector('p')
+        const err4=stock.parentElement.querySelector('p')
         err4.innerText=''
         const err5=description.parentElement.querySelector('p')
         err5.innerText=''
-        const err6=image.parentElement.querySelector('p')
-        err6.innerText=''
+        // const err6=image.parentElement.querySelector('p')
+        // err6.innerText=''
     
         let flag=1
     
@@ -121,64 +155,74 @@
             flag=2
         }
     
-        //email validatio
+      
         if (priceValue=='') {
             err2.innerText='This field is required'
             flag=2
+        }else if(isNaN(priceValue)){
+            err2.innerText='Price field should be a number'
+            flag=2
         }
     
-        //password validation
+      
         if(categoryValue==''){
             err3.innerText='This field is required'
             flag=2
         }  
     
         //mobile validation
-        if(!quantityValue){
-            err5.innerText='This field is required'
+        if(stockValue==''){
+            err4.innerText='This field is required'
             flag=2
-        }else if(!mobileValue.match(/^[1-10]/)){
-            err5.innerText='enter a valid price'
+        }else if(isNaN(stockValue)){
+            err4.innerText='stock field should be a number'
+            flag=2
+        }
+
+        if(descriptionValue==''){
+            err5.innerText='This field is required'
             flag=2
         }
 
         //image validation
-        if(imageValue==""){
-            err6.innerText='uplad an image'
-        }
+        // if(imageValue==""){
+        //     err6.innerText='uplad an image'
+        // }
     
         if(flag==1){
-            submit(nameValue,priceValue,categoryValue,quantityValue,descriptionValue)
+            console.log('validation succecfull');
+            // submit(nameValue,priceValue,categoryValue,quantityValue,descriptionValue)
+            document.getElementById('addProductsForm').submit()
         }
     
-        function submit(nameValue,priceValue,categoryValue,quantityValue,descriptionValue) {
+        // function submit(nameValue,priceValue,categoryValue,quantityValue,descriptionValue) {
             
-            fetch('/add-products',{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json'
-                },
-                body:JSON.stringify({
-                    name:nameValue,
-                    price:priceValue,
-                    category:categoryValue,
-                    quantity:quantityValue,
-                    description:descriptionValue,
+        //     fetch('/add-products',{
+        //         method:'POST',
+        //         headers:{
+        //             'Content-Type':'application/json'
+        //         },
+        //         body:JSON.stringify({
+        //             name:nameValue,
+        //             price:priceValue,
+        //             category:categoryValue,
+        //             quantity:quantityValue,
+        //             description:descriptionValue,
                    
-                })
-            })
-            .then((res)=>res.json())
-            .then((res)=>{
+        //         })
+        //     })
+        //     .then((res)=>res.json())
+        //     .then((res)=>{
     
-                console.log("res");
+        //         console.log("res");
     
-                if(res.value=='success'){
-                    window.location.href='/admin/products'
-                }else{
-                    window.location.reload()
-                }
-            })
-        }
+        //         if(res.value=='success'){
+        //             window.location.href='/admin/products'
+        //         }else{
+        //             window.location.reload()
+        //         }
+        //     })
+        // }
     
     }
     

@@ -35,19 +35,45 @@ module.exports = {
     });
   },
   editProduct: (prodId, data) => {
+    console.log(data);
     return new Promise(async (resolve, reject) => {
+      let dbprodData = await db.products.findOne({_id:prodId})
+      if(data.img.length==0){
+        data.img=dbprodData.img
+      }
       await db.products.updateOne(
         { _id: prodId },
         {
           name: data.name,
           price: data.price,
+          offerPrice:data.offerPrice,
+          offerPercentage:data.offerPercentage,
           category: data.category,
           stock: data.stock,
           description: data.description,
+          img:data.img
           // img:data.img
         }
       );
       resolve(data);
     });
   },
+  addMainBanner:(bannerData)=>{
+    return new Promise(async(resolve,reject)=>{
+        let data = await db.banners(bannerData)
+        await data.save()
+        resolve()
+    })
+  },
+  getBanners:()=>{
+    
+      return new Promise((resolve,reject)=>{
+        db.banners.find({}).then((data)=>{
+          resolve(data)
+        }).catch((error)=>{
+          console.log(error);
+        })
+      })
+   
+  }
 };

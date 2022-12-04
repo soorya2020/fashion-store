@@ -69,7 +69,9 @@
                             </div><!-- End .rating-container -->
 
                             <div class="">
-                                  <h3>$<%= product.price %> </h3>
+                                
+                                <h3><sup><small>₹</small></sup><%= product.offerPrice? product.offerPrice : product.price %><sup><small>00</small></sup> </h3>
+                                <h5 >MRP <strike class="text-danger">₹ <%= product.price %></strike><p class="text-danger ">-<%= 100-(product.offerPrice/product.price)*100? 100-(product.offerPrice/product.price)*100 :0  %>% OFF </p>   </h3>
                               
                             </div><!-- End .product-price -->
 
@@ -107,7 +109,7 @@
                                         <input type="number" id="qty" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
                                     </div><!-- End .product-details-quantity -->
 
-                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                    <a href="#" class="btn-product btn-cart" onclick="addToCart('<%= product._id%>','<%= product.stock%>')"   ><span>add to cart</span></a>
                                 </div><!-- End .details-action-col -->
 
                                 <div class="details-action-wrapper">

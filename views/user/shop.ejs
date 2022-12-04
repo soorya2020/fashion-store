@@ -50,7 +50,7 @@
                         <div class="col-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2">
                             <div class="product">
                                 <figure class="product-media">
-                                    <span class="product-label label-new">New</span>
+                                    <span class="product-label label-new"><%= products.offerPercentage  %>% OFF </span>
                                     <a href="/single-product/<%= products._id  %> ">
                                         <img src="/product-images/<%= products.img[0] %> " alt="Product image"
                                             class="product-image">
@@ -82,13 +82,13 @@
                                         </a></h3>
                                     <!-- End .product-title -->
                                     <div class="product-price">
-                                        <%= products.price  %> 
+                                        <%= products.offerPrice  %> 
                                     </div><!-- End .product-price -->
                                     <div class="ratings-container">
                                         <div class="ratings">
-                                            <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->
+                                            <div class="ratings-val" style="width: 50%;"></div><!-- End .ratings-val -->
                                         </div><!-- End .ratings -->
-                                        <span class="ratings-text">( 0 Reviews )</span>
+                                        <span class="ratings-text">( 5 Reviews )</span>
                                     </div><!-- End .rating-container -->
 
                                     <div class="product-nav product-nav-dots">
@@ -384,14 +384,3 @@
 <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
 <!-- toast color -->
-<style>
-    .colored-toast.swal2-icon-success {
-  background-color: #a3ef76 !important;
-  font-size: medium !important;
-  
-}
-.colored-toast.swal2-icon-error {
-  background-color: #f27474 !important;
-  font-size: medium !important;
-}
-</style>

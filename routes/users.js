@@ -47,7 +47,8 @@ const {
   addAddress,
   paypalPayment,
   verifyPaypal,
-  retunProduct
+  retunProduct,
+  getHome
 } = require("../controllers/cart");
 const cartHelpers = require("../helpers/cartHelpers");
 const productHelpers = require("../helpers/product-helpers");
@@ -65,9 +66,7 @@ const cartCount = async (req, res, next) => {
   next();
 };
 //home page
-router.get("/", async function (req, res) {
-  res.render("index", { nav, footer });
-});
+router.get("/",getHome);
 
 //user login and signup
 router.get("/login", getLogin);

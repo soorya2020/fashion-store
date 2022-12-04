@@ -5,7 +5,7 @@ const adminHelpers = require('../helpers/adminHelpers');
 const productHelpers = require('../helpers/product-helpers');
 const cartHelpers = require('../helpers/cartHelpers');
 const path=require('path')
-
+const multer= require('multer')
 const router = express.Router();
 const layout = 'admin-layout'
 
@@ -14,6 +14,8 @@ const layout = 'admin-layout'
 
 
 module.exports={
+    
+
     dashboard:function (req, res, next) {
         res.render('admin/admin_page', {
           layout
@@ -31,6 +33,7 @@ module.exports={
         },
 
     getAddProducts:(req, res) => {
+      console.log(req.body,"this is my producst");
         adminHelpers.getAllCatagories().then((category)=>{
           res.render('admin/add_product',{layout,category})
         })
@@ -72,10 +75,19 @@ module.exports={
       },
 
     postEditProduct:(req, res) => {
-      console.log(req.body,req.params,'ds');
-        productHelpers.editProduct(req.params.id, req.body).then(()=>{
+     
+      console.log(req.body,'this ismy body')
+      const files=req.files
+      const fileName=files.map((file)=>{
+        return file.filename
+      })
+      const product=req.body
+      product.img=fileName
+
+      productHelpers.editProduct(req.params.id, req.body).then((d)=>{
           // res.redirect('/admin/products')
-          res.send('success')
+       
+      res.redirect('/admin/products')
           // if(req?.files?.image){
           //    let image =req.files.image
           //   const imgName =req.params.id 
@@ -83,6 +95,8 @@ module.exports={
           // }
         })
       },
+
+      
 
     
 

@@ -40,7 +40,7 @@ module.exports={
       singleProduct:(req, res) => {
         let prodId=req.params.id
         productHelpers.getProductDetails(prodId).then((product)=>{
-          console.log(product);
+          
           res.render('user/single-product',{nav:true,footer:true,product})
         })
         

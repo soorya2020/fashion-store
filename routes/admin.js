@@ -12,24 +12,23 @@ const storage = multer.diskStorage({
         cb(null, 'public/product-images')
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now()+ '-' + file.originalname)
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+      cb(null,  file.fieldname + '-' + uniqueSuffix+".jpg")
     }
 });
  const upload = multer({ storage: storage });
-// handle storage using multer
-// const storage2 = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//       cb(null, 'public/images/brand')
-//   },
-//   filename: (req, file, cb) => {
-//       cb(null, Date.now()+ '-' + file.originalname)
-//   }
-// });
-// const upload2 = multer({ storage: storage2 });
-// module.exports= {
-//   upload,
-//   upload2
-// };
+
+
+const storage2 = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/assets/banner-images')
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+      cb(null,  file.fieldname + '-' + uniqueSuffix+".jpg")
+    }
+});
+ const upload2 = multer({ storage: storage2 });
 
 
 const {
@@ -39,7 +38,8 @@ const {
   viewProducts,
   deleteProduct,
   getEditProduct,
-  postEditProduct}=require('../controllers/productManagment')
+  postEditProduct,
+  }=require('../controllers/productManagment')
 const {
   viewAllUsers,
   getAddUser,
@@ -64,6 +64,12 @@ const {
   addCoupon,
   addCouponPost
 }=require('../controllers/orderManagement')
+
+const{
+  getBanner,
+  getMainBanner,
+  addMainBanner
+}=require('../controllers/bannerManagement')
 const layout = 'admin-layout'
 
 
@@ -119,7 +125,11 @@ router.post('/add-products',upload.array('image') ,addProducts)
 router.get('/delete-products/:id', deleteProduct)
 //edit product
 router.get('/edit-products/:id',getEditProduct)
-router.post('/edit-products/:id', postEditProduct)
+
+
+
+router.post('/edit-products/:id',upload.array('image'),postEditProduct)
+
 
 
 // users
@@ -156,6 +166,10 @@ router.get('/chartGraph',revenueGraph)
 router.get('/coupon',verifyAdminLogin,coupon)
 router.get('/add-coupon',verifyAdminLogin,addCoupon)
 router.post('/add-coupon',verifyAdminLogin,addCouponPost)
+
+router.get('/banner',verifyAdminLogin,getBanner)
+router.get('/add-main-banner',verifyAdminLogin,getMainBanner)
+router.post('/add-main-banner',upload2.array('image'),verifyAdminLogin,addMainBanner)
 
 
 

@@ -224,7 +224,8 @@ module.exports = {
             {
               $group: {
                 _id: null,
-                total: { $sum: { $multiply: ["$quantity", "$product.price"] } },
+                total: { $sum: { $multiply: ["$quantity", "$product.offerPrice"] } },
+                mrpTotal: { $sum: { $multiply: ["$quantity", "$product.price"] } },
               },
             },
           ])
@@ -306,7 +307,8 @@ module.exports = {
             _id: "$cartItemsResult._id",
             quantity: 1,
             productsName: "$cartItemsResult.name",
-            productsPrice: "$cartItemsResult.price",
+            productsPrice: "$cartItemsResult.offerPrice",
+            productsOfferPercentage:'$cartItemsResult.offerPercentage',
             orderStatus: "$cartItemsResult.status",
             imageName: "$cartItemsResult.img",
             return: "$cartItemsResult.return",

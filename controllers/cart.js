@@ -32,6 +32,12 @@ var nav = true;
 var footer = true;
 
 module.exports = {
+  getHome:async function (req, res) {
+  productHelpers.getBanners().then((banners)=>{
+ 
+    res.render("index", { nav, footer,banners:banners });
+  })
+  },
   getCart: async (req, res) => {
     let cartCount = await cartHelpers.getCartCount(req?.session?.user?._id);
     let total = await cartHelpers.getTotalAmount(req?.session?.user?._id);
@@ -98,7 +104,7 @@ module.exports = {
     } else {
       
       cartHelpers.placeOrder(req.body, total).then(async(response) => {
-        console.log('this is my out of stock reaposen:',response);
+ 
         if(response?.outOfStock){
           res.json(response)
         }else{
