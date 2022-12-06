@@ -1,69 +1,78 @@
-<div class="col-lg-11 grid-margin stretch-card">
+<div class="col-lg-10 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
         <h4 class="card-title">Striped Table</h4>
+        <% const dataToReadable=(date)=>{
 
+          const date_=new Date(date);
+          let month=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+          let dd=date_.getDate()
+          let mm=date_.getMonth()
+          let monthText=month[mm]
+          let yyyy=date_.getFullYear()
+        
+          return `${isNaN(dd)?'00':dd}-${monthText}-${isNaN(yyyy)?'0000':yyyy}`
+        
+          } %>
 
         
         <a type="button " href="/admin/add-coupon" class="btn btn-success btn-sm btn-icon-text btn-icon-prepend">
           Add Coupon
       </a>
         <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
+          <table class="table table-bordered">
+            <thead class="">
               <tr>
                 <th>
                   #
                 </th>
-                <th>
+                <th class="">
                   Coupon Code
                 </th>
                 <th>
-                  Category
+                  Expiry
                 </th>
                 <th>
-                  Discount %/ Rupees
+                  Order Value
                 </th>
                 <th>
-                  discount
+                  discount %
                 </th>
                 <th>
-                  Max Use
+                  Capped Discount
                 </th>
-              
+                <th>
+                  description
+                </th>
+            
               </tr>
             </thead>
-            <tbody>
-               
+           <% coupons.forEach((element,index)=>{ %> 
               <tr>
                 <td>
-                  adf 
+                  <%= index+1 %> 
                 </td>
                 <td class="py-1" >
-                  <img style="border-radius:2cm !important;width: 50px;" src="?.?./?.?./images/faces/face1?.jpg" alt="image"/>
+                  <img  src="/couponimage.jpg" alt="image"/>
+                  <%= element.couponName %> 
                 </td>
                 <td>
-                 asdf
+               <%= dataToReadable(element.expiry)  %> 
                 </td>
                 <td>
-                adsf
+                  ₹ <%= element.minPurchase %>
                 </td>
-               
-               
                 <td>
-                 
-                    <a type="button" style="width:80px ;" href="" class="btn btn-success btn-sm btn-icon-text btn-icon-prepend">
-                      block
-                  </a>
-                   
-                    
-                    <a type="button" style="width:80px ;" href="" class="btn btn-danger btn-sm btn-icon-text  btn-icon-prepend">
-                      Unblock
-                  </a>
-                   
+                 <%= element.discountPercentage%>% OFF
+                </td>
+                <td>
+                 <%= element.maxDiscountValue%>
+                </td>
+                <td>
+                 <%= element.description%>
                 </td>
               </tr>
-            
+            <% }) %> 
             </tbody>
           </table>
         </div>

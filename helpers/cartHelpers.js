@@ -138,20 +138,7 @@ module.exports = {
         });
     });
   },
-  getCartCount: (userId) => {
-    return new Promise(async (resolve, reject) => {
-      let count = 0;
-      let cart = await db.carts.findOne({ user: userId });
 
-      if (cart) {
-        for (i = 0; i < cart.products.length; i++) {
-          count += cart.products[i].quantity;
-        }
-      }
-      count = parseInt(count);
-      resolve(count);
-    });
-  },
   changeProductQuantity: (data) => {
     data.count = parseInt(data.count);
     data.quantity = parseInt(data.quantity);
@@ -230,6 +217,7 @@ module.exports = {
             },
           ])
           .then((totalAmount) => {
+            // resolve(totalAmount[0]?.total);
             resolve(totalAmount[0]?.total);
           }).catch((err)=>{
             console.log(err,"saleshelpers line 233");
@@ -241,12 +229,7 @@ module.exports = {
     }
   },
 
-  getAddress: (userId) => {
-    return new Promise(async (resolve, reject) => {
-      let address = await db.addresses.find({ userId: userId });
-      resolve(address);
-    });
-  },
+  
   removeProduct: (data) => {
     return new Promise((resolve, reject) => {
       db.carts
@@ -869,4 +852,27 @@ module.exports = {
       }
     });
   },
+  getCartCount: (userId) => {
+    return new Promise(async (resolve, reject) => {
+      let count = 0;
+      let cart = await db.carts.findOne({ user: userId });
+  
+      if (cart) {
+        for (i = 0; i < cart.products.length; i++) {
+          count += cart.products[i].quantity;
+        }
+      }
+      count = parseInt(count);
+      resolve(count);
+    });
+  },
+  getAddress: (userId) => {
+    return new Promise(async (resolve, reject) => {
+      let address = await db.addresses.find({ userId: userId });
+      resolve(address);
+    });
+  }
 };
+
+
+

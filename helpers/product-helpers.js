@@ -17,6 +17,7 @@ module.exports = {
   getAllProducts: () => {
     return new Promise(async (resolve, reject) => {
       let products = await db.products.find({});
+      console.log(products);
       resolve(products);
     });
   },
@@ -75,5 +76,76 @@ module.exports = {
         })
       })
    
-  }
-};
+  },
+  removeMainBanner:(bannerId)=>{
+    return new Promise((resolve,reject)=>{
+      db.banners.deleteOne({_id:bannerId}).then((d)=>{
+        resolve(d)
+      }).catch((e)=>{
+        reject(e)
+      })
+    })
+  },
+  editMainBanner:(data)=>{
+    return new Promise((resolve,reject)=>{
+      db.banners.updateOne({_id:data._id},
+        {
+          title:data.title,
+          subtitle:data.subtitle,
+          description:data.description,
+          offer:data.offer
+        }).then((data)=>{
+          resolve(data)
+        }).catch((error)=>{
+          reject((error))
+        })
+    })
+  },
+  addToWishlist:(userId,prodId)=>{
+    try {
+      let prodObj = {
+        item: prodId,
+      };
+      return new Promise(async(resolve,reject)=>{
+        let wishlistExist=await db.wishlists.findOne({user:userId})
+        if(wishlistExist){
+          let prodIndex=wishlistExist.products.findIndex((i)=>i.item==prodId)
+          console.log(prodIndex,'my product');
+          if(prodIndex==-1){
+           
+              
+                db.wishlists.updateOne({user:userId},
+                  {
+                    $push:{products:prodObj}
+                  }
+                  ).then(()=>{
+                    resolve({status:'success'})
+                  })
+         
+          }else{
+            resolve({status:'already added'})
+          }
+        }else{
+          let wishlistObj={
+            user:userId,
+            products:[prodObj]
+          }
+          let data=await db.wishlists(wishlistObj)
+          await data.save()
+          resolve({status:'success'})
+        }
+      })
+      
+    } catch (error) {
+      console.log(error)
+      reject({error:error})
+    }
+  },
+  getWishlistProducts:(userId)=>{
+    return new Promise((resolve,reject)=>{
+
+      db.wishlist.find({user:userId})
+    })
+  },
+  
+};                                              

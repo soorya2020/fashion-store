@@ -1,4 +1,4 @@
-<div class="col-lg-11 grid-margin stretch-card">
+<div class="col-lg-10 grid-margin stretch-card" style="overflow: hidden;">
   <div class="card">
     <div class="card-body">
       <h4 class="card-title">Banners Table</h4>
@@ -28,7 +28,10 @@
                 description
               </th>
               <th>
-                offer
+                Offer
+              </th>
+              <th>
+                Action
               </th>
             
             </tr>
@@ -52,20 +55,20 @@
                <%- banner.description %> 
               </td>
               <td>
-               <%- banner.offers %> 
+               <%- banner.offer %> 
               </td>
              
              
               <td>
 
-                  <a type="button" style="width:80px ;" href="/admin/blockUser/<%= banner._id  %> " class="btn btn-success btn-sm btn-icon-text btn-icon-prepend">
-                    delete
+                <a type="button" style="width:80px ;" href="/admin/blockUser/<%= banner._id  %> "  class="btn btn-success btn-sm btn-icon-text btn-icon-prepend">
+                  edit
                 </a>
                 
+                <a type="button" style="width:80px ;" href="/admin/delete-main-banner/<%= banner._id  %> " onclick="confirm('are you sure')" class="btn btn-danger btn-sm btn-icon-text  btn-icon-prepend">
+                  delete
+              </a>
                   
-                  <a type="button" style="width:80px ;" href="/admin/unBlockUser/<%= banner._id  %> " class="btn btn-danger btn-sm btn-icon-text  btn-icon-prepend">
-                    edit
-                </a>
                 
               </td>
             </tr>

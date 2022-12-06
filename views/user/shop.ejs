@@ -57,7 +57,7 @@
                                     </a>
 
                                     <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to
+                                        <a onclick="addToWishlist('<%= products._id%>')" class="btn-product-icon btn-wishlist btn-expandable"><span>add to
                                                 wishlist</span></a>
                                     </div><!-- End .product-action -->
 
@@ -82,7 +82,9 @@
                                         </a></h3>
                                     <!-- End .product-title -->
                                     <div class="product-price">
-                                        <%= products.offerPrice  %> 
+                                       <h6>₹ <%= products.offerPrice  %> </h6>
+                                <p >MRP <strike class="text-danger">₹ <%= products.price %></strike><p class="text-danger ">-<%= 100-(products.offerPrice/products.price)*100? 100-(products.offerPrice/products.price)*100 :0  %>% OFF </p>   </p>
+
                                     </div><!-- End .product-price -->
                                     <div class="ratings-container">
                                         <div class="ratings">
@@ -384,3 +386,20 @@
 <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
 <!-- toast color -->
+<script>
+    function addToWishlist(id){
+        $.ajax({
+            url:'/add-to-wishlist/'+id,
+            method:'get',
+            success:(response)=>{
+                if(response.status=='success'){
+                    toast('added to wishlist')
+                }else{
+                    toast('already added to wishlist')
+                }
+            }
+        })
+    }
+
+    
+</script>

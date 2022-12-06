@@ -1,6 +1,7 @@
-const { ObjectID } = require('bson');
 const mongoose=require('mongoose');
+const { ObjectID } = require('bson');
 const { stringify } = require('uuid');
+const { coupon } = require('../controllers/orderManagement');
 
 //db connection
 const db=mongoose.createConnection("mongodb://localhost:27017/tshirts")
@@ -13,7 +14,7 @@ db.once("open",()=>{
 
 
 //product schema
-const productSchema=new mongoose.Schema({
+exports.products=db.model('product',new mongoose.Schema({
     name:String,
     price:Number,
     offerPrice:Number,
@@ -29,7 +30,7 @@ const productSchema=new mongoose.Schema({
         type:Boolean,
         default:false
     }
-})
+}))
 
 //user schema
 const userSchema=new mongoose.Schema({
@@ -53,11 +54,21 @@ const catergorySchema=new mongoose.Schema({
     name:String
 })
 
-const cartSchema=new mongoose.Schema({
+exports.carts=db.model('cart',new mongoose.Schema({
     user:ObjectID,
     products:[{
         item:ObjectID,
         quantity:Number
+        
+    }]
+        
+}))
+
+const wishlistSchema=new mongoose.Schema({
+    user:ObjectID,
+    products:[{
+        item:ObjectID,
+        
         
     }]
         
@@ -78,7 +89,7 @@ const addressSchema=new mongoose.Schema({
     }]
 })
 
-const orderSchema=new mongoose.Schema({
+module.exports.orders=db.model('order',new mongoose.Schema({
     userId:mongoose.Types.ObjectId,
     orders:[
         {
@@ -107,7 +118,7 @@ const orderSchema=new mongoose.Schema({
         }                   //4 order delovered
                             //5 order returned
     ]
-})
+}))
 
 const bannerSchema=new mongoose.Schema({
     title:String,
@@ -117,13 +128,27 @@ const bannerSchema=new mongoose.Schema({
     image:Array
 })
 
+exports.coupons= db.model("coupons",new mongoose.Schema({
+    couponName:String,
+    expiry:{
+        type:Date
+    },
+    minPurchase:Number,
+    description:String,
+    discountPercentage:Number,
+    maxDiscountValue:Number
+}))
+
 
 module.exports={
-    products:db.model("product",productSchema),
+    // products:db.model("product",productSchema),
     users:db.model("user",userSchema),
     categories:db.model("catergory",catergorySchema),
-    carts:db.model('cart',cartSchema),
+    // carts:db.model('cart',cartSchema),
     addresses:db.model('address',addressSchema),
-    orders:db.model('order',orderSchema),
-    banners:db.model('banner',bannerSchema)
+    // orders:db.model('order',orderSchema),
+    banners:db.model('banner',bannerSchema),
+    wishlists:db.model('wishlist',wishlistSchema),
+    // coupons:db.model("coupons",couponSchema)
 }
+

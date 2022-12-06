@@ -1,8 +1,8 @@
 var express = require("express");
 var router = express.Router();
+const config = require("../config/otpconfig");
 const userHelpers = require("../helpers/userHelpers");
 const productHelpers = require("../helpers/product-helpers");
-const config = require("../config/otpconfig");
 const { Db } = require("mongodb");
 const { response } = require("../app");
 const client = require("twilio")(config.accountID, config.authToken);
@@ -16,6 +16,7 @@ module.exports = {
   verifyLogin: (req, res, next) => {
     if (req.session.loggedIn) {
       res.locals.loggedIn = true;
+      res.locals.user=req.session.user
 
       next();
     } else {

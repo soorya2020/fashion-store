@@ -1,123 +1,11 @@
 const db = require("../model/connection");
 const { response } = require("../app");
-
-module.exports = {
-    monthlySales: () => {
-        let date = new Date()
-        let thisMonth = date.getMonth()
-
-        return new Promise((resolve, reject) => {
-            try {
-                db.orders.aggregate([
-                    {
-                        $unwind: "$orders"
-                    },
-                    {
-                        $unwind: '$orders.productDetails'
-                    },
-                    {
-                        $match: { 'orders.productDetails.orderStatus': 4 }
-                    },
-                    {
-                        $match: {
-                            $expr: {
-                                $eq: [
-                                    {
-                                        $month: '$orders.createdAt'
-                                    },
-                                    thisMonth + 1
-                                ]
-                            }
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: null,
-                            total: { $sum: '$orders.totalPrice' },
-                            orders: { $sum: '$orders.productDetails.quantity' },
-                            // totalOrders:{$sum:"$orders.totalQuantity"},
-                            count: { $sum: 1 }
+const expressEjsLayouts = require("express-ejs-layouts");
 
 
-                        }
-                    }
-                ]).then((data) => {
+    
 
-                    resolve(data)
-                })
-            } catch (error) {
-                console.log(error);
-            }
-        })
-    },
-
-    monthWiseSales: () => {
-
-        return new Promise(async (resolve, reject) => {
-            try {
-                let data = []
-                for (let i = 0; i < 12; i++) {
-                    await db.orders.aggregate([
-                        {
-                            $unwind: "$orders"
-                        },
-                        {
-                            $unwind: '$orders.productDetails'
-                        },
-                        {
-                            $match: { 'orders.productDetails.orderStatus': 4 }
-                        },
-                        {
-                            $match: {
-                                $expr: {
-                                    $eq: [
-                                        {
-                                            $month: '$orders.createdAt'
-                                        },
-                                        i + 1
-                                    ]
-                                }
-                            }
-                        },
-                        {
-                            $group: {
-                                _id: null,
-                                total: { $sum: '$orders.totalPrice' },
-                                orders: { $sum: '$orders.productDetails.quantity' },
-                                count: { $sum: 1 }
-                            }
-                        },
-
-                    ]).then((monthlyData) => {
-
-                        data[i + 1] = monthlyData[0]
-
-                    })
-
-
-                }
-
-                for (let j = 0; j < 12; j++) {
-
-                    if (data[j + 1] == undefined) {
-                        data[j + 1] = {
-                            _id: null,
-                            total: 0,
-                            orders: 0,
-                            count: 0
-                        }
-                    } else {
-                        data[j]
-                    }
-                }
-
-                resolve(data)
-            } catch (error) {
-                console.log(error);
-            }
-        })
-    },
-    getRevenueByDay: () => {
+exports.getRevenueByDay= () => {
 
         try {
             let date = new Date()
@@ -180,8 +68,9 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }
-    },
-    getRevenueByear: () => {
+    }
+
+exports.getRevenueByear =()=>{
 
         try {
             let date = new Date()
@@ -231,4 +120,121 @@ module.exports = {
         }
     }
 
+
+
+exports.monthWiseSales= () => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            let data = []
+            for (let i = 0; i < 12; i++) {
+                await db.orders.aggregate([
+                    {
+                        $unwind: "$orders"
+                    },
+                    {
+                        $unwind: '$orders.productDetails'
+                    },
+                    {
+                        $match: { 'orders.productDetails.orderStatus': 4 }
+                    },
+                    {
+                        $match: {
+                            $expr: {
+                                $eq: [
+                                    {
+                                        $month: '$orders.createdAt'
+                                    },
+                                    i + 1
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            total: { $sum: '$orders.totalPrice' },
+                            orders: { $sum: '$orders.productDetails.quantity' },
+                            count: { $sum: 1 }
+                        }
+                    },
+
+                ]).then((monthlyData) => {
+
+                    data[i + 1] = monthlyData[0]
+
+                })
+
+
+            }
+
+            for (let j = 0; j < 12; j++) {
+
+                if (data[j + 1] == undefined) {
+                    data[j + 1] = {
+                        _id: null,
+                        total: 0,
+                        orders: 0,
+                        count: 0
+                    }
+                } else {
+                    data[j]
+                }
+            }
+
+            resolve(data)
+        } catch (error) {
+            console.log(error);
+        }
+    })
 }
+
+
+// monthlySales: () => {
+    //     let date = new Date()
+    //     let thisMonth = date.getMonth()
+
+    //     return new Promise((resolve, reject) => {
+    //         try {
+    //             db.orders.aggregate([
+    //                 {
+    //                     $unwind: "$orders"
+    //                 },
+    //                 {
+    //                     $unwind: '$orders.productDetails'
+    //                 },
+    //                 {
+    //                     $match: { 'orders.productDetails.orderStatus': 4 }
+    //                 },
+    //                 {
+    //                     $match: {
+    //                         $expr: {
+    //                             $eq: [
+    //                                 {
+    //                                     $month: '$orders.createdAt'
+    //                                 },
+    //                                 thisMonth + 1
+    //                             ]
+    //                         }
+    //                     }
+    //                 },
+    //                 {
+    //                     $group: {
+    //                         _id: null,
+    //                         total: { $sum: '$orders.totalPrice' },
+    //                         orders: { $sum: '$orders.productDetails.quantity' },
+    //                         // totalOrders:{$sum:"$orders.totalQuantity"},
+    //                         count: { $sum: 1 }
+
+
+    //                     }
+    //                 }
+    //             ]).then((data) => {
+
+    //                 resolve(data)
+    //             })
+    //         } catch (error) {
+    //             console.log(error);
+    //         }
+    //     })
+    // },

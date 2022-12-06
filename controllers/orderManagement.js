@@ -1,10 +1,11 @@
 var express = require('express');
-const { render } = require('../app');
+const { render, response } = require('../app');
 const { products } = require('../model/connection');
 const adminHelpers = require('../helpers/adminHelpers');
 const productHelpers = require('../helpers/product-helpers');
 const cartHelpers = require('../helpers/cartHelpers');
 const salesHelpers = require('../helpers/salesHelpers');
+const couponHelpers=require('../helpers/couponHelpers')
 
 
 const router = express.Router();
@@ -34,14 +35,14 @@ module.exports={
     },
     getSalesReport:async(req,res)=>{
         // let yearly=await salesHelpers.yearlySales()
-        let monthly=await salesHelpers.monthlySales()
+        // let monthly=await salesHelpers.monthlySales()
         let monthlyWise=await salesHelpers.monthWiseSales()
         let daily=await salesHelpers.getRevenueByDay()
         let year=await salesHelpers.getRevenueByear()
   
       
         
-        res.render('admin/salesReport',{layout,monthlyData:monthly[0],monthlyWise:monthlyWise,dailyWise:daily,yearlyWise:year})
+        res.render('admin/salesReport',{layout,monthlyWise:monthlyWise,dailyWise:daily,yearlyWise:year})
     },
     revenueGraph:async(req,res)=>{
         try {
@@ -57,11 +58,9 @@ module.exports={
         }
     },
     coupon:(req,res)=>{
-        try {
-            res.render('admin/coupon',{layout})
-        } catch (error) {
-            
-        }
+            couponHelpers.getAllCoupons().then((coupons)=>{
+                res.render('admin/coupon',{layout,coupons:coupons})
+            })  
     },
     addCoupon:(req,res)=>{
         try {
@@ -71,11 +70,14 @@ module.exports={
         }
     },
     addCouponPost:(req,res)=>{
-        try {
-
-            
-        } catch (error) {
-            
-        }
+       
+       
+        couponHelpers.addCoupon(req.body).then(()=>{
+                res.send({status:true})
+            }).catch((error)=>{
+                console.log('coupon not added');
+                res.send({status:false,error:error})
+            })
+    
     }
 }

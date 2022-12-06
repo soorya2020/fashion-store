@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
-
+const productHelpers = require("../helpers/product-helpers");
+const cartHelpers = require("../helpers/cartHelpers");
 const multer = require("multer");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -48,10 +49,11 @@ const {
   paypalPayment,
   verifyPaypal,
   retunProduct,
-  getHome
+  getHome,
+  getWishlist,
+  addToWishlist
 } = require("../controllers/cart");
-const cartHelpers = require("../helpers/cartHelpers");
-const productHelpers = require("../helpers/product-helpers");
+
 const { path } = require("../app");
 const { resolveInclude } = require("ejs");
 const { cancelOrder, generatePaypal } = require("../helpers/cartHelpers");
@@ -128,6 +130,10 @@ router.get("/verify-paypal", verifyLogin, verifyPaypal);
 
 router.post('/return',retunProduct)
 router.get('/get-order-data/:id',getOrderDetails)
+
+
+router.get('/wishlist',verifyLogin,getWishlist)
+router.get('/add-to-wishlist/:id',verifyLogin,addToWishlist)
 
 
 // router.get('/new-order',(req,res)=>{

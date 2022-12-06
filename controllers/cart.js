@@ -40,8 +40,9 @@ module.exports = {
   },
   getCart: async (req, res) => {
     let cartCount = await cartHelpers.getCartCount(req?.session?.user?._id);
-    let total = await cartHelpers.getTotalAmount(req?.session?.user?._id);
-    
+    let totalAmount = await cartHelpers.getTotalAmount(req?.session?.user?._id);
+    let total=totalAmount.total
+    let mrpTotal=totalAmount.mrpTotal
     cartHelpers.getCartProducts(req?.session?.user?._id).then((cartItems) => {
       
       res.render("user/cart", {
@@ -49,6 +50,7 @@ module.exports = {
         user: req.session.user,
         cartCount,
         total,
+        mrpTotal,
         nav,
       });
     });
@@ -252,5 +254,17 @@ module.exports = {
       res.send(response)
     })
   },
+  addToWishlist:(req,res)=>{
+   
+    productHelpers.addToWishlist(req.session.user._id,req.params.id).then((response)=>{
+      res.send(response)
+    })
+  },
+  getWishlist:(req,res)=>{
+    productHelpers.getWishlistProducts(req.session.user._id).then((products)=>{
+
+      res.render('user/wishlist',{nav})
+    })
+  }
   
 };

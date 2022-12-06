@@ -1,10 +1,9 @@
-var express = require("express");
-var router = express.Router();
-const userHelpers = require("../helpers/userHelpers");
-const productHelpers = require("../helpers/product-helpers");
+
+
 const cartHelpers=require('../helpers/cartHelpers')
-const config = require("../config/otpconfig");
-const client = require("twilio")(config.accountID, config.authToken);
+const productHelpers = require("../helpers/product-helpers");
+
+
 
 var nav = true;
 var footer = true;

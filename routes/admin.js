@@ -68,7 +68,10 @@ const {
 const{
   getBanner,
   getMainBanner,
-  addMainBanner
+  addMainBanner,
+  deleteBanner,
+  editManinBanner,
+  getCoupenCode
 }=require('../controllers/bannerManagement')
 const layout = 'admin-layout'
 
@@ -165,11 +168,19 @@ router.get('/chartGraph',revenueGraph)
 
 router.get('/coupon',verifyAdminLogin,coupon)
 router.get('/add-coupon',verifyAdminLogin,addCoupon)
+
+
 router.post('/add-coupon',verifyAdminLogin,addCouponPost)
+
+
 
 router.get('/banner',verifyAdminLogin,getBanner)
 router.get('/add-main-banner',verifyAdminLogin,getMainBanner)
 router.post('/add-main-banner',upload2.array('image'),verifyAdminLogin,addMainBanner)
+router.get('/delete-main-banner/:id',verifyAdminLogin,deleteBanner)
+router.post('/edit-main-banner',verifyAdminLogin,editManinBanner)
+
+router.get('/generate-coupon-code',verifyAdminLogin,getCoupenCode)
 
 
 
