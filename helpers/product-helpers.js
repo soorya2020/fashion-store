@@ -1,5 +1,4 @@
 const db = require("../model/connection");
-const { response } = require("../app");
 
 module.exports = {
   addProducts: async (product) => {
@@ -17,7 +16,7 @@ module.exports = {
   getAllProducts: () => {
     return new Promise(async (resolve, reject) => {
       let products = await db.products.find({});
-      console.log(products);
+     
       resolve(products);
     });
   },
@@ -143,9 +142,60 @@ module.exports = {
   },
   getWishlistProducts:(userId)=>{
     return new Promise((resolve,reject)=>{
-
-      db.wishlist.find({user:userId})
+      // db.wishlists.find({user:userId}).then((data)=>{
+      //   resolve(data)
+      // })
+      db.wishlists.aggregate([
+        {
+          $match:{user:userId},
+        },
+        {
+          $unwind:'$products'
+        },
+        {
+          $project:{
+            item:'$products.item',
+          }
+        },
+        {
+          $lookup:{
+            from:'products',
+            localField:'item',
+            foreignField:'_id',
+            as:'productInfo'
+          }
+        },
+        {
+          $project:{
+            item:1,
+            image:1,
+            product:{$arrayElemAt:['$productInfo',0]}
+          }
+        },
+        
+      ]).then((data)=>{
+        resolve(data)
+      }).catch((e)=>{
+        reject(e)
+      })
     })
   },
+  removeFromWishlist:(userId,prodId)=>{
+    return new Promise((resolve,reject)=>{
+      db.wishlists.updateOne(
+        {
+          user:userId
+        },
+        {
+          $pull:{products:{item:prodId}}
+        }
+        ).then(()=>{
+          resolve()
+        }).catch((e)=>{
+          reject()
+        })
+    })
+  }
+  
   
 };                                              

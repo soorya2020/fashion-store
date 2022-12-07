@@ -4,12 +4,14 @@
     let month=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
     let dd=date_.getDate()
     let mm=date_.getMonth()
-    let monthText=date_.month(mm)
+    let monthText=month[mm]
     let yyyy=date_.getFullYear()
   
     return `${isNaN(dd)?'00':dd}-${monthText}-${isNaN(yyyy)?'0000':yyyy}`
   
     } %>
+
+    // 
 
 <% orders?.orders?.reverse()?.forEach(order=>{ %>
 <div class="page-content">

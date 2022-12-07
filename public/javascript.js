@@ -13,7 +13,7 @@ function addToCart(prodId,stock){
             if(response.status){
                 console.log(response);
                 if(stock - response.quantity<=0){
-                    toast2()
+                    toast2('out of stock')
                 }else{
                     
                     $.ajax({
@@ -33,7 +33,7 @@ function addToCart(prodId,stock){
                     })
                 }
             }else if(!response.status && stock==0){
-                toast2()
+                toast2('out of stock')
             }
             else{
                 $.ajax({
@@ -61,7 +61,12 @@ function addToCart(prodId,stock){
             
         }
     })
-    async function toast() {
+
+    
+
+
+
+    async function toast(message) {
         const Toast = Swal.mixin({
             toast: true,
             position: 'top',
@@ -79,7 +84,7 @@ function addToCart(prodId,stock){
           })
           
     }
-    async function toast2() {
+async function toast2(message) {
         const Toast = Swal.mixin({
             toast: true,
             position: 'bottom',
@@ -93,7 +98,7 @@ function addToCart(prodId,stock){
           })
           await Toast.fire({
             icon: 'error',
-            title: 'Out of stock'
+            title: `${message}`
           })
           
     }
@@ -101,7 +106,7 @@ function addToCart(prodId,stock){
     
 }
 
-async function toast(messa){
+async function toast(message) {
     const Toast = Swal.mixin({
         toast: true,
         position: 'top',
@@ -115,10 +120,45 @@ async function toast(messa){
       })
       await Toast.fire({
         icon: 'success',
-        title: messa
+        title: `${message}`
       })
+      
+}
+async function toast2(message) {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'bottom',
+        iconColor: 'white',
+        customClass: {
+          popup: 'colored-toast'
+        },
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true
+      })
+      await Toast.fire({
+        icon: 'error',
+        title: `${message}`
+      })
+      
 }
 
+
+
+
+function addToWishlist(id){
+  $.ajax({
+      url:'/add-to-wishlist/'+id,
+      method:'get',
+      success:(response)=>{
+          if(response.status=='success'){
+              toast('added to wishlist')
+          }else{
+              toast('already added to wishlist')
+          }
+      }
+  })
+}
 
 
    

@@ -1,18 +1,13 @@
 const db = require("../model/connection");
-const { response } = require("../app");
-const { products, orders } = require("../model/connection");
 const ObjectId = require("mongodb").ObjectID;
-
 const Razorpay = require("razorpay");
-const { resolve } = require("node:path");
+const paypal = require("paypal-rest-sdk");
+
 var instance = new Razorpay({
   key_id: "rzp_test_tUZpCht97wF71G",
   key_secret: "ggez8hbKtN3dnEXjRWW6XqZg",
 });
 
-const paypal = require("paypal-rest-sdk");
-const { ObjectID } = require("bson");
-const product = require("../controllers/product");
 paypal.configure({
   mode: "sandbox", //sandbox or live
   client_id:
@@ -217,10 +212,10 @@ module.exports = {
             },
           ])
           .then((totalAmount) => {
-            // resolve(totalAmount[0]?.total);
-            resolve(totalAmount[0]?.total);
+       
+            resolve(totalAmount[0]);
           }).catch((err)=>{
-            console.log(err,"saleshelpers line 233");
+            console.log(err);
           });
       });
     } catch (error) {
@@ -343,7 +338,7 @@ module.exports = {
       let addressExist = await db.addresses.find({ userId: order.userId });
 
       if (addressExist.length) {
-        console.log(addressExist, "addreExist");
+       
 
         db.addresses
           .find({
@@ -352,9 +347,9 @@ module.exports = {
             userId: order.userId,
           })
           .then((res) => {
-            console.log(res, "this is res");
+           
             if (res.length == 0) {
-              console.log(res, "line 303");
+             
               // db.addresses(addressObj).save()
               db.addresses
                 .updateOne(
@@ -369,7 +364,7 @@ module.exports = {
                   resolve();
                 });
             } else {
-              console.log("else is working");
+             
             }
           });
       } else {
@@ -852,27 +847,28 @@ module.exports = {
       }
     });
   },
-  getCartCount: (userId) => {
-    return new Promise(async (resolve, reject) => {
-      let count = 0;
-      let cart = await db.carts.findOne({ user: userId });
   
-      if (cart) {
-        for (i = 0; i < cart.products.length; i++) {
-          count += cart.products[i].quantity;
-        }
-      }
-      count = parseInt(count);
-      resolve(count);
-    });
-  },
-  getAddress: (userId) => {
-    return new Promise(async (resolve, reject) => {
-      let address = await db.addresses.find({ userId: userId });
-      resolve(address);
-    });
-  }
+
 };
 
+module.exports.getCartCount = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    let count = 0;
+    let cart = await db.carts.findOne({ user: userId });
 
+    if (cart) {
+      for (i = 0; i < cart.products.length; i++) {
+        count += cart.products[i].quantity;
+      }
+    }
+    count = parseInt(count);
+    resolve(count);
+  });
+}
 
+module.exports.getAddress = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    let address = await db.addresses.find({ userId: userId });
+    resolve(address);
+  });
+}

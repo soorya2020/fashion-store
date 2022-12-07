@@ -1,12 +1,6 @@
-var express = require("express");
-var router = express.Router();
 const config = require("../config/otpconfig");
 const userHelpers = require("../helpers/userHelpers");
-const productHelpers = require("../helpers/product-helpers");
-const { Db } = require("mongodb");
-const { response } = require("../app");
 const client = require("twilio")(config.accountID, config.authToken);
-
 const db = require("../model/connection");
 
 var nav = true;

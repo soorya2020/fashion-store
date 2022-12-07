@@ -6,7 +6,7 @@
         <!-- <p class="card-description">
                       Personal info
                     </p> -->
-        <div class="alert alert-warning" id="errorDisplay" role="alert">
+        <div class="alert alert-danger" id="errorDisplay" role="alert" hidden>
 
         </div>
         <div class="col">
@@ -71,7 +71,12 @@
             </div>
           </div>
 
-          <button type="button" onclick="validatorCoupen()" >submit</button>
+          <div class="" >
+          
+
+              <a type="button" class="btn btn-success col-6" onclick="validatorCoupen()" >submit</a>
+           
+          </div>
         </div>
     </div>
     </form>
@@ -92,51 +97,62 @@
 
     let flag = 1
     if (coupenName == "") {
+      error.removeAttribute('hidden')
       error.innerText = "Generate coupen"
       error.style.background = "rgb(200,0,0,0.1)"
       error.style.width = "100%"
       flag = 2
     } else if (validity == '') {
+      error.removeAttribute('hidden')
       error.innerText = 'expiry date is required'
       error.style.background = 'rgb(200,0,0,0.1)'
       error.style.width = "100%"
       flag = 2
     } else if (new Date(validity) - new Date() <= 0) {
+      error.removeAttribute('hidden')
       error.innerText = 'this date has already expired'
       error.style.background = 'rgb(200,0,0,0.1)'
       error.style.width = "100%"
       flag = 2
     } else if (minAmount == '') {
+      error.removeAttribute('hidden')
       error.innerText = 'min amount is required'
       error.style.background = 'rgb(200,0,0,0.1)'
       error.style.width = "100%"
       flag = 2
     } else if (minAmount < 1000) {
+      error.removeAttribute('hidden')
       error.innerText = 'min amount should be greater that 1000'
       error.style.background = 'rgb(200,0,0,0.1)'
       error.style.width = "100%"
       flag = 2
-    } else if (maxDiscountValue > minAmount - (minAmount * discountPercentage / 100)) {
+    } else if (maxDiscountValue > (minAmount * discountPercentage / 100) ) {
+      error.removeAttribute('hidden')
+      console.log(minAmount * discountPercentage / 100);
       error.innerText = `maximum offer price should be  ${minAmount*discountPercentage/100 }`
       error.style.background = 'rgb(200,0,0,0.1)'
       error.style.width = "100%"
       flag = 2
     } else if (description == '') {
+      error.removeAttribute('hidden')
       error.innerText = 'description is required'
       error.style.background = 'rgb(200,0,0,0.1)'
       error.style.width = "100%"
       flag = 2
     } else if (maxDiscountValue == '') {
+      error.removeAttribute('hidden')
       error.innerText = 'Max Discount value is required'
       error.style.background = 'rgb(200,0,0,0.1)'
       error.style.width = "100%"
       flag = 2
     } else if (discountPercentage == '') {
+      error.removeAttribute('hidden')
       error.innerText = ' discount percentage is required'
       error.style.background = 'rgb(200,0,0,0.1)'
       error.style.width = "100%"
       flag = 2
-    } else if (discountPercentage != '') {
+    } else if (discountPercentage <= 0) {
+      error.removeAttribute('hidden')
       if (discountPercentage > 100) {
         error.innerText = ' discount percentage cannot be greated thant 100'
         error.style.background = 'rgb(200,0,0,0.1)'

@@ -1,21 +1,15 @@
 require("dotenv").config();
-var express = require("express");
-var router = express.Router();
-const userHelpers = require("../helpers/userHelpers");
 const productHelpers = require("../helpers/product-helpers");
 const cartHelpers = require("../helpers/cartHelpers");
 const config = require("../config/otpconfig");
 
 const { v4: uuidv4 } = require("uuid");
-
-const client = require("twilio")(config.accountID, config.authToken);
-
 const db = require("../model/connection"); //trial
-const { response } = require("../app");
-const { ObjectId, ObjectID } = require("mongodb");
-const { resolveInclude } = require("ejs");
 
 const paypal = require("@paypal/checkout-server-sdk");
+const couponHelpers = require("../helpers/couponHelpers");
+const { coupon } = require("./orderManagement");
+const { ObjectId } = require("mongodb");
 const Environment =
   process.env.NODE_ENV === "production"
     ? paypal.core.LiveEnvironment
@@ -32,19 +26,18 @@ var nav = true;
 var footer = true;
 
 module.exports = {
-  getHome:async function (req, res) {
-  productHelpers.getBanners().then((banners)=>{
- 
-    res.render("index", { nav, footer,banners:banners });
-  })
+  getHome: async function (req, res) {
+    productHelpers.getBanners().then((banners) => {
+      res.render("index", { nav, footer, banners: banners });
+    });
   },
   getCart: async (req, res) => {
     let cartCount = await cartHelpers.getCartCount(req?.session?.user?._id);
+
     let totalAmount = await cartHelpers.getTotalAmount(req?.session?.user?._id);
-    let total=totalAmount.total
-    let mrpTotal=totalAmount.mrpTotal
+    let total = totalAmount?.total;
+    let mrpTotal = totalAmount?.mrpTotal;
     cartHelpers.getCartProducts(req?.session?.user?._id).then((cartItems) => {
-      
       res.render("user/cart", {
         cartItems,
         user: req.session.user,
@@ -55,22 +48,24 @@ module.exports = {
       });
     });
   },
-  findProdQuantity:(req,res)=>{
-    let prodId=req.params.id
-    cartHelpers.findQuantity(prodId,req.session.user._id).then((quantity)=>{
-      res.json(quantity)
-    })
+  findProdQuantity: (req, res) => {
+    let prodId = req.params.id;
+    cartHelpers.findQuantity(prodId, req.session.user._id).then((quantity) => {
+      res.json(quantity);
+    });
   },
   addToCart: (req, res) => {
-   
-    cartHelpers.addToCart(req.params.id, req.session.user._id).then((quantity) => {
-      console.log(quantity,'soorya');
-      res.json({ status: true });
-    });
+    cartHelpers
+      .addToCart(req.params.id, req.session.user._id)
+      .then((quantity) => {
+        console.log(quantity, "soorya");
+        res.json({ status: true });
+      });
   },
   changePrdQty: (req, res) => {
     cartHelpers.changeProductQuantity(req.body).then(async (response) => {
       response.total = await cartHelpers.getTotalAmount(req.session.user._id);
+      response.total=response?.total?.total//changed
 
       res.json(response);
     });
@@ -83,71 +78,96 @@ module.exports = {
   getCheckout: async (req, res) => {
     let cartProducts = await cartHelpers.getCartProducts(req.session.user._id);
     let total = await cartHelpers.getTotalAmount(req.session.user._id);
+    console.log(total);
+    let totalAmount=total.total
     let address = await cartHelpers.getAddress(req.session.user._id);
+    let coupons= await couponHelpers.getAllCoupons()
 
     res.render("user/checkout", {
-      total: total,
+      total: totalAmount,
       user: req.session.user,
       address,
       cartProducts,
       nav,
       paypalClientId: process.env.PAYPAL_CLIENT_ID,
+      coupons
     });
   },
   postCheckout: async (req, res) => {
-    req.body.userId = await req.session.user._id;
-    let total = await cartHelpers.getTotalAmount(req.session.user._id);
-    let totalPrice = total;
+    var totalPrice=0
+    req.body.userId =  req.session.user._id;
+    if(req.session.coupon){
+      
+    let coupon=await couponHelpers.getCoupon(req.session.coupon)
+    let totalAmount = await cartHelpers.getTotalAmount(req.session.user._id);
+    let total=totalAmount.total
+      if(total>coupon.minPurchase){ 
+        await couponHelpers.changeCouponStatus(req.session.user._id,req.session.coupon)
+        if(total*coupon.discountPercentage/100 <=coupon.maxDiscountValue){
+        console.log('soosrya');
+         totalPrice=total-coupon.maxDiscountValue
+         console.log(totalPrice,'this is my toal proce');
+        }else{
+          totalPrice=total-coupon.maxDiscountValue
+         }
+      }else{
+         totalPrice=total-total*coupon.discountPercentage/100
+      }
+    }else{
 
+      let totalAmount = await cartHelpers.getTotalAmount(req.session.user._id);
+      totalPrice = totalAmount.total;
+      console.log(totalPrice,'this is my toal proce');
+    }
 
-
-    if (total == 0) {
+    if (totalPrice == 0) {
+      req.session.coupon=''
       res.json({ status: true });
     } else {
-      
-      cartHelpers.placeOrder(req.body, total).then(async(response) => {
- 
-        if(response?.outOfStock){
-          res.json(response)
-        }else{
-        
-        if (req.body.paymentMethod === "COD") {
-
-          let orders = await db.orders.find({ userId:req.session.user._id });
-          let myOrderId =  orders[0]?.orders.reverse();
-          myOrderId = myOrderId[0]?._id;
-          cartHelpers.changePaymentStatus(myOrderId,req.session.user._id).then(()=>{
-          res.json({ cod: true });
-          })
-
-        } else if (req.body.paymentMethod === "UPI") {
-          cartHelpers.generateRazorpay(req.session.user._id, totalPrice).then((response) => {
-           
-              res.json(response);
-            });
-
-        } else if (req.body.paymentMethod === "PAYPAL") {
-          res.json({ paypal: true, totalPrice: totalPrice });
+      cartHelpers.placeOrder(req.body, totalPrice).then(async (response) => {
+        if (response?.outOfStock) {
+          req.session.coupon=''
+          res.json(response);
+        } else {
+          if (req.body.paymentMethod === "COD") {
+            let orders = await db.orders.find({ userId: req.session.user._id });
+            let myOrderId = orders[0]?.orders.reverse();
+            myOrderId = myOrderId[0]?._id;
+            cartHelpers
+              .changePaymentStatus(myOrderId, req.session.user._id)
+              .then(() => {
+                req.session.coupon=''
+                res.json({ cod: true });
+              });
+          } else if (req.body.paymentMethod === "UPI") {
+            cartHelpers
+              .generateRazorpay(req.session.user._id, totalPrice)
+              .then((response) => {
+                req.session.coupon=''
+                res.json(response);
+              });
+          } else if (req.body.paymentMethod === "PAYPAL") {
+            req.session.coupon=''
+            res.json({ paypal: true, totalPrice: totalPrice });
+          }
         }
-      }
       });
     }
   },
   getOrders: (req, res) => {
     let userId = req.session.user._id;
     cartHelpers.getOrders(userId).then((orders) => {
-      console.log();
+     
       // res.render("user/orders", { nav, orders });
-      res.render('user/neworder',{ nav, orders })
+      res.render("user/neworder", { nav, orders });
     });
   },
-  getOrderDetails:(req,res)=>{
-    let orderId=req.params.id
-    let userId=req.session.user._id
-    cartHelpers.getOrderDetails(orderId,userId).then((d)=>{
-      
-      res.send(d[0])
-    })
+  getOrderDetails: (req, res) => {
+    let orderId = req.params.id;
+    let userId = req.session.user._id;
+    cartHelpers.getOrderDetails(orderId, userId).then((d) => {
+      res.send(d[0]);
+    });
   },
   postCancelOrder: (req, res) => {
     cartHelpers
@@ -170,10 +190,12 @@ module.exports = {
       .verifyPayment(req.body)
       .then(() => {
         console.log(req.body["order[receipt]"]);
-        console.log('thsis is orsdr id');
-        cartHelpers.changePaymentStatus(req.body["order[receipt]"],req.session.user._id).then(() => {
-          res.send({ status: true });
-        });
+        console.log("thsis is orsdr id");
+        cartHelpers
+          .changePaymentStatus(req.body["order[receipt]"], req.session.user._id)
+          .then(() => {
+            res.send({ status: true });
+          });
       })
       .catch((err) => {
         res.send({ status: "payment failed" });
@@ -248,23 +270,64 @@ module.exports = {
         console.log("error while updating payament status");
       });
   },
-  retunProduct:(req,res)=>{
+  retunProduct: (req, res) => {
+    cartHelpers.retunItem(req.body, req.session.user._id).then((response) => {
+      res.send(response);
+    });
+  },
+  addToWishlist: (req, res) => {
+    productHelpers
+      .addToWishlist(req.session.user._id, req.params.id)
+      .then((response) => {
+        res.send(response);
+      });
+  },
+  getWishlist: (req, res) => {
+    productHelpers
+      .getWishlistProducts(req.session.user._id)
+      .then((products) => {
+        res.render("user/wishlist", { nav, products });
+      });
+  },
+  removeFromWishlist:(req,res)=>{
+    console.log('soorya');
+    productHelpers.removeFromWishlist(req.session.user._id,req.params.id).then(()=>{
+      res.send({status:true})
+    }).catch((e)=>{
+      res.send({status:false})
+    })
+  },
+  applyCoupon:async(req,res)=>{
+    req.session.coupon=req.body._id
+    let couponId=req.body._id
+    let totalAmount=await cartHelpers.getTotalAmount(req.session.user._id)
+    let total=totalAmount.total
+    couponHelpers.getCoupon(couponId).then((data)=>{
+      if(total>=data.minPurchase){
+        //add coupon to user
+        couponHelpers.addCouponToUser(req.session.user._id,ObjectId(req.body._id),false).then((d)=>{
+          
+          if(total*data.discountPercentage/100 <=data.maxDiscountValue){
   
-    cartHelpers.retunItem(req.body,req.session.user._id).then((response)=>{
-      res.send(response)
-    })
-  },
-  addToWishlist:(req,res)=>{
-   
-    productHelpers.addToWishlist(req.session.user._id,req.params.id).then((response)=>{
-      res.send(response)
-    })
-  },
-  getWishlist:(req,res)=>{
-    productHelpers.getWishlistProducts(req.session.user._id).then((products)=>{
+            console.log(total*data.discountPercentage/100,'thsi is my discount value')
+            let couponAmount=total*data.discountPercentage/100
+            // couponHelpers.applyCoupon(couponAmount)
+            res.send({status:true,couponAmount:couponAmount,couponId:data._id})
+  
+          }else{
+            let couponAmount=data.maxDiscountValue
+            // couponHelpers.applyCoupon(couponAmount)
+            console.log('soorya ethi mone');
+            res.send({status:true,couponAmount:couponAmount})
 
-      res.render('user/wishlist',{nav})
+          }
+        }).catch(()=>{
+          res.send({staus:false,message:'coupon already used'})
+        })
+
+      }else{
+        res.send({status:false,message:'coupon not applicable'})
+      }
     })
-  }
-  
-};
+  },
+}

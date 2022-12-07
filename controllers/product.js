@@ -17,7 +17,7 @@ module.exports={
       let cartCount=await cartHelpers.getCartCount(req?.session?.user?._id)
         productHelpers.getAllProducts().then((products) => {
           var value = req.session.loggedIn;
-          console.log(value,'this is shop user');
+        
           if(req.session.loggedIn){
             res.locals.loggedIn=true
           }

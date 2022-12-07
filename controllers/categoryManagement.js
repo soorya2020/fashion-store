@@ -1,13 +1,5 @@
-var express = require('express');
-const { render } = require('../app');
-
 const adminHelpers = require('../helpers/adminHelpers');
-
-
-
-
 const layout = 'admin-layout'
-
 
 module.exports={
     viewAllCategories:(req,res)=>{

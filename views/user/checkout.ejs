@@ -1,3 +1,105 @@
+<style>
+  /*the complete project is in the following link:
+https://github.com/vkive/coupon-code.git
+Follow me on Codepen
+*/
+
+  .mycoupon {
+    width: 100%;
+    height: 30vh;
+    background: #f0fff3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
+
+  .coupon-card {
+    background: linear-gradient(135deg, #7158fe, #9d4de6);
+    color: #fff;
+    text-align: center;
+    padding: 22px 37px;
+    border-radius: 15px;
+    box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.15);
+    position: relative;
+
+  }
+
+  .logo {
+    width: 80px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+
+  }
+
+  .coupon-card h3 {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 25px;
+
+  }
+
+  .coupon-card p {
+    font-size: 15px;
+
+  }
+
+  .coupon-row {
+    display: flex;
+    align-items: center;
+    margin: 25px auto;
+    width: fit-content;
+
+  }
+
+  #cpnCode {
+    border: 1px dashed #fff !important;
+    padding: 10px 20px !important;
+    border-right: 0 !important;
+
+  }
+
+  .couponButton {
+    border: 1px solid #fff;
+    background: #fff;
+    padding: 13px 20px;
+    color: #7158fe;
+    cursor: pointer;
+  }
+
+  .circle1,
+  .circle2 {
+    background: #f0fff3;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+  }
+
+  .circle1 {
+    left: -25px;
+  }
+
+  .circle2 {
+    right: -25px;
+  }
+</style>
+<% 
+dataToReadable=(date)=>{
+
+const date_=new Date(date);
+let month=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+let dd=date_.getDate()
+let mm=date_.getMonth()
+let monthText=month[mm]
+let yyyy=date_.getFullYear()
+
+return `${isNaN(dd)?'00':dd}-${monthText}-${isNaN(yyyy)?'0000':yyyy}`
+
+} %>
 <main class="main">
   <div class="page-header text-center" style="background-image: url('https://image.shutterstock.com/image-photo/credit-cards-on-hand-customers-260nw-1416251864.jpg')">
     <div class="container">
@@ -47,12 +149,63 @@
         <!-- end of address -->
 
         <div class="checkout-discount">
-          <form action="">
+          <form action="#">
             <input type="text" class="form-control" required id="checkout-discount-input">
-            <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to
-                enter your code</span></label>
+            <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
           </form>
         </div><!-- End .checkout-discount -->
+
+
+
+        <div>
+          <button type="button" class="btn btn-success rounded" data-toggle="modal" data-target="#exampleModalLong">Browse coupon</button>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="container-fluid">
+                  <!-- coupon start -->
+                  <% coupons.forEach(element=>{ %>
+                  <div class="container mycoupon">
+                    <div class="coupon-card">
+                      <!-- <img src="https://i.postimg.cc/KvTqpZq9/uber.png" class="logo"> -->
+                      <h3><%=  element.description %> </h3>
+                      <div class="coupon-row">
+                        <span id="cpnCode" class="couponName"><%= element.couponName  %> </span>
+                        <button onclick="applyCoupon(this,'<%= element._id%>')" id="<%= element._id  %> " class="btn couponButton">Copy Code</button>
+                      </div>
+                      <p style="color:white ;">Valid Till: <%= dataToReadable(element.expiry) %> </p>
+                      <input hidden id="couponId" type="text" value="<%= element._id %>">
+                      <div class="circle1"></div>
+                      <div class="circle2"></div>
+                    </div>
+                  </div>
+                  <% }) %>
+                  <!-- coupon end -->
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" onClick="window.location.reload()" class="btn btn-secondary text-white" data-dismiss="modal">cancel</button>
+                <a type="button" class="btn btn-primary  text-white" data-dismiss="modal">Save</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--  -->
+
+
+
+
         <form action="#">
           <div class="row">
             <div class="col-lg-9">
@@ -191,9 +344,17 @@
                       <td>Shipping:</td>
                       <td>Free shipping</td>
                     </tr>
+                    <tr>
+                      <td>
+                        Offer:
+                      </td>
+                      <td>
+                        <strong><p class="text-success" id="offerApplied">₹ 0</p></strong>
+                      </td>
+                    </tr>
                     <tr class="summary-total">
                       <td>Total:</td>
-                      <td>Rs <%= total? total:0 %>
+                      <td id="finalAmount">₹ <%= total? total:0 %>
                       </td>
                     </tr><!-- End .summary-total -->
                   </tbody>
@@ -275,7 +436,7 @@
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-  function validate() {
+  function validate(couponId) {
 
     const firstname = document.getElementById('firstname')
     const lastname = document.getElementById('lastname')
@@ -286,6 +447,7 @@
     const pincode = document.getElementById('pincode')
     const mobile = document.getElementById('mobile')
     const email = document.getElementById('email')
+
 
     const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value ? document.querySelector('input[name="payment"]:checked').value : ""
 
@@ -464,14 +626,14 @@
           mobile: mobilevValue,
           email: emailValue,
           paymentMethod: paymentMethod
+          
         },
 
 
         success: (response) => {
-          if(response.outOfStock){
+          if (response.outOfStock) {
             alert('item was out of stock')
-          }
-          else if (response.status == true) { //no products to order
+          } else if (response.status == true) { //no products to order
             Swal.fire({
               icon: 'error',
               title: 'Oops... Add Products plzzzzz',
@@ -486,7 +648,7 @@
 
           } else if (response.paypal) {
             paypalPayment(response.totalPrice)
-          } else if(response) {
+          } else if (response) {
             rozorpayPayment(response)
           }
 
@@ -602,7 +764,7 @@
               },
               body: JSON.stringify({
                 total: total,
-               
+
               })
 
             }).then((response) => {
@@ -619,39 +781,39 @@
           },
           // Finalize the transaction after payer approval
           onApprove: (data, actions) => {
-           $.ajax({
-            url:'/verify-paypal',
-            method:'get',
-            success:(response)=>{
-              if(response.status){
-                let timerInterval
-                    Swal.fire({
-                      title: 'Payment Successfull',
-                      html: 'I will close in <b></b> milliseconds.',
-                      timer: 2000,
-                      timerProgressBar: true,
-                      didOpen: () => {
-                        Swal.showLoading()
-                        const b = Swal.getHtmlContainer().querySelector('b')
-                        timerInterval = setInterval(() => {
-                          b.textContent = Swal.getTimerLeft()
-                        }, 100)
-                      },
-                      willClose: () => {
-                        clearInterval(timerInterval)
-                      }
-                    }).then((result) => {
-                      /* Read more about handling dismissals below */
-                      if (result.dismiss === Swal.DismissReason.timer) {
-                        console.log('I was closed by the timer')
-                        window.location.href='/orders'
-                      }
-                    })
-              }else{
-                alert('payment status not changed')
+            $.ajax({
+              url: '/verify-paypal',
+              method: 'get',
+              success: (response) => {
+                if (response.status) {
+                  let timerInterval
+                  Swal.fire({
+                    title: 'Payment Successfull',
+                    html: 'I will close in <b></b> milliseconds.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                      Swal.showLoading()
+                      const b = Swal.getHtmlContainer().querySelector('b')
+                      timerInterval = setInterval(() => {
+                        b.textContent = Swal.getTimerLeft()
+                      }, 100)
+                    },
+                    willClose: () => {
+                      clearInterval(timerInterval)
+                    }
+                  }).then((result) => {
+                    /* Read more about handling dismissals below */
+                    if (result.dismiss === Swal.DismissReason.timer) {
+                      console.log('I was closed by the timer')
+                      window.location.href = '/orders'
+                    }
+                  })
+                } else {
+                  alert('payment status not changed')
+                }
               }
-            }
-           })
+            })
           }
         }).render('#paypal-button-container');
       }
@@ -678,4 +840,80 @@
 
     })
   }
+
+
+
+
+  function applyCoupon(input, id) {
+    var cpnBtn = input
+
+    var cpnCode = input.parentElement.querySelector('span.couponName')
+    // var couponId = document.getElementById('couponId').value
+    
+    cpnBtn.innerHTML = "COPIED";
+   
+    var elems = document.getElementsByClassName("couponButton");
+    for (var i = 0; i < elems.length; i++) {
+      elems[i].disabled = true;
+    }
+
+    $.ajax({
+      url: '/apply-coupon',
+      method: 'post',
+      data: {
+        _id: id
+      },
+      success: (response) => {
+        if (response.status) {
+          toast('Coupon applied')
+          cpnBtn.innerHTML = "applied"
+          document.getElementById('offerApplied').innerText = "₹"+response.couponAmount
+          let discountTotal =parseInt(document.getElementById('finalAmount').innerText.split(' ')[1]) - parseInt(response.couponAmount)
+          document.getElementById('finalAmount').innerText = "₹"+discountTotal
+
+        } else {
+          toast2(response.message)
+        }
+      }
+    })
+    // setTimeout(function(){
+    //     cpnBtn.innerHTML="COPY CODE";
+    // }, 3000);
+
+  }
+
+
+  // script for coupon from codepen
+  // var cpnBtn = document.getElementById("cpnBtn");
+  //           var cpnCode = document.getElementById("cpnCode");
+  //           var couponId=document.getElementById('couponId').value
+
+
+  //           cpnBtn.onclick = function(){
+  //               navigator.clipboard.writeText(cpnCode.innerHTML);
+  //               cpnBtn.innerHTML ="COPIED";
+
+  //               $.ajax({
+  //                 url:'/apply-coupon',
+  //                 method:'post',
+  //                 data:{
+  //                   _id:couponId
+  //                 },
+  //                 success:(response)=>{
+  //                   if(response.status){
+  //                     cpnBtn.innerHTML="applied"
+  //                    document.getElementById('offerApplied').innerText=response.couponAmount
+  //                    let discountTotal=parseInt(document.getElementById('finalAmount').innerText.split(' ')[1])-parseInt(response.couponAmount)
+  //                    document.getElementById('finalAmount').innerText='Rs '+discountTotal
+
+  //                   }else{
+  //                     alert('error')
+  //                   }
+  //                 }
+  //               })
+  //               // setTimeout(function(){
+  //               //     cpnBtn.innerHTML="COPY CODE";
+  //               // }, 3000);
+
+  //           }
 </script>

@@ -1,7 +1,5 @@
 const db = require("../model/connection");
-const { response } = require("../app");
 const bcrypt = require("bcrypt");
-const { ObjectID } = require("bson");
 const data = require("../config/adminpass");
 
 module.exports = {

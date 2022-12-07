@@ -1,14 +1,6 @@
-var express = require('express');
-const { render, response } = require('../app');
-const { products } = require('../model/connection');
-const adminHelpers = require('../helpers/adminHelpers');
-const productHelpers = require('../helpers/product-helpers');
 const cartHelpers = require('../helpers/cartHelpers');
 const salesHelpers = require('../helpers/salesHelpers');
 const couponHelpers=require('../helpers/couponHelpers')
-
-
-const router = express.Router();
 const layout = 'admin-layout'
 
 

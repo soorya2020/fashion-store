@@ -1,7 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const productHelpers = require("../helpers/product-helpers");
-const cartHelpers = require("../helpers/cartHelpers");
+const path = require('path');
 const multer = require("multer");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -51,20 +50,19 @@ const {
   retunProduct,
   getHome,
   getWishlist,
-  addToWishlist
+  addToWishlist,
+  removeFromWishlist,
+  applyCoupon,
+
 } = require("../controllers/cart");
 
-const { path } = require("../app");
-const { resolveInclude } = require("ejs");
-const { cancelOrder, generatePaypal } = require("../helpers/cartHelpers");
-const { route } = require("./admin");
 
 var nav = true;
 var footer = true;
 
-//cart count middleware
+
 const cartCount = async (req, res, next) => {
-  res.locals.cartCount = await cartHelpers.getCartCount(req.session.user._id);
+  // res.locals.cartCount = await cartHelpers.getCartCount(req.session.user._id);
   next();
 };
 //home page
@@ -134,6 +132,10 @@ router.get('/get-order-data/:id',getOrderDetails)
 
 router.get('/wishlist',verifyLogin,getWishlist)
 router.get('/add-to-wishlist/:id',verifyLogin,addToWishlist)
+router.get('/remove-item-wishlist/:id',verifyLogin,removeFromWishlist)
+
+router.post('/apply-coupon',verifyLogin,applyCoupon)
+
 
 
 // router.get('/new-order',(req,res)=>{

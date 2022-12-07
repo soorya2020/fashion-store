@@ -1,10 +1,9 @@
 // const { products } = require('../config/connection');
 var express = require('express');
-const { render } = require('../app');
 const adminHelpers = require('../helpers/adminHelpers');
 const router = express.Router();
 
-const multer= require('multer')
+const multer= require('multer');
 
 // handle storage using multer
 const storage = multer.diskStorage({

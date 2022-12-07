@@ -14,7 +14,7 @@ db.once("open",()=>{
 
 
 //product schema
-exports.products=db.model('product',new mongoose.Schema({
+module.exports.products=db.model('product',new mongoose.Schema({
     name:String,
     price:Number,
     offerPrice:Number,
@@ -33,7 +33,7 @@ exports.products=db.model('product',new mongoose.Schema({
 }))
 
 //user schema
-const userSchema=new mongoose.Schema({
+module.exports.users=db.model('user', new mongoose.Schema({
     name:String,
     email:String,
     status:{
@@ -46,15 +46,22 @@ const userSchema=new mongoose.Schema({
     },
     password:String,
     mobile:String,
-    wallet:Array
-})
+    wallet:Array,
+    coupon:[
+        {
+        couponId:mongoose.Types.ObjectId,
+        status:{
+            type:Boolean
+        }
+    }]
+}))
 
 //catergory schema
-const catergorySchema=new mongoose.Schema({
+module.exports.categories=db.model('category',new mongoose.Schema({
     name:String
-})
+}))
 
-exports.carts=db.model('cart',new mongoose.Schema({
+module.exports.carts=db.model('cart',new mongoose.Schema({
     user:ObjectID,
     products:[{
         item:ObjectID,
@@ -64,7 +71,7 @@ exports.carts=db.model('cart',new mongoose.Schema({
         
 }))
 
-const wishlistSchema=new mongoose.Schema({
+module.exports.wishlists=db.model('wishlist',new mongoose.Schema({
     user:ObjectID,
     products:[{
         item:ObjectID,
@@ -72,9 +79,9 @@ const wishlistSchema=new mongoose.Schema({
         
     }]
         
-})
+}))
 
-const addressSchema=new mongoose.Schema({
+module.exports.addresses=db.model('address',new mongoose.Schema({
     userId:mongoose.Types.ObjectId,
     address:[{
         firstName:String,
@@ -87,7 +94,7 @@ const addressSchema=new mongoose.Schema({
         mobile:Number,
         email:String
     }]
-})
+}))
 
 module.exports.orders=db.model('order',new mongoose.Schema({
     userId:mongoose.Types.ObjectId,
@@ -120,15 +127,15 @@ module.exports.orders=db.model('order',new mongoose.Schema({
     ]
 }))
 
-const bannerSchema=new mongoose.Schema({
+module.exports.banners=db.model('banner',new mongoose.Schema({
     title:String,
     subtitle:String,
     description:String,
     offer:String,
     image:Array
-})
+}))
 
-exports.coupons= db.model("coupons",new mongoose.Schema({
+module.exports.coupons= db.model("coupons",new mongoose.Schema({
     couponName:String,
     expiry:{
         type:Date
@@ -140,15 +147,14 @@ exports.coupons= db.model("coupons",new mongoose.Schema({
 }))
 
 
-module.exports={
-    // products:db.model("product",productSchema),
-    users:db.model("user",userSchema),
-    categories:db.model("catergory",catergorySchema),
-    // carts:db.model('cart',cartSchema),
-    addresses:db.model('address',addressSchema),
-    // orders:db.model('order',orderSchema),
-    banners:db.model('banner',bannerSchema),
-    wishlists:db.model('wishlist',wishlistSchema),
-    // coupons:db.model("coupons",couponSchema)
-}
+// module.exports={
+//     products:db.model("product",productSchema),
+//     users:db.model("user",userSchema),
+//     categories:db.model("catergory",catergorySchema),
+//     carts:db.model('cart',cartSchema),
+//     orders:db.model('order',orderSchema),
+//     banners:db.model('banner',bannerSchema),
+//     wishlists:db.model('wishlist',wishlistSchema),
+//     coupons:db.model("coupons",couponSchema)
+// }
 

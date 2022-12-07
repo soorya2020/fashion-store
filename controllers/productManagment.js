@@ -1,17 +1,8 @@
 var express = require('express');
-const { render } = require('../app');
-const { products } = require('../model/connection');
 const adminHelpers = require('../helpers/adminHelpers');
 const productHelpers = require('../helpers/product-helpers');
 const cartHelpers = require('../helpers/cartHelpers');
-const path=require('path')
-const multer= require('multer')
-const router = express.Router();
 const layout = 'admin-layout'
-
-
-
-
 
 module.exports={
     

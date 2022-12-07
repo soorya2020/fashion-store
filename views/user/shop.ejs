@@ -387,19 +387,6 @@
 
 <!-- toast color -->
 <script>
-    function addToWishlist(id){
-        $.ajax({
-            url:'/add-to-wishlist/'+id,
-            method:'get',
-            success:(response)=>{
-                if(response.status=='success'){
-                    toast('added to wishlist')
-                }else{
-                    toast('already added to wishlist')
-                }
-            }
-        })
-    }
 
     
 </script>

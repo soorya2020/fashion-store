@@ -1,14 +1,5 @@
-var express = require('express');
-const { render } = require('../app');
-const { products } = require('../model/connection');
-const { unBlockUser } = require('../helpers/adminHelpers');
 const adminHelpers = require('../helpers/adminHelpers');
-const productHelpers = require('../helpers/product-helpers');
-
-
-const router = express.Router();
 const layout = 'admin-layout'
-
 
 module.exports={
 
@@ -48,7 +39,4 @@ module.exports={
         })
         
       },
-
-    
-    
 }

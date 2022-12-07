@@ -1,9 +1,4 @@
 const db = require("../model/connection");
-const { response } = require("../app");
-const expressEjsLayouts = require("express-ejs-layouts");
-
-
-    
 
 exports.getRevenueByDay= () => {
 
