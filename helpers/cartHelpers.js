@@ -239,6 +239,8 @@ module.exports = {
         )
         .then((response) => {
           resolve(response);
+        }).catch((error)=>{
+          reject(error)
         });
     });
   },
@@ -248,10 +250,9 @@ module.exports = {
     });
   },
   placeOrder: (order, total) => {
+    
+ 
     return new Promise(async (resolve, reject) => {
-      // //check stock
-      // console.log(order);
-      // //check stock
 
       let products = await db.carts.aggregate([
         {
@@ -361,7 +362,7 @@ module.exports = {
                   }
                 )
                 .then((data) => {
-                  resolve();
+                 
                 });
             } else {
              
@@ -371,7 +372,7 @@ module.exports = {
         db.addresses(addressObj)
           .save()
           .then(() => {
-            resolve();
+          
           });
       }
 
@@ -388,7 +389,7 @@ module.exports = {
 
      
 
-
+      
       let orderData = {
         firstName: order.firstname,
         lastName: order.lastname,
@@ -417,16 +418,25 @@ module.exports = {
               $push: { orders: orderData },
             }
           )
-          .then((data) => {});
+          .then((data) => {
+            console.log("order saved");
+          });
       } else {
-        let data = db.orders(orderObj);
+        
+        let data = await db.orders(orderObj);
+
         await data.save();
+        console.log(data,"order saved");
       }
       db.carts.deleteOne({ user: order.userId }).then((res) => {
         resolve() 
+      }).catch((e)=>{
+        console.log(e,"somehting goene wrong wlide deleting cart");
+        reject()
       });
     });
   },
+
 
   listAddress: (userId, addressId) => {
     return new Promise((resolve, reject) => {
@@ -570,7 +580,7 @@ module.exports = {
     });
   },
 
-  changePaymentStatus: (orderId, userId) => {
+  changePaymentStatus: (orderId, userId,value) => {
     return new Promise(async (resolve, reject) => {
       let orders = await db.orders.find({ userId: userId });
 
@@ -586,7 +596,7 @@ module.exports = {
           },
           {
             $set: {
-              ["orders." + orderIndex + ".paymentStatus"]: 0,
+              ["orders." + orderIndex + ".paymentStatus"]: value,
             },
           }
         )
@@ -625,7 +635,7 @@ module.exports = {
     let updateValue = parseInt(value);
     return new Promise(async (resolve, reject) => {
       let order = await db.orders.findOne({ "orders._id": orderId });
-      console.log(order, "this is ordeerb line 538 cart helpers");
+  
 
       if (order) {
         let orderIndex = order.orders.findIndex(
@@ -666,7 +676,7 @@ module.exports = {
               )
               .then((data) => {
                
-                console.log(data,'payment status update ffor cod');
+            
                 resolve();
               })
             }

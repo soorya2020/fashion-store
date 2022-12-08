@@ -1,3 +1,5 @@
+
+
 <div id="right-sidebar" class="settings-panel">
     <i class="settings-close ti-close"></i>
     <ul class="nav nav-tabs border-top" id="setting-panel" role="tablist">
@@ -195,7 +197,10 @@
                     <h2 class="mb-0 font-weight-normal"><i class="icon-sun mr-2"></i>31<sup>C</sup></h2>
                   </div>
                   <div class="ml-2">
+                    
                     <h4 class="location font-weight-normal">Bangalore</h4>
+                    <button onclick="getWeather()"">get weather</button>
+                    <div class="weather-temperature"></div>
                     <h6 class="font-weight-normal">India</h6>
                   </div>
                 </div>
@@ -949,6 +954,7 @@
   </div>
   <!-- page-body-wrapper ends -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
   <script>
     (()=>{
       
@@ -1070,10 +1076,10 @@
         })()
         
         
-        
-        
-        
-        
+  function getWeather() {
+    
+    fetch('https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=370f0a5de832146be8cb41f2690b295e').then(res=>res.json()).then(data=>console.log(data,'this is my weather data')).catch(err=>alert(err))
+  }      
         
         
         

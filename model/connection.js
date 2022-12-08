@@ -110,7 +110,7 @@ module.exports.orders=db.model('order',new mongoose.Schema({
             shippingAddress:Object,
             paymentStatus:{
                 type:Number,
-                default:0
+                default:1
             },
             createdAt:{
                 type:Date

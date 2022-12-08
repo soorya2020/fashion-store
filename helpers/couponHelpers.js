@@ -48,7 +48,6 @@ module.exports = {
     });
   },
   addCouponToUser: (userId, coupId, value) => {
-    console.log(userId, coupId);
     return new Promise((resolve, reject) => {
       //check coupon already used or not
       db.users
@@ -61,11 +60,12 @@ module.exports = {
           },
           {
             $match: {
-              $and: [{ "coupon.couponId": coupId, status: true }],
+              $and: [{ "coupon.couponId": coupId, 'coupon.status': true }],
             },
           },
         ])
-        .then((data) => {      
+        .then((data) => {    
+          console.log(data,'kjh');  
           if (!data.length) {
             let couponObj = {
               couponId: coupId,

@@ -24,6 +24,7 @@ const paypalClient = new paypal.core.PayPalHttpClient(
 
 var nav = true;
 var footer = true;
+let  couponAmount=0
 
 module.exports = {
   getHome: async function (req, res) {
@@ -71,15 +72,18 @@ module.exports = {
     });
   },
   deleteProduct: (req, res) => {
+  
     cartHelpers.removeProduct(req.body).then((response) => {
       res.json(response);
+    }).catch((error)=>{
+      res.json()
     });
   },
   getCheckout: async (req, res) => {
     let cartProducts = await cartHelpers.getCartProducts(req.session.user._id);
     let total = await cartHelpers.getTotalAmount(req.session.user._id);
     console.log(total);
-    let totalAmount=total.total
+    let totalAmount=total?.total
     let address = await cartHelpers.getAddress(req.session.user._id);
     let coupons= await couponHelpers.getAllCoupons()
 
@@ -94,47 +98,29 @@ module.exports = {
     });
   },
   postCheckout: async (req, res) => {
-    var totalPrice=0
-    req.body.userId =  req.session.user._id;
-    if(req.session.coupon){
-      
-    let coupon=await couponHelpers.getCoupon(req.session.coupon)
-    let totalAmount = await cartHelpers.getTotalAmount(req.session.user._id);
-    let total=totalAmount.total
-      if(total>coupon.minPurchase){ 
-        await couponHelpers.changeCouponStatus(req.session.user._id,req.session.coupon)
-        if(total*coupon.discountPercentage/100 <=coupon.maxDiscountValue){
-        console.log('soosrya');
-         totalPrice=total-coupon.maxDiscountValue
-         console.log(totalPrice,'this is my toal proce');
-        }else{
-          totalPrice=total-coupon.maxDiscountValue
-         }
-      }else{
-         totalPrice=total-total*coupon.discountPercentage/100
-      }
-    }else{
-
+    req.body.userId=req.session.user._id
+    console.log(couponAmount,'this is my coupon amount');
       let totalAmount = await cartHelpers.getTotalAmount(req.session.user._id);
-      totalPrice = totalAmount.total;
-      console.log(totalPrice,'this is my toal proce');
-    }
-
+      totalPrice = totalAmount?.total;
+      console.log(totalPrice,"total before offer");
+      totalPrice=totalPrice-couponAmount
+      console.log(totalPrice,"total after offer");
     if (totalPrice == 0) {
       req.session.coupon=''
       res.json({ status: true });
     } else {
       cartHelpers.placeOrder(req.body, totalPrice).then(async (response) => {
-        if (response?.outOfStock) {
-          req.session.coupon=''
-          res.json(response);
-        } else {
+        // if (response?.outOfStock) {
+        //   req.session.coupon=''
+        //   res.json(response);
+        // } else {
           if (req.body.paymentMethod === "COD") {
-            let orders = await db.orders.find({ userId: req.session.user._id });
+            let orders = await db.orders.find({ userId: req.session.user._id })
+            console.log(orders,'soorya');
             let myOrderId = orders[0]?.orders.reverse();
             myOrderId = myOrderId[0]?._id;
             cartHelpers
-              .changePaymentStatus(myOrderId, req.session.user._id)
+              .changePaymentStatus(myOrderId, req.session.user._id,0)
               .then(() => {
                 req.session.coupon=''
                 res.json({ cod: true });
@@ -150,7 +136,7 @@ module.exports = {
             req.session.coupon=''
             res.json({ paypal: true, totalPrice: totalPrice });
           }
-        }
+      // }
       });
     }
   },
@@ -186,13 +172,14 @@ module.exports = {
   },
 
   paymentVerification: (req, res) => {
+    console.log(req.body,'payment verification');
     cartHelpers
       .verifyPayment(req.body)
       .then(() => {
         console.log(req.body["order[receipt]"]);
         console.log("thsis is orsdr id");
         cartHelpers
-          .changePaymentStatus(req.body["order[receipt]"], req.session.user._id)
+          .changePaymentStatus(req.body["order[receipt]"], req.session.user._id,1)
           .then(() => {
             res.send({ status: true });
           });
@@ -301,28 +288,31 @@ module.exports = {
     req.session.coupon=req.body._id
     let couponId=req.body._id
     let totalAmount=await cartHelpers.getTotalAmount(req.session.user._id)
-    let total=totalAmount.total
+    let total=totalAmount?.total
     couponHelpers.getCoupon(couponId).then((data)=>{
       if(total>=data.minPurchase){
         //add coupon to user
+
         couponHelpers.addCouponToUser(req.session.user._id,ObjectId(req.body._id),false).then((d)=>{
           
           if(total*data.discountPercentage/100 <=data.maxDiscountValue){
   
             console.log(total*data.discountPercentage/100,'thsi is my discount value')
-            let couponAmount=total*data.discountPercentage/100
+            let couponTotal=total*data.discountPercentage/100
             // couponHelpers.applyCoupon(couponAmount)
-            res.send({status:true,couponAmount:couponAmount,couponId:data._id})
+            couponAmount=couponTotal
+            res.send({status:true,couponAmount:couponTotal,couponId:data._id})
   
           }else{
-            let couponAmount=data.maxDiscountValue
+            couponAmount=data.maxDiscountValue
             // couponHelpers.applyCoupon(couponAmount)
-            console.log('soorya ethi mone');
-            res.send({status:true,couponAmount:couponAmount})
+         
+            res.send({status:true,couponAmount:couponAmount,offerTotal:total-couponAmount})
 
           }
-        }).catch(()=>{
-          res.send({staus:false,message:'coupon already used'})
+        }).catch((e)=>{
+          
+          res.send({staus:false,message:'Something went wrong'})
         })
 
       }else{
