@@ -194,18 +194,18 @@
               <div class="weather-info">
                 <div class="d-flex">
                   <div>
-                    <h2 class="mb-0 font-weight-normal"><i class="icon-sun mr-2"></i>31<sup>C</sup></h2>
+                    <h2 class="mb-0 font-weight-normal"><i class="icon-sun mr-2" id="temperature"></i><sup>°C</sup></h2>
                   </div>
                   <div class="ml-2">
                     
-                    <h4 class="location font-weight-normal">Bangalore</h4>
-                    <button onclick="getWeather()"">get weather</button>
-                    <div class="weather-temperature"></div>
-                    <h6 class="font-weight-normal">India</h6>
+                    <h4 id="location" class="font-weight-normal"></h4>
+                    
+                    <div id="weather-temperature"></div>
+                    <h6 id="country" class="font-weight-normal">India</h6>
                   </div>
                 </div>
               </div>
-            </div>
+            </div>    
           </div>
         </div>
         <div class="col-md-6 grid-margin transparent">
@@ -1076,10 +1076,23 @@
         })()
         
         
-  function getWeather() {
+ 
+
+
+      fetch('https://api.openweathermap.org/data/2.5/weather?lat=9.9816&lon=76.2999&units=metric&appid=370f0a5de832146be8cb41f2690b295e')
+      .then(res=>res.json())
+      .then(data=>{
+
+        console.log(data,'this is my weather data')
+        temperature.innerText=data.main.temp
+        document.getElementById('location').innerText=data.name
+        
+      }
+     
+      ).catch(err=>alert(err))
+     
     
-    fetch('https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=370f0a5de832146be8cb41f2690b295e').then(res=>res.json()).then(data=>console.log(data,'this is my weather data')).catch(err=>alert(err))
-  }      
+
         
         
         

@@ -83,7 +83,7 @@
                                     <!-- End .product-title -->
                                     <div class="product-price">
                                        <h6>₹ <%= products.offerPrice  %> </h6>
-                                <p >MRP <strike class="text-danger">₹ <%= products.price %></strike><p class="text-danger ">-<%= 100-(products.offerPrice/products.price)*100? 100-(products.offerPrice/products.price)*100 :0  %>% OFF </p>   </p>
+                                <p >MRP <strike class="text-danger">₹ <%= products.price %></strike><p class="text-danger ">-<%=Math.round(100-(products.offerPrice/products.price)*100) ? Math.round(100-(products.offerPrice/products.price)*100) :0  %>% OFF </p>   </p>
 
                                     </div><!-- End .product-price -->
                                     <div class="ratings-container">

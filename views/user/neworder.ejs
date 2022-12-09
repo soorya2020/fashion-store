@@ -51,34 +51,33 @@
 
                   <%if(!prodata.return){%>
                   <%if(prodata.orderStatus==1){%>
-                  <button class="btn btn-primary m-0 p-0">oder placed</button>
+                  <span class="btn btn-outline-secondary rounded m-0 p-1">oder placed</span>
                   <% }else if(prodata.orderStatus==2){%>
-                  <button class="btn btn-primary m-0 p-0">order dispatched</button>
+                  <button class="btn btn-outline-primary rounded m-0 p-1">order dispatched</button>
                   <%}else if(prodata.orderStatus==3){%>
-                  <button class="btn btn-primary m-0 p-0">ouy for delivery</button>
+                  <button class="btn btn-outline-warning rounded m-0 p-1">ouy for delivery</button>
                   <%}else if(prodata.orderStatus==4){%>
-                  <button class="btn btn-primary m-0 p-0">delivered</button>
+                  <button class="btn btn-outline-success  rounded m-0 p-1">delivered</button>
                   <%}else{%>
-                  <button class="btn btn-primary m-0 p-0">item cancelled</button>
+                  <button class="btn btn-outline-danger  rounded m-0 p-1">item cancelled</button>
                   <%}%>
                                 <%}else{%>
                   <button class="btn btn-primary m-0 p-0">item returned</button>
                   <%}%>
-                                </td>
-
-                                <td class="text-center"><%= prodata.quantity%>
                 </td>
+
+                <td class="text-center"><%= prodata.quantity%> </td>
+               
                 <td class=" text-center">$<%= prodata.productsPrice%></td>
                 <td class=" text-center">
                   <div class="col">
-                    <% if( prodata.orderStatus==4){%>
-                    <P><a style="color: rgb(19, 12, 12);" id="return-btn " onclick="returnItem('<%= prodata._id%>','<%= order._id %>',this)" class="btn btn-outline-warning btn-round p-0 m-0">return</a></P>
+                    <% if( prodata.orderStatus<4){%>
+                      <P><a style="color: rgb(30, 21, 21);" onclick="cancelOrder('<%= prodata._id%>','<%= order._id %>')" href="" class="btn btn-outline-danger btn-round p-0 m-0">Cancell Product</a></P>
+                      
+                      <%}else if(prodata.orderStatus==4){%>
+                        <P><a style="color: rgb(19, 12, 12);" id="return-btn " onclick="returnItem('<%= prodata._id%>','<%= order._id %>',this)" class="btn btn-outline-warning btn-round p-0 m-0">return</a></P>
 
-                    <P><a style="color: rgb(37, 22, 22);" onclick="downloadInvoice('<%= order._id %>','<%= index %>')" class="btn  btn-round p-0 m-0 btn-outline-info">Download Invoice</a></P>
-                    <%}else{%>
-                    <P><a style="color: rgb(30, 21, 21);" onclick="cancelOrder('<%= prodata._id%>','<%= order._id %>')" href="" class="btn btn-outline-danger btn-round p-0 m-0">Cancell Product</a></P>
-
-                    <P><a style="color: rgb(36, 24, 24);" onclick="downloadInvoice('<%= order._id %>','<%= index %>')" class="btn  btn-round p-0 m-0 btn-outline-info">Download Invoice</a></P>
+                        <P><a style="color: rgb(36, 24, 24);" onclick="downloadInvoice('<%= order._id %>','<%= index %>')" class="btn  btn-round p-0 m-0 btn-outline-info">Download Invoice</a></P>
                     <%}%>
                                     </div>
                                 </td>

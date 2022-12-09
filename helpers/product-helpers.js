@@ -38,9 +38,9 @@ module.exports = {
     console.log(data);
     return new Promise(async (resolve, reject) => {
       let dbprodData = await db.products.findOne({_id:prodId})
-      if(data.img.length==0){
-        data.img=dbprodData.img
-      }
+      // if(data?.img?.length==0){
+        data.img=dbprodData?.img
+      // }
       await db.products.updateOne(
         { _id: prodId },
         {

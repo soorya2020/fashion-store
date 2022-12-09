@@ -249,7 +249,7 @@ module.exports = {
       db.carts.updateMany({});
     });
   },
-  placeOrder: (order, total) => {
+  placeOrder: (order, total, couponId) => {
     
  
     return new Promise(async (resolve, reject) => {
@@ -304,7 +304,7 @@ module.exports = {
      
 
       for (let i = 0; i <= products.length - 1; i++) {
-        console.log("count");
+        
         db.products
           .updateOne(
             {
@@ -419,7 +419,7 @@ module.exports = {
             }
           )
           .then((data) => {
-            console.log("order saved");
+            console.log("order pushed");
           });
       } else {
         
@@ -429,11 +429,28 @@ module.exports = {
         console.log(data,"order saved");
       }
       db.carts.deleteOne({ user: order.userId }).then((res) => {
-        resolve() 
-      }).catch((e)=>{
-        console.log(e,"somehting goene wrong wlide deleting cart");
+        if(couponId){
+          db.users.updateOne(
+            {
+              _id:order.userId,"coupon.couponId":ObjectId(couponId) 
+            },
+            {
+              $set:{
+                'coupon.$.status':true
+              }
+            }
+            ).then((d)=>{
+              resolve() 
+            }).catch((e)=>{
+              console.log(e,"somehting goene wrong wlide deleting cart");
+              reject()
+            });
+        }else{
+          resolve()
+        }
+      }).catch(()=>{
         reject()
-      });
+      })
     });
   },
 
@@ -810,8 +827,8 @@ module.exports = {
                     $match: {
                       $and: [
                         {
-                          "orders._id": ObjectID(data.orderId),
-                          "orders.productDetails._id": ObjectID(data.prodId),
+                          "orders._id": data.orderId,
+                          "orders.productDetails._id":data.prodId,
                         },
                       ],
                     },

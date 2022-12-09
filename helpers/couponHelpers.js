@@ -1,5 +1,5 @@
+
 const { ObjectId } = require("mongodb");
-const { coupon } = require("../controllers/orderManagement");
 const db = require("../model/connection");
 
 module.exports = {
@@ -25,9 +25,14 @@ module.exports = {
   },
   getAllCoupons: () => {
     return new Promise((resolve, reject) => {
-      db.coupons
-        .find({})
-        .then((data) => {
+      let date=new Date
+      db.coupons.aggregate([
+    
+        {
+          $match:{expiry:{$gt: date}}
+        }
+
+      ]).then((data) => {
           resolve(data);
         })
         .catch((error) => {
@@ -49,73 +54,45 @@ module.exports = {
   },
   addCouponToUser: (userId, coupId, value) => {
     return new Promise((resolve, reject) => {
+      
       //check coupon already used or not
-      db.users
-        .aggregate([
-          {
-            $unwind: "$coupon",
-          },
-          {
-            $match: { _id: ObjectId(userId) },
-          },
-          {
-            $match: {
-              $and: [{ "coupon.couponId": coupId, 'coupon.status': true }],
-            },
-          },
-        ])
-        .then((data) => {    
-          console.log(data,'kjh');  
-          if (!data.length) {
-            let couponObj = {
-              couponId: coupId,
-              status: value,
-            };
-            db.users
-              .updateOne(
-                {
-                  _id: userId,
-                },
-                {
-                  $push: { coupon: couponObj },
-                }
-              )
-              .then(() => {
-                resolve();
-              })
-              .catch((e) => {
-                reject();
-              });
-          } else {
-            reject();
-          }
-        });
+      db.users.findOne({_id:userId,'coupon.couponId':coupId}).then((response)=>{  
+         if(!response){
+
+                let couponObj = {
+                  couponId: coupId,
+                  status: value,
+                };
+                db.users
+                  .updateOne(
+                    {
+                      _id: userId,
+                    },
+                    {
+                      $push: { coupon: couponObj },
+                    }
+                  )
+                  .then(() => {
+                    resolve();
+                  })
+                  .catch(() => {
+                    reject();
+                  });
+
+        }else{
+          
+        
+          let couponIndex=response.coupon.findIndex(i=>i.couponId==""+coupId )
+
+          if(response.coupon[couponIndex].status){
+           reject("this coupon have been used")
+         }else{
+          resolve()
+         }
+        }
+
+      })
     });
   },
-  changeCouponStatus:(userId,coupId)=>{
-    return new Promise((resolve,reject)=>{
-      db.users.aggregate([
-        {
-          $unwind:'$coupon'
-        },
-        {
-          $match:{_id:userId}
-        },
-        {
-          $match: {
-            $and: [{ "coupon.couponId": coupId, status: false }],
-          },
-        },
-        {
-          $set:{'coupon.status':true}
-        }
-      ]).then((d)=>{
-        console.log(d,'coupon status updated');
-        resolve()
-      }).catch((e)=>{
-        console.log(e,'error while updating coupon stats');
-        reject()
-      })
-    })
-  }
+
 };

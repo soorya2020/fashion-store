@@ -126,14 +126,22 @@
       error.style.background = 'rgb(200,0,0,0.1)'
       error.style.width = "100%"
       flag = 2
-    } else if (maxDiscountValue > (minAmount * discountPercentage / 100) ) {
+    }else if(maxDiscountValue==''){
       error.removeAttribute('hidden')
       console.log(minAmount * discountPercentage / 100);
-      error.innerText = `maximum offer price should be  ${minAmount*discountPercentage/100 }`
+      error.innerText = `maximum offer price is required `
       error.style.background = 'rgb(200,0,0,0.1)'
       error.style.width = "100%"
       flag = 2
-    } else if (description == '') {
+    }
+    // } else if (maxDiscountValue > (minAmount * discountPercentage / 100) ) {
+    //   error.removeAttribute('hidden')
+    //   console.log(minAmount * discountPercentage / 100);
+    //   error.innerText = `maximum offer price should be  ${minAmount*discountPercentage/100 }`
+    //   error.style.background = 'rgb(200,0,0,0.1)'
+    //   error.style.width = "100%"
+    //   flag = 2
+    else if (description == '') {
       error.removeAttribute('hidden')
       error.innerText = 'description is required'
       error.style.background = 'rgb(200,0,0,0.1)'

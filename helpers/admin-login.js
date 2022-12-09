@@ -1,6 +1,5 @@
 var userCollection = require('../config/admin_pass')
 const bcrypt = require('bcrypt');
-const { response } = require('../app');
 
 
 var data = userCollection.userid

@@ -69,22 +69,24 @@ module.exports={
      
       console.log(req.body,'this ismy body')
       const files=req.files
-      const fileName=files.map((file)=>{
-        return file.filename
-      })
-      const product=req.body
-      product.img=fileName
+      console.log(files);
+      // const fileName=files?.map((file)=>{
+      //   return file.filename
+      // })
+      // const product=req.body
+      // product.img=fileName
 
-      productHelpers.editProduct(req.params.id, req.body).then((d)=>{
-          // res.redirect('/admin/products')
+      // productHelpers.editProduct(req.params.id, req.body).then((d)=>{
+      //     // res.redirect('/admin/products')
        
+      // res.redirect('/admin/products')
+      //     // if(req?.files?.image){
+      //     //    let image =req.files.image
+      //     //   const imgName =req.params.id 
+      //     //   image.mv('./public/product-images/'+imgName+'.jpg')
+      //     // }
+      //   })
       res.redirect('/admin/products')
-          // if(req?.files?.image){
-          //    let image =req.files.image
-          //   const imgName =req.params.id 
-          //   image.mv('./public/product-images/'+imgName+'.jpg')
-          // }
-        })
       },
 
       

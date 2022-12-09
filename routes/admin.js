@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-      cb(null,  file.fieldname + '-' + uniqueSuffix+".jpg")
+      cb(null,  req.params.id+".jpg")
     }
 });
  const upload = multer({ storage: storage });
@@ -28,6 +28,10 @@ const storage2 = multer.diskStorage({
     }
 });
  const upload2 = multer({ storage: storage2 });
+
+
+
+
 
 
 const {
@@ -122,23 +126,24 @@ router.get('/',verifyAdminLogin, dashboard);
 router.get('/products',verifyAdminLogin ,viewProducts)
 //add-products
 router.get('/add-products', verifyAdminLogin,getAddProducts)
-router.post('/add-products',upload.array('image') ,addProducts)
+router.post('/add-products',verifyAdminLogin, ,addProducts)
 //delete product
-router.get('/delete-products/:id', deleteProduct)
+router.get('/delete-products/:id', verifyAdminLogin,deleteProduct)
 //edit product
-router.get('/edit-products/:id',getEditProduct)
+router.get('/edit-products/:id',verifyAdminLogin,getEditProduct)
 
 
 
-router.post('/edit-products/:id',upload.array('image'),postEditProduct)
+router.post('/edit-products/:id',verifyAdminLogin,postEditProduct)
+
 
 
 
 // users
 router.get('/users', verifyAdminLogin,viewAllUsers)
 //block user
-router.get('/blockUser/:id', blockUser)
-router.get('/unBlockUser/:id', unBlockUser)
+router.get('/blockUser/:id',verifyAdminLogin, blockUser)
+router.get('/unBlockUser/:id', verifyAdminLogin,unBlockUser)
 //add user
 // router.get('/add-users',getAddUser)
 // router.post('/add-user',postAddUser)
@@ -147,13 +152,13 @@ router.get('/unBlockUser/:id', unBlockUser)
 // categories
 router.get("/categories",verifyAdminLogin,viewAllCategories)
 //add category
-router.get('/add-category',getAddCategory)
-router.post("/add-category",postAddCategory)
+router.get('/add-category',verifyAdminLogin,getAddCategory)
+router.post("/add-category",verifyAdminLogin,postAddCategory)
 //edit category
-router.get("/edit-category/:id",getEditCategory)
-router.post("/edit-category/:id",postEditCategory)
+router.get("/edit-category/:id",verifyAdminLogin,getEditCategory)
+router.post("/edit-category/:id",verifyAdminLogin,postEditCategory)
 //delete category
-router.get("/delete-category/:id",deleteCategory)
+router.get("/delete-category/:id",verifyAdminLogin,deleteCategory)
 
 //orders
 router.get('/orders',verifyAdminLogin,viewAllOrders)
@@ -162,8 +167,8 @@ router.get("/single-order/:id",verifyAdminLogin,viewOrderDetails)
 router.post('/update-order-status',verifyAdminLogin,updateOrderStatus)
 
 //chart and sales
-router.get('/sales-report',getSalesReport)
-router.get('/chartGraph',revenueGraph)
+router.get('/sales-report',verifyAdminLogin,getSalesReport)
+router.get('/chartGraph',verifyAdminLogin,revenueGraph)
 
 router.get('/coupon',verifyAdminLogin,coupon)
 router.get('/add-coupon',verifyAdminLogin,addCoupon)
